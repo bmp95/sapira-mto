@@ -51,7 +51,7 @@ def test_los_textos_de_motivo_conservan_sus_tildes():
         f"CALIDAD_SOLO_TUERCA debe contener la palabra '{palabra_solo}' completa"
 
     # INOX_CON_ACABADO_ZINC: debe contener "austenítico" completo (con una sola tilde)
-    palabra_austenitico = "austenít" + chr(0xed) + "ico"
+    palabra_austenitico = "austen" + chr(0xed) + "tico"
     motivos = comprobar(_linea(nombre="TUERCA", calidad="A4-80", acabado="CINCADO"), TODAS_ACTIVAS)
     assert any(palabra_austenitico in m.texto for m in motivos if m.codigo == "INOX_CON_ACABADO_ZINC"), \
         f"INOX_CON_ACABADO_ZINC debe contener la palabra '{palabra_austenitico}' completa"

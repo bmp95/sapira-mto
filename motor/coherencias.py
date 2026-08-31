@@ -32,8 +32,9 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
                               texto=f"Las clases HV son durezas de arandela y esto es {nombre}."))
 
     if interruptores.get("inox_acabado") and calidad in _INOX and acabado in _ZINC:
+        _austenitico = "austen" + chr(0xed) + "tico"
         motivos.append(Motivo(codigo="INOX_CON_ACABADO_ZINC", atributo="acabado",
-                              texto=f"{calidad} es inox austenít{chr(0xed)}ico, as{chr(0xed)} que un acabado {acabado.lower()} es incoherente."))
+                              texto=f"{calidad} es inox {_austenitico}, as{chr(0xed)} que un acabado {acabado.lower()} es incoherente."))
 
     if interruptores.get("sistema_medida") and norma and medida:
         imperial_norma = norma.startswith(("ASTM", "ASME", "MSS"))
