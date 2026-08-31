@@ -20,6 +20,8 @@
 - Toda celda lleva `procedencia`. Una celda sin procedencia lanza excepción, no advertencia.
 - Ningún secreto en el repositorio. La clave se lee de `os.environ["OPENAI_API_KEY"]`.
 - Commits en castellano, presente de indicativo: `añade`, `corrige`, `mide`.
+- **Todo carácter no-ASCII que viva dentro de un literal de código se escribe con `chr(0x....)` o escape unicode, nunca crudo.** Comillas tipográficas, primas, símbolo de diámetro, acentos dentro de expresiones regulares. Los comentarios y docstrings sí pueden llevar tildes crudas. Motivo: en la Tarea 2 unas comillas escritas en crudo se convirtieron en rectas al guardar el fichero, rompieron el módulo, y el test que debía cazarlo se corrompió igual y siguió pasando.
+- **Ningún test que recorra una colección puede pasar con la colección vacía.** Si un test comprueba "todas las claves de X cumplen Y", afirma primero que X no está vacía. Ha aparecido tres veces ya: un guardián que no guarda es peor que ninguno, porque da seguridad falsa.
 
 ---
 
@@ -58,7 +60,7 @@ Cada fichero del motor tiene una responsabilidad y se prueba solo. `pipeline.py`
 
 ---
 
-## Tarea 1: Andamiaje y modelos de datos
+## Task 1: Andamiaje y modelos de datos
 
 **Files:**
 - Create: `pyproject.toml`, `motor/__init__.py`, `motor/modelos.py`, `tests/__init__.py`, `tests/test_modelos.py`
@@ -239,7 +241,7 @@ git commit -m "añade modelos de dominio con estado derivado de la confianza"
 
 ---
 
-## Tarea 2: Lectura del MTO y saneado
+## Task 2: Lectura del MTO y saneado
 
 **Files:**
 - Create: `motor/saneado.py`, `motor/lectura_mto.py`, `tests/test_saneado.py`, `tests/test_lectura.py`
@@ -364,7 +366,7 @@ git commit -m "añade lectura del MTO y saneado de entrada"
 
 ---
 
-## Tarea 3: Catálogos y emparejador por token
+## Task 3: Catálogos y emparejador por token
 
 Aquí viven las trampas. Es la tarea con más riesgo de fallo silencioso.
 
@@ -510,7 +512,7 @@ git commit -m "añade catalogos cerrados y emparejador por token sin coincidenci
 
 ---
 
-## Tarea 4: Derivaciones
+## Task 4: Derivaciones
 
 **Files:**
 - Create: `motor/derivaciones.py`, `tests/test_derivaciones.py`
@@ -618,7 +620,7 @@ git commit -m "añade derivacion de material desde calidad y de nombre desde nor
 
 ---
 
-## Tarea 5: Puerto LLM y segmentador con votación
+## Task 5: Puerto LLM y segmentador con votación
 
 **Files:**
 - Create: `motor/puerto_llm.py`, `motor/segmentador.py`, `tests/test_segmentador.py`
@@ -726,7 +728,7 @@ git commit -m "añade puerto LLM y segmentador con votacion de tres pasadas"
 
 ---
 
-## Tarea 6: Invariantes estructurales
+## Task 6: Invariantes estructurales
 
 **Files:**
 - Create: `motor/invariantes.py`, `tests/test_invariantes.py`
@@ -852,7 +854,7 @@ git commit -m "añade invariantes estructurales incluida la cobertura del texto"
 
 ---
 
-## Tarea 7: Coherencias cruzadas
+## Task 7: Coherencias cruzadas
 
 **Files:**
 - Create: `motor/coherencias.py`, `tests/test_coherencias.py`
@@ -979,7 +981,7 @@ git commit -m "añade seis comprobaciones cruzadas de dominio con interruptor"
 
 ---
 
-## Tarea 8: Confianza y validador
+## Task 8: Confianza y validador
 
 **Files:**
 - Create: `motor/confianza.py`, `motor/validador.py`, `tests/test_confianza.py`
@@ -1103,7 +1105,7 @@ git commit -m "añade indice de confianza como minimo de cuatro factores medidos
 
 ---
 
-## Tarea 9: Cantidades
+## Task 9: Cantidades
 
 **Files:**
 - Create: `motor/cantidades.py`, `tests/test_cantidades.py`
@@ -1160,7 +1162,7 @@ git commit -m "añade multiplicadores de cantidad del set"
 
 ---
 
-## Tarea 10: Pipeline punta a punta
+## Task 10: Pipeline punta a punta
 
 Con `PuertoFalso` guionizado para las 15 filas. Sin red. Es el hito que convierte piezas en sistema.
 
@@ -1229,7 +1231,7 @@ git commit -m "añade pipeline punta a punta: 15 filas dan 30 lineas"
 
 ---
 
-## Tarea 11: Gold set
+## Task 11: Gold set
 
 **Files:**
 - Create: `evaluacion/plantilla_gold.py`, `datos/gold_set.csv`
@@ -1266,7 +1268,7 @@ git commit -m "añade gold set anotado a mano con doble anotacion"
 
 ---
 
-## Tarea 12: Arnés de evaluación
+## Task 12: Arnés de evaluación
 
 **Files:**
 - Create: `evaluacion/arnes.py`, `tests/test_arnes.py`
@@ -1303,7 +1305,7 @@ git commit -m "añade arnes de evaluacion con las metricas del spec"
 
 ---
 
-## Tarea 13: Puerto OpenAI y prueba de humo
+## Task 13: Puerto OpenAI y prueba de humo
 
 **Files:**
 - Create: `motor/puerto_openai.py`, `tests/test_puerto_openai.py` (marcado `@pytest.mark.red`)
@@ -1327,7 +1329,7 @@ git commit -m "añade puerto OpenAI con cache en disco y contabilidad de coste"
 
 ---
 
-## Tarea 14: API
+## Task 14: API
 
 **Files:**
 - Create: `api/servidor.py`, `arrancar.py`
@@ -1341,7 +1343,7 @@ git commit -m "añade puerto OpenAI con cache en disco y contabilidad de coste"
 
 ---
 
-## Tarea 15: Front
+## Task 15: Front
 
 **Files:**
 - Create: `front/` (Vite + React + TS + Tailwind + shadcn/ui + TanStack Table)
@@ -1357,7 +1359,7 @@ git commit -m "añade puerto OpenAI con cache en disco y contabilidad de coste"
 
 ---
 
-## Tarea 16: Corpus de estrés, ablaciones e informe
+## Task 16: Corpus de estrés, ablaciones e informe
 
 **Files:**
 - Create: `datos/corpus_estres.csv`, `evaluacion/ablaciones.py`, `evaluacion/informe.py`
@@ -1370,7 +1372,7 @@ git commit -m "añade puerto OpenAI con cache en disco y contabilidad de coste"
 
 ---
 
-## Tarea 17: Arranque en frío
+## Task 17: Arranque en frío
 
 - [ ] `README.md` con los tres comandos exactos
 - [ ] **Probar en frío:** clonar en carpeta limpia, `pip install -e .`, `python arrancar.py`, subir el MTO. Sin `npm install`.
@@ -1387,3 +1389,220 @@ git commit -m "añade puerto OpenAI con cache en disco y contabilidad de coste"
 **Consistencia de tipos:** `Valor.factores` es `dict[str,int]` en la tarea 1 y se rellena en la 8. `Elemento.votos` se fija en la 5 y se consume en la 8. `Motivo.factor_limitante` se define en la 1 y se usa en la 8.
 
 **Ruta crítica para el miércoles:** tareas 1-13. Las 14-15 son el front. La 16 es lo que llena las casillas del one-pager. Si el martes por la noche va justo, lo que se cae es la 16 antes que la 15, y la 15 antes que la 13.
+
+---
+
+## Task 18: El histórico de respuestas — almacén y clave canónica
+
+Añadida el 2026-08-31 tras las respuestas del cliente. Implementa §13 del spec.
+
+**Depende de:** Task 1 (modelos). Se puede hacer en paralelo al resto del motor.
+
+**Files:**
+- Create: `motor/historico.py`, `tests/test_historico.py`
+
+**Interfaces:**
+- Produces: `RespuestaHistorica`, `ClaveCanonica`, `clave_de(linea, atributo) -> ClaveCanonica`, `Historico` con `.buscar(clave, atributo) -> ResultadoBusqueda` y `.registrar(respuesta)`, `ResultadoBusqueda` (enum `UNICA` / `NINGUNA` / `CONFLICTO` + valor)
+
+- [ ] **Paso 1: Escribir los tests que fallan**
+
+```python
+import pytest
+from motor.modelos import LineaSalida, Valor, Procedencia
+from motor.historico import Historico, RespuestaHistorica, clave_de, Hallazgo
+
+
+def _linea(**kw):
+    l = LineaSalida.vacia(id="L1", fila_origen=1, cantidad=1)
+    for k, v in kw.items():
+        setattr(l, k, Valor(valor=v, literal=v, span=(0, 1), procedencia=Procedencia.EXTRAIDO))
+    return l
+
+
+def _respuesta(clave, valor="200HV", autor="ingenieria@epc.es"):
+    return RespuestaHistorica(clave=clave, atributo="calidad", valor=valor, autor=autor,
+                              origen="ingenieria", fecha="2026-08-31",
+                              mto_origen="MTO_rev9.xlsx", revision_origen="9")
+
+
+def test_clave_ignora_el_atributo_que_se_pregunta():
+    """La clave son los OTROS seis atributos: es la identidad de la pieza sin la incognita."""
+    linea = _linea(nombre="ARANDELA", norma="ISO 7089", medida="M10", acabado="CINCADO")
+    clave = clave_de(linea, "calidad")
+    assert ("calidad", "200HV") not in clave
+    assert ("nombre", "ARANDELA") in clave
+    assert ("norma", "ISO 7089") in clave
+
+
+def test_los_ausentes_van_marcados_explicitamente():
+    clave = clave_de(_linea(nombre="ARANDELA"), "calidad")
+    assert ("longitud", "AUSENTE") in clave
+
+
+def test_coincidencia_exacta_devuelve_la_respuesta():
+    h = Historico()
+    linea = _linea(nombre="ARANDELA", norma="ISO 7089", medida="M10", acabado="CINCADO")
+    clave = clave_de(linea, "calidad")
+    h.registrar(_respuesta(clave))
+    r = h.buscar(clave, "calidad")
+    assert r.hallazgo is Hallazgo.UNICA
+    assert r.valor == "200HV"
+    assert r.respuesta.autor == "ingenieria@epc.es"
+
+
+def test_un_solo_atributo_distinto_ya_no_coincide():
+    """Cero coincidencia difusa: la arandela cincada y la sin acabado son piezas distintas (§9)."""
+    h = Historico()
+    con_acabado = clave_de(_linea(nombre="ARANDELA", norma="ISO 7089", medida="M10",
+                                  acabado="CINCADO"), "calidad")
+    sin_acabado = clave_de(_linea(nombre="ARANDELA", norma="ISO 7089", medida="M10"), "calidad")
+    h.registrar(_respuesta(con_acabado))
+    assert h.buscar(sin_acabado, "calidad").hallazgo is Hallazgo.NINGUNA
+
+
+def test_dos_respuestas_distintas_para_la_misma_clave_dan_conflicto():
+    """Un historico que se contradice es peor que uno vacio: no se hereda nada."""
+    h = Historico()
+    clave = clave_de(_linea(nombre="ARANDELA", norma="ISO 7089", medida="M10"), "calidad")
+    h.registrar(_respuesta(clave, valor="200HV"))
+    h.registrar(_respuesta(clave, valor="140HV", autor="comprador@epc.es"))
+    r = h.buscar(clave, "calidad")
+    assert r.hallazgo is Hallazgo.CONFLICTO
+    assert r.valor is None
+    assert len(r.candidatas) == 2
+
+
+def test_repetir_la_misma_respuesta_no_es_conflicto():
+    h = Historico()
+    clave = clave_de(_linea(nombre="ARANDELA", norma="ISO 7089"), "calidad")
+    h.registrar(_respuesta(clave, valor="200HV"))
+    h.registrar(_respuesta(clave, valor="200HV", autor="otro@epc.es"))
+    assert h.buscar(clave, "calidad").hallazgo is Hallazgo.UNICA
+
+
+def test_no_hay_sugerencias_aproximadas():
+    """Si no hay coincidencia exacta no pasa nada. Nada de 'materiales parecidos'."""
+    h = Historico()
+    h.registrar(_respuesta(clave_de(_linea(nombre="ARANDELA", medida="M10"), "calidad")))
+    otra = clave_de(_linea(nombre="ARANDELA", medida="M12"), "calidad")
+    r = h.buscar(otra, "calidad")
+    assert r.hallazgo is Hallazgo.NINGUNA
+    assert r.valor is None
+    assert r.candidatas == []
+
+
+def test_persiste_y_recarga(tmp_path):
+    ruta = tmp_path / "historico.json"
+    h = Historico()
+    clave = clave_de(_linea(nombre="ARANDELA", medida="M10"), "calidad")
+    h.registrar(_respuesta(clave))
+    h.guardar(ruta)
+    assert Historico.cargar(ruta).buscar(clave, "calidad").valor == "200HV"
+```
+
+- [ ] **Paso 2: Ejecutar y ver que fallan** — `pytest tests/test_historico.py -v`
+
+- [ ] **Paso 3: Implementar `motor/historico.py`**
+
+Puntos que la implementación debe respetar, todos del spec §13:
+
+- `clave_de` construye una tupla **ordenada** de pares `(atributo, valor)` con los seis atributos distintos del preguntado, usando el literal `"AUSENTE"` para los que no tienen valor. Ordenada para que la igualdad de tuplas sea estable.
+- `buscar` compara por **igualdad de tupla**. Nada de subconjuntos, de similitud ni de normalizar más. Si no hay igualdad exacta, `NINGUNA`.
+- Dos respuestas con el mismo `valor` no son conflicto; dos con valores distintos sí, y entonces `valor` es `None` y `candidatas` trae las dos.
+- Persistencia en JSON. La clave se serializa como lista de pares.
+
+- [ ] **Paso 4: Ver que pasan los 8 tests**
+
+- [ ] **Paso 5: Commit**
+
+```bash
+git add motor/historico.py tests/test_historico.py
+git commit -m "añade historico de respuestas con clave canonica exacta"
+```
+
+---
+
+## Task 19: Herencia desde el histórico en el pipeline
+
+**Depende de:** Task 10 (pipeline) y Task 18.
+
+**Files:**
+- Modify: `motor/modelos.py` (añadir `HEREDADO` a `Procedencia` y sus puntos), `motor/confianza.py`, `motor/pipeline.py`
+- Create: `tests/test_herencia.py`
+
+**Interfaces:**
+- Consumes: `Historico.buscar`, `clave_de` de Task 18; `aplicar_confianza` de Task 8
+- Produces: `procesar_mto(..., historico: Historico | None = None)`
+
+- [ ] **Paso 1: Escribir los tests que fallan**
+
+```python
+from motor.modelos import Procedencia, Estado
+from motor.historico import Historico, clave_de, RespuestaHistorica
+
+
+def test_una_linea_sin_calidad_se_resuelve_desde_el_historico():
+    """El caso de negocio entero: preguntar una vez y heredar en las 24 revisiones siguientes."""
+    h = Historico()
+    linea = _arandela_sin_calidad()
+    h.registrar(RespuestaHistorica(clave=clave_de(linea, "calidad"), atributo="calidad",
+                                   valor="200HV", autor="ingenieria@epc.es", origen="ingenieria",
+                                   fecha="2026-08-31", mto_origen="rev9.xlsx", revision_origen="9"))
+    r = _procesar_una(linea, historico=h)
+    assert r.calidad.valor == "200HV"
+    assert r.calidad.procedencia is Procedencia.HEREDADO
+    assert r.confianza == 100
+    assert r.estado is Estado.RESUELTA
+
+
+def test_lo_heredado_dice_quien_y_cuando():
+    r = _procesar_una(_arandela_sin_calidad(), historico=_historico_con_respuesta())
+    assert "ingenieria@epc.es" in r.calidad.regla or r.calidad.regla.startswith("HIST-")
+    assert any(m.codigo == "VALOR_HEREDADO" for m in r.motivos)
+
+
+def test_sin_historico_la_misma_linea_va_a_revision():
+    r = _procesar_una(_arandela_sin_calidad(), historico=None)
+    assert r.estado is Estado.REVISION_MANUAL
+
+
+def test_el_conflicto_no_hereda_y_manda_a_revision():
+    r = _procesar_una(_arandela_sin_calidad(), historico=_historico_en_conflicto())
+    assert r.calidad.procedencia is not Procedencia.HEREDADO
+    assert r.estado is Estado.REVISION_MANUAL
+    assert any(m.codigo == "HISTORICO_EN_CONFLICTO" for m in r.motivos)
+
+
+def test_una_incoherencia_cruzada_tumba_la_herencia():
+    """Condicion 4 de §13.2: heredar no salta las comprobaciones de dominio."""
+    r = _procesar_una(_tornillo_sin_calidad(), historico=_historico_que_da_200HV())
+    assert r.estado is Estado.REVISION_MANUAL   # HV solo aplica a arandelas
+```
+
+- [ ] **Paso 2: Ver que fallan**
+
+- [ ] **Paso 3: Implementar**
+
+- En `motor/modelos.py`: añadir `HEREDADO = "HEREDADO"` a `Procedencia` y `Procedencia.HEREDADO: 100` a `PUNTOS_PROCEDENCIA`. El validador `_exige_evidencia` debe exigir `regla` también para `HEREDADO`, igual que para `DERIVADO`: un valor heredado sin puntero a su registro es inauditable.
+- En `motor/confianza.py`: el factor `literal` se da por bueno para `HEREDADO` igual que para `DERIVADO`, porque no hay literal en el texto que verificar.
+- En `motor/pipeline.py`: **la herencia se intenta al final**, después de extraer, normalizar, derivar y comprobar coherencias. Sólo para atributos que hayan quedado `AUSENTE`. El orden importa: primero lo que dice el MTO, después lo que se deduce, y sólo al final lo que alguien contestó una vez.
+- Toda línea con un valor heredado lleva un `Motivo` de código `VALOR_HEREDADO` — **informativo, no de revisión** — con quién contestó, cuándo y sobre qué revisión, para que el front pueda enseñarlo.
+
+- [ ] **Paso 4: Ver que pasan los 5 tests, y que la suite entera sigue verde**
+
+- [ ] **Paso 5: Commit**
+
+```bash
+git add motor/modelos.py motor/confianza.py motor/pipeline.py tests/test_herencia.py
+git commit -m "añade herencia de respuestas del historico al pipeline"
+```
+
+---
+
+## Nota sobre el orden con el histórico dentro
+
+El histórico deja de ser un extra: es el argumento de negocio principal, porque el cliente confirmó que las líneas sin calidad van a ingeniería y cuestan días. Ruta crítica revisada:
+
+1-13 (motor) → **18, 19 (histórico)** → 14 (API) → 15 (front, incluida la escritura al histórico y la marca visible de lo heredado) → 12 y 16 (medición y ablaciones) → 17 (arranque en frío).
+
+La medición debe reportar **dos números de cobertura**: sin histórico y con histórico poblado, porque la diferencia entre los dos es exactamente lo que el sistema ahorra en consultas a ingeniería a lo largo de 25 revisiones.

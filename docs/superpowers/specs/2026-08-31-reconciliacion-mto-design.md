@@ -22,12 +22,13 @@ arquitectura sale de ahí.
 
 ## 2. La decisión central: procedencia
 
-Cuatro niveles. La frontera entre DERIVADO e INFERIDO es exacta: **¿existe la alternativa?**
+Cinco niveles. La frontera entre DERIVADO e INFERIDO es exacta: **¿existe la alternativa?**
 
 | Nivel | Definición | Política |
 |---|---|---|
 | `EXTRAIDO` | Escrito literalmente en el MTO | Se toma |
 | `DERIVADO` | Entailment determinista; la alternativa no existe | **Se toma** |
+| `HEREDADO` | Respuesta previa de un humano con autoridad, sobre clave canónica idéntica | **Se toma**, bajo las cuatro condiciones de §13.2 |
 | `INFERIDO` | Confianza alta, pero es un juicio | **A revisión** |
 | `AUSENTE` | No hay dato | Según regla del atributo |
 
@@ -334,3 +335,86 @@ Lo de arriba se entrega aunque falte lo de abajo.
 7. *Si hay tiempo:* A3 construido y descartado; pulido
 
 **Bloqueante:** `ANTHROPIC_API_KEY` con saldo (~25 € cubren todo el caso).
+
+---
+
+## 13. El histórico de respuestas
+
+Añadido el 2026-08-31, tras las respuestas del cliente.
+
+### 13.1 Por qué existe
+
+El cliente contestó dos cosas que, juntas, cambian dónde está el valor:
+
+> *"Cuando falta la calidad, generalmente lo consulta con ingeniería, a no ser que se pueda dar por hecho en función de otros datos de la misma línea."*
+>
+> *"Lo comparamos contra una bbdd de items comprados en el pasado."*
+
+Es decir: las 13 líneas sin calidad no se cierran en segundos, se van a ingeniería y cuestan días. Y no hay maestro de materiales, hay un histórico de compras.
+
+De ahí se sigue el argumento central del proyecto, y no es el ahorro de lectura:
+
+**La misma arandela DIN 125 sin dureza aparece en la revisión 9, en la 12 y en la 15. Hoy se pregunta tres veces, porque la respuesta no se guarda contra una identidad estable. Con normalización canónica se pregunta una vez y las otras veinticuatro revisiones la heredan.**
+
+Con 25 revisiones por obra, eso no reduce el coste de la consulta a ingeniería: lo divide por el número de revisiones.
+
+### 13.2 La quinta procedencia
+
+Un valor que viene del histórico no es extraído (no está en el texto de este MTO) ni derivado (no es entailment de otros campos). Es una respuesta humana con autoridad, dada antes, para una identidad de material idéntica. Merece su propio nivel:
+
+| Nivel | Definición | Confianza |
+|---|---|---|
+| `EXTRAIDO` | Escrito literalmente en el MTO | 100 |
+| `DERIVADO` | Entailment determinista | 100 |
+| `HEREDADO` | Respuesta previa de un humano con autoridad, sobre clave canónica idéntica | **100, bajo condiciones** |
+| `INFERIDO` | Confianza alta, pero es un juicio | 70 → revisión |
+| `AUSENTE` | No hay dato | — |
+
+`HEREDADO` sólo alcanza 100 si se cumplen **las cuatro**:
+
+1. La clave canónica coincide **exactamente**. Cero coincidencia difusa: si un solo atributo conocido difiere, es otra pregunta y no hay reutilización.
+2. El registro identifica **quién** contestó y **cuándo**.
+3. No existe ninguna respuesta almacenada en conflicto para esa misma clave.
+4. Ninguna comprobación cruzada de §3 salta sobre la línea resultante.
+
+Si falla cualquiera, el valor no se hereda y la línea va a revisión. **Nunca se hereda a medias.**
+
+### 13.3 La clave canónica
+
+La pregunta que el histórico responde no es "¿qué material es éste?" sino **"¿alguien ha contestado ya este atributo, para una pieza cuyo resto de atributos es exactamente éste?"**.
+
+Así que la clave es la tupla de los **seis atributos restantes** ya normalizados, con marca explícita para los ausentes, más el nombre del atributo que se pregunta. Coincidencia por igualdad de tupla, nunca parcial ni aproximada.
+
+Consecuencia deliberada: una arandela DIN 125 M10 cincada y una arandela DIN 125 M10 sin acabado son **claves distintas**, porque por §9 de las reglas son materiales distintos. El histórico no las mezcla.
+
+### 13.4 Contrato
+
+```
+RespuestaHistorica:
+  clave           # tupla de los 6 atributos restantes, normalizados
+  atributo        # cual se contesto
+  valor           # el valor normalizado dado
+  autor           # quien lo contesto
+  origen          # ingenieria | comprador
+  fecha
+  mto_origen      # fichero y fila donde surgio la pregunta
+  revision_origen # revision del MTO
+```
+
+Una `LineaSalida` cuyo valor se hereda guarda en ese `Valor` la `regla` con el identificador del registro histórico, de modo que la traza del front puede enseñar **quién contestó esto, cuándo y sobre qué fila**.
+
+### 13.5 Invalidación y conflicto
+
+- **Conflicto:** si aparecen dos respuestas distintas para la misma clave, ninguna se hereda. Las dos quedan marcadas y la línea va a revisión con el motivo `HISTORICO_EN_CONFLICTO`. Un histórico que se contradice es peor que uno vacío.
+- **Caducidad:** no se caduca automáticamente por fecha, porque una dureza de arandela no cambia con el tiempo. Pero la traza siempre enseña la fecha y la revisión de origen, para que el comprador juzgue. Un plano puede cambiar; el sistema no puede saberlo, y no va a fingir que sí.
+- **Sin sugerencias.** Si no hay coincidencia exacta, no pasa nada. Ni "materiales parecidos", ni "quizá quisiste decir". Eso sería la coincidencia difusa por la puerta de atrás.
+
+### 13.6 Escritura
+
+Cuando alguien resuelve una línea en la cola del front, la respuesta entra al histórico con su autor, su fecha y su origen. Es el único camino de escritura: **el sistema nunca se escribe respuestas a sí mismo.**
+
+Un valor heredado que un humano corrige genera un registro nuevo en conflicto con el anterior, lo que por §13.5 desactiva la herencia de esa clave hasta que alguien la resuelva. Es deliberado: una corrección es una señal de que la respuesta guardada era mala, y lo peor que se puede hacer es seguir propagándola.
+
+### 13.7 Lo que esto cambia en el alcance
+
+La reconciliación entre revisiones estaba fuera del alcance por depender del maestro del cliente. Con el histórico propio, la parte que importa —no repetir la pregunta— entra dentro. Lo que sigue fuera es integrarse con su base de datos de compras: eso es material de la reunión que el cliente propone.
