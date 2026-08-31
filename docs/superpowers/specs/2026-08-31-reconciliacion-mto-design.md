@@ -119,7 +119,7 @@ motor de procedencia. Todo tabla.
 
 ### Stack
 
-Motor en **Python 3.12** (openpyxl, pydantic, openai). Front en **Vite + React +
+Motor en **Python 3.12** (openpyxl, pydantic, google-genai). Front en **Vite + React +
 shadcn/ui + TanStack Table**, compilado a estático y servido por **FastAPI**.
 
 Un comando, un proceso, sin Node en la demo. `dist/` versionado a propósito: "arranca en
@@ -139,8 +139,8 @@ Valor:
   valor          # normalizado, o None
   literal        # tal como aparece en el texto
   span           # posición en el texto saneado
-  procedencia    # EXTRAIDO | DERIVADO | INFERIDO | AUSENTE
-  regla          # id de la regla aplicada, si DERIVADO
+  procedencia    # EXTRAIDO | DERIVADO | HEREDADO | INFERIDO | AUSENTE
+  regla          # id de la regla aplicada, si DERIVADO; id del registro, si HEREDADO
   confianza      # entero 0-100. Lo calcula el código. NUNCA lo reporta el modelo.
   factores       # {procedencia, literal, segmentacion, coherencia} -> confianza = min()
 
@@ -274,11 +274,18 @@ longitudes con unidad explícita y suciedad unicode. **Sustituye a optimizar con
 **Ablaciones:** el arnés se ejecuta con cada componente desactivado y se rellena la tabla de
 la sección 5. Ninguna casilla puede quedar con un adjetivo.
 
-**Modelos:** el proveedor vive detrás de un puerto (`PuertoLLM`), con implementación OpenAI.
-Se mide con **GPT-5.6 Luna** ($0,20/$1,20 por MTok) y **GPT-5.6 Terra** ($2/$12) y se reporta el
-par (escape, coste/obra) de cada uno, con recomendación razonada. Luna cuesta ~10× menos: si
-aguanta el escape, ése es el argumento; si no, se enseña cuánto se degrada. Cambiar de
-proveedor o de modelo es un parámetro, no un refactor.
+**Modelos:** el proveedor vive detrás de un puerto (`PuertoLLM`), con implementación Gemini
+(Google AI Studio). Se mide con **Gemini 3.7 Flash** (0,75 $/3,75 $ por MTok, precio de
+introducción hasta el 31/12/2026) y con **Gemini 3.5 Flash-Lite**, y se reporta el par
+(escape, coste/obra) de cada uno con recomendación razonada. Cambiar de proveedor o de modelo
+es un parámetro, no un refactor: el puerto ya cambió de OpenAI a Gemini sin tocar el motor.
+
+**Restricción operativa:** el nivel gratuito de AI Studio da 250 peticiones/día y 10/minuto.
+A ~5,5 llamadas por fila, una pasada del MTO de 15 filas son ~83 llamadas y 8 minutos de
+reloj. El blind set en directo serían ~7 minutos delante del cliente. **Se requiere
+facturación activada**, no por coste (una pasada cuesta ~0,14 $) sino para quitar el límite
+de 10 por minuto. La salida estructurada, que el diseño necesita, sólo existe en la serie
+Gemini 3.
 
 ---
 
@@ -334,7 +341,9 @@ Lo de arriba se entrega aunque falte lo de abajo.
 6. One-pager
 7. *Si hay tiempo:* A3 construido y descartado; pulido
 
-**Bloqueante:** `ANTHROPIC_API_KEY` con saldo (~25 € cubren todo el caso).
+**Bloqueante:** `GEMINI_API_KEY` de Google AI Studio **con facturación activada**. No por
+coste —una pasada del MTO de 15 filas cuesta ~0,14 $— sino porque el nivel gratuito topa
+en 10 peticiones/minuto y a ~5,5 llamadas por fila una demo en directo tardaría 7 minutos.
 
 ---
 

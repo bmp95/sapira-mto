@@ -6,7 +6,7 @@
 
 **Architecture:** Cinco etapas; sólo una usa modelo. Saneado (código) → segmentación (LLM ×3) → extracción por elemento (LLM, ve sólo su tramo) → normalización (100 % tablas) → validación y estado (código). La confianza la calcula el código como mínimo de cuatro factores medidos; `RESUELTA` es exactamente `confianza == 100`.
 
-**Tech Stack:** Python 3.12, pydantic v2, openpyxl, openai, FastAPI, pytest · Front: Vite + React + TypeScript + Tailwind + shadcn/ui + TanStack Table.
+**Tech Stack:** Python 3.12, pydantic v2, openpyxl, google-genai, FastAPI, pytest · Front: Vite + React + TypeScript + Tailwind + shadcn/ui + TanStack Table.
 
 **Spec:** `docs/superpowers/specs/2026-08-31-reconciliacion-mto-design.md`
 
@@ -18,7 +18,8 @@
 - **Cero coincidencia difusa.** Nada de Levenshtein, `difflib`, ni "el más parecido". Emparejamiento por token, más largo primero.
 - **Sin valores por defecto.** Un campo ausente es `AUSENTE`, nunca `""` ni `None` silencioso.
 - Toda celda lleva `procedencia`. Una celda sin procedencia lanza excepción, no advertencia.
-- Ningún secreto en el repositorio. La clave se lee de `os.environ["OPENAI_API_KEY"]`.
+- Ningún secreto en el repositorio. La clave se lee de `os.environ["GEMINI_API_KEY"]`, con
+  respaldo en `.env` (que está en `.gitignore`).
 - Commits en castellano, presente de indicativo: `añade`, `corrige`, `mide`.
 - **Todo carácter no-ASCII que viva dentro de un literal de código se escribe con `chr(0x....)` o escape unicode, nunca crudo.** Comillas tipográficas, primas, símbolo de diámetro, acentos dentro de expresiones regulares. Los comentarios y docstrings sí pueden llevar tildes crudas. Motivo: en la Tarea 2 unas comillas escritas en crudo se convirtieron en rectas al guardar el fichero, rompieron el módulo, y el test que debía cazarlo se corrompió igual y siguió pasando.
 - **Ningún test que recorra una colección puede pasar con la colección vacía.** Si un test comprueba "todas las claves de X cumplen Y", afirma primero que X no está vacía. Ha aparecido tres veces ya: un guardián que no guarda es peor que ninguno, porque da seguridad falsa.
@@ -34,7 +35,7 @@ motor/
   lectura_mto.py   xlsx -> [FilaMTO]
   catalogos.py     Las 4 tablas + emparejador por token
   derivaciones.py  calidad->material, norma->nombre
-  puerto_llm.py    Protocol PuertoLLM + PuertoFalso + PuertoOpenAI
+  puerto_llm.py    Protocol PuertoLLM + PuertoFalso + PuertoGemini
   segmentador.py   A1: parte la fila, vota 3 pasadas
   extractor.py     A2: literales por elemento, ve solo su tramo
   invariantes.py   Las 8 comprobaciones estructurales
@@ -75,7 +76,7 @@ Cada fichero del motor tiene una responsabilidad y se prueba solo. `pipeline.py`
 name = "sapira-mto"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["pydantic>=2.7", "openpyxl>=3.1", "openai>=1.40", "fastapi>=0.111", "uvicorn>=0.30"]
+dependencies = ["pydantic>=2.7", "openpyxl>=3.1", "google-genai>=1.0", "fastapi>=0.111", "uvicorn>=0.30"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
@@ -1305,17 +1306,17 @@ git commit -m "añade arnes de evaluacion con las metricas del spec"
 
 ---
 
-## Task 13: Puerto OpenAI y prueba de humo
+## Task 13: Puerto Gemini y prueba de humo
 
 **Files:**
-- Create: `motor/puerto_openai.py`, `tests/test_puerto_openai.py` (marcado `@pytest.mark.red`)
+- Create: `motor/puerto_gemini.py`, `tests/test_puerto_gemini.py` (marcado `@pytest.mark.red`)
 
-- [ ] **Paso 1: Implementar `PuertoOpenAI`** con salida estructurada, `temperature=0`, caché en disco por hash del texto (`.cache_llm/`), y contabilidad de `usage` para el coste. **Sin catálogos en el prompt.**
+- [ ] **Paso 1: Implementar `PuertoGemini`** (paquete `google-genai`, modelo de la serie Gemini 3 porque la salida estructurada sólo existe ahí) con salida estructurada, `temperature=0`, caché en disco por hash del texto (`.cache_llm/`), contabilidad de tokens para el coste, y **concurrencia limitada y reintento con espera ante el 429**, porque el nivel gratuito topa en 10 peticiones/minuto. **Sin catálogos en el prompt.**
 
 - [ ] **Paso 2: Prueba de humo sobre 3 filas** (la 1, la 8 y la 13: set completo ASTM, set sin norma, elemento suelto con trampa `AUTOBLOCANTE`).
 
 ```bash
-python -m motor.pipeline --mto datos/MTO_tornilleria.xlsx --filas 1,8,13 --proveedor openai --modelo <luna>
+python -m motor.pipeline --mto datos/MTO_tornilleria.xlsx --filas 1,8,13 --proveedor gemini --modelo <gemini-3-flash>
 ```
 
 Coste esperado: céntimos. Si la segmentación de la fila 1 no da 3 elementos, el prompt necesita trabajo — **es el momento de descubrirlo, no el martes por la noche.**
@@ -1323,8 +1324,8 @@ Coste esperado: céntimos. Si la segmentación de la fila 1 no da 3 elementos, e
 - [ ] **Paso 3: Commit**
 
 ```bash
-git add motor/puerto_openai.py tests/test_puerto_openai.py
-git commit -m "añade puerto OpenAI con cache en disco y contabilidad de coste"
+git add motor/puerto_gemini.py tests/test_puerto_gemini.py
+git commit -m "añade puerto Gemini con cache en disco y contabilidad de coste"
 ```
 
 ---

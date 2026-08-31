@@ -2,7 +2,7 @@
 name = "sapira-mto"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["pydantic>=2.7", "openpyxl>=3.1", "openai>=1.40", "fastapi>=0.111", "uvicorn>=0.30"]
+dependencies = ["pydantic>=2.7", "openpyxl>=3.1", "google-genai>=1.0", "fastapi>=0.111", "uvicorn>=0.30"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
