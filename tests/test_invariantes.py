@@ -12,12 +12,24 @@ def test_literal_verificado():
 def test_cobertura_detecta_elemento_perdido():
     t = "BOLT M16 with NUT and WASHER"
     completa = Segmentacion(elementos=[
-        Elemento(tipo_indicado="BOLT", span=(0, 11)),
+        Elemento(tipo_indicado="BOLT", span=(0, 8)),
         Elemento(tipo_indicado="NUT", span=(14, 17)),
-        Elemento(tipo_indicado="WASHER", span=(22, 28))])
+        Elemento(tipo_indicado="WASHER", span=(22, 28))],
+        conectores=[(9, 13), (18, 21)])
     assert cobertura(t, completa) > 0.75
-    coja = Segmentacion(elementos=completa.elementos[:2])
+    coja = Segmentacion(elementos=completa.elementos[:2],
+                        conectores=[(9, 13), (18, 21)])
     assert cobertura(t, coja) < 0.75
+
+
+def test_los_conectores_no_penalizan_la_cobertura():
+    t = "BOLT M16 with NUT and WASHER"
+    con_conectores = Segmentacion(elementos=[
+        Elemento(tipo_indicado="BOLT", span=(0, 8)),
+        Elemento(tipo_indicado="NUT", span=(14, 17)),
+        Elemento(tipo_indicado="WASHER", span=(22, 28))],
+        conectores=[(9, 13), (18, 21)])
+    assert cobertura(t, con_conectores) == 1.0
 
 
 def test_solape():

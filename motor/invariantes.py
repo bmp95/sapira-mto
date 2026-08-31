@@ -39,7 +39,13 @@ def cobertura(texto: str, seg: Segmentacion) -> float:
     for ini, fin in seg.ambito_fila:
         for i in range(max(0, ini), min(len(texto), fin)):
             marcas[i] = 1
-    significativos = [i for i, c in enumerate(texto) if c.isalnum()]
+    # Marcar conectores para excluirlos del denominador
+    es_conector = bytearray(len(texto))
+    for ini, fin in seg.conectores:
+        for i in range(max(0, ini), min(len(texto), fin)):
+            es_conector[i] = 1
+    # Significativos son los alfanumericos que NO estan en conectores
+    significativos = [i for i, c in enumerate(texto) if c.isalnum() and not es_conector[i]]
     if not significativos:
         return 1.0
     return sum(marcas[i] for i in significativos) / len(significativos)
