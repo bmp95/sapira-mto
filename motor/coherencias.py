@@ -33,7 +33,7 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
 
     if interruptores.get("inox_acabado") and calidad in _INOX and acabado in _ZINC:
         motivos.append(Motivo(codigo="INOX_CON_ACABADO_ZINC", atributo="acabado",
-                              texto=f"{calidad} es inox austenít{chr(0xed)}co y no se {acabado.lower()}."))
+                              texto=f"{calidad} es inox austenít{chr(0xed)}ico, as{chr(0xed)} que un acabado {acabado.lower()} es incoherente."))
 
     if interruptores.get("sistema_medida") and norma and medida:
         imperial_norma = norma.startswith(("ASTM", "ASME", "MSS"))

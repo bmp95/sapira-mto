@@ -43,23 +43,27 @@ def test_interruptor_apaga_la_comprobacion():
 
 
 def test_los_textos_de_motivo_conservan_sus_tildes():
-    """Verifica que las tildes en los textos de motivos no se pierden al guardar."""
-    # CALIDAD_SOLO_TUERCA: debe contener "sólo" con tilde
+    """Verifica que las palabras completas con tildes aparecen en los textos de motivos."""
+    # CALIDAD_SOLO_TUERCA: debe contener "sólo" completo
+    palabra_solo = "s" + chr(0xf3) + "lo"
     motivos = comprobar(_linea(nombre="TORNILLO", calidad="10"), TODAS_ACTIVAS)
-    assert any(chr(0xf3) in m.texto for m in motivos if m.codigo == "CALIDAD_SOLO_TUERCA"), \
-        "CALIDAD_SOLO_TUERCA debe contener 's" + chr(0xf3) + "lo' con tilde"
+    assert any(palabra_solo in m.texto for m in motivos if m.codigo == "CALIDAD_SOLO_TUERCA"), \
+        f"CALIDAD_SOLO_TUERCA debe contener la palabra '{palabra_solo}' completa"
 
-    # INOX_CON_ACABADO_ZINC: debe contener "austenítico" con tilde
+    # INOX_CON_ACABADO_ZINC: debe contener "austenítico" completo (con una sola tilde)
+    palabra_austenitico = "austenít" + chr(0xed) + "ico"
     motivos = comprobar(_linea(nombre="TUERCA", calidad="A4-80", acabado="CINCADO"), TODAS_ACTIVAS)
-    assert any(chr(0xed) in m.texto for m in motivos if m.codigo == "INOX_CON_ACABADO_ZINC"), \
-        "INOX_CON_ACABADO_ZINC debe contener 'austenít" + chr(0xed) + "co' con tilde"
+    assert any(palabra_austenitico in m.texto for m in motivos if m.codigo == "INOX_CON_ACABADO_ZINC"), \
+        f"INOX_CON_ACABADO_ZINC debe contener la palabra '{palabra_austenitico}' completa"
 
-    # SISTEMA_MEDIDA_INCOHERENTE (imperial->metrica): debe contener "métrica" con tilde
+    # SISTEMA_MEDIDA_INCOHERENTE (imperial->metrica): debe contener "métrica" completo
+    palabra_metrica = "m" + chr(0xe9) + "trica"
     motivos = comprobar(_linea(nombre="ESPARRAGO", norma="ASTM A193", medida="M20"), TODAS_ACTIVAS)
-    assert any(chr(0xe9) in m.texto for m in motivos if m.codigo == "SISTEMA_MEDIDA_INCOHERENTE"), \
-        "SISTEMA_MEDIDA_INCOHERENTE debe contener 'm" + chr(0xe9) + "trica' con tilde"
+    assert any(palabra_metrica in m.texto for m in motivos if m.codigo == "SISTEMA_MEDIDA_INCOHERENTE"), \
+        f"SISTEMA_MEDIDA_INCOHERENTE debe contener la palabra '{palabra_metrica}' completa"
 
-    # GRADO_ASTM_INCOHERENTE (B7): debe contener "tornillería" con tilde
+    # GRADO_ASTM_INCOHERENTE (B7): debe contener "tornillería" completo
+    palabra_tornilleria = "torniller" + chr(0xed) + "a"
     motivos = comprobar(_linea(nombre="ARANDELA", calidad="B7"), TODAS_ACTIVAS)
-    assert any(chr(0xed) in m.texto for m in motivos if m.codigo == "GRADO_ASTM_INCOHERENTE"), \
-        "GRADO_ASTM_INCOHERENTE debe contener 'torniller" + chr(0xed) + "a' con tilde"
+    assert any(palabra_tornilleria in m.texto for m in motivos if m.codigo == "GRADO_ASTM_INCOHERENTE"), \
+        f"GRADO_ASTM_INCOHERENTE debe contener la palabra '{palabra_tornilleria}' completa"
