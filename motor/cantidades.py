@@ -25,12 +25,34 @@ _PATRONES_SUSTANTIVOS = (
     r"THREADED\s+RODS?",
 )
 
+# Patrones que NO pueden ser multiplicadores
+_PATRON_NORMA = r"(?:DIN|ISO|ASTM|ASME|EN|MSS)\s+\d+"
+_PATRON_MEDIDA_METRICA = r"M\d+(?:X\d+)?"
+_PATRON_MEDIDA_PULGADA = r"\d+/\d+|\d+\""
+
+
+def _limpiar_texto_anterior(texto: str) -> str:
+    """Elimina tokens que no pueden ser multiplicadores.
+
+    Elimina:
+    - Normas (DIN, ISO, ASTM, ASME, EN, MSS) con su número
+    - Medidas métricas (M20, M20x90, etc.)
+    - Medidas en pulgadas (7/8, 3/4, 7", etc.)
+    """
+    # Eliminar normas
+    texto = re.sub(_PATRON_NORMA, " ", texto, flags=re.IGNORECASE)
+    # Eliminar medidas métricas
+    texto = re.sub(_PATRON_MEDIDA_METRICA, " ", texto, flags=re.IGNORECASE)
+    # Eliminar medidas en pulgadas
+    texto = re.sub(_PATRON_MEDIDA_PULGADA, " ", texto, flags=re.IGNORECASE)
+    return texto
+
 
 def multiplicador(tramo: str) -> int:
     """Extrae el multiplicador del tramo.
 
     El multiplicador es el número que aparece antes del primer sustantivo
-    de tipo (tornillo, tuerca, arandela, etc.).
+    de tipo (tornillo, tuerca, arandela, etc.), excluyendo normas y medidas.
     Si no hay número, devuelve 1.
 
     Args:
@@ -58,8 +80,11 @@ def multiplicador(tramo: str) -> int:
     # Extraer el texto antes del primer sustantivo
     texto_anterior = tramo_upper[:primer_sustantivo_match.start()]
 
-    # Buscar el último número en el texto anterior
-    numeros = re.findall(r"\d+", texto_anterior)
+    # Limpiar el texto anterior de normas y medidas
+    texto_limpio = _limpiar_texto_anterior(texto_anterior)
+
+    # Buscar el último número en el texto limpio
+    numeros = re.findall(r"\d+", texto_limpio)
     if numeros:
         return int(numeros[-1])
     else:

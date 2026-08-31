@@ -27,3 +27,20 @@ def test_case_regression_norma_no_es_multiplicador():
     "with NUT DIN 934 M20" devolvería 934 en lugar de 1.
     """
     assert multiplicador("with NUT DIN 934 M20") == 1
+
+
+def test_norma_delante_del_sustantivo_no_es_multiplicador():
+    """Las normas (DIN, ISO, ASTM, etc.) y medidas métricas no son multiplicadores."""
+    assert multiplicador("DIN 934 M20 NUT") == 1
+    assert multiplicador("y DIN 125 M10 arandela") == 1
+    assert multiplicador("ISO 4032 M16 tuerca") == 1
+
+
+def test_multiplicador_real_con_norma_delante():
+    """Si hay un multiplicador real antes de la norma, se debe detectar."""
+    assert multiplicador("2 DIN 125 M10 arandelas") == 2
+
+
+def test_medidas_en_pulgadas_no_son_multiplicadores():
+    """Las medidas en pulgadas (fracciones y comillas) no son multiplicadores."""
+    assert multiplicador("W/2 HEX. NUT 7/8\", ASTM A194") == 2
