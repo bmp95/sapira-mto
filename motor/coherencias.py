@@ -25,7 +25,7 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
 
     if interruptores.get("calidad_solo_tuerca") and calidad in {"8", "10"} and nombre and nombre != "TUERCA":
         motivos.append(Motivo(codigo="CALIDAD_SOLO_TUERCA", atributo="calidad",
-                              texto=f"La calidad {calidad} solo aplica a tuercas (§5) y esto es {nombre}."))
+                              texto=f"La calidad {calidad} s{chr(0xf3)}lo aplica a tuercas (§5) y esto es {nombre}."))
 
     if interruptores.get("calidad_solo_arandela") and calidad.endswith("HV") and nombre and nombre != "ARANDELA":
         motivos.append(Motivo(codigo="CALIDAD_SOLO_ARANDELA", atributo="calidad",
@@ -33,17 +33,17 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
 
     if interruptores.get("inox_acabado") and calidad in _INOX and acabado in _ZINC:
         motivos.append(Motivo(codigo="INOX_CON_ACABADO_ZINC", atributo="acabado",
-                              texto=f"{calidad} es inox austenitico y no se {acabado.lower()}."))
+                              texto=f"{calidad} es inox austenít{chr(0xed)}co y no se {acabado.lower()}."))
 
     if interruptores.get("sistema_medida") and norma and medida:
         imperial_norma = norma.startswith(("ASTM", "ASME", "MSS"))
         metrica_medida = medida.upper().startswith("M")
         if imperial_norma and metrica_medida:
             motivos.append(Motivo(codigo="SISTEMA_MEDIDA_INCOHERENTE", atributo="medida",
-                                  texto=f"{norma} es norma imperial y la medida {medida} es metrica."))
+                                  texto=f"{norma} es norma imperial y la medida {medida} es m{chr(0xe9)}trica."))
         if norma.startswith(("DIN", "ISO", "EN")) and '"' in medida:
             motivos.append(Motivo(codigo="SISTEMA_MEDIDA_INCOHERENTE", atributo="medida",
-                                  texto=f"{norma} es norma metrica y la medida {medida} es imperial."))
+                                  texto=f"{norma} es norma m{chr(0xe9)}trica y la medida {medida} es imperial."))
 
     if interruptores.get("grado_astm_nombre") and nombre:
         if calidad in {"GR 2H", "2H"} and nombre != "TUERCA":
@@ -51,5 +51,5 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
                                   texto="GR 2H es ASTM A194, norma de tuercas."))
         if calidad in {"GR B7", "B7"} and nombre not in {"TORNILLO", "ESPARRAGO"}:
             motivos.append(Motivo(codigo="GRADO_ASTM_INCOHERENTE", atributo="calidad",
-                                  texto="GR B7 es ASTM A193, norma de tornilleria."))
+                                  texto="GR B7 es ASTM A193, norma de torniller" + chr(0xed) + "a."))
     return motivos
