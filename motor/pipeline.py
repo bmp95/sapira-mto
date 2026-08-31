@@ -14,8 +14,13 @@ para ejercitar el pipeline con `PuertoFalso` (que solo guioniza
 `segmentar()`) hace falta una via sin red. El limite de contencion --nunca
 mirar mas texto que el propio tramo del elemento-- se respeta igual:
 cada extractor solo recibe `texto[ini:fin]` del elemento, nunca la fila
-completa, salvo el caso explicito del ambito de fila (ver
-`_atribuir_ambito_a_principal`).
+completa, salvo dos casos explicitos y acotados al elemento principal
+(el primero del set, normalmente el tornillo o el esparrago): el ambito
+de fila (ver `_atribuir_ambito_a_principal`) y, como ultimo respaldo, la
+columna MATERIAL del xlsx (ver `_calidad_de_columna_material`) cuando ni
+el tramo propio ni el ambito de fila traen calidad. Ninguno de los dos
+alcanza jamas a los demas elementos del set: la calidad no se atribuye
+entre elementos, es la regla mas importante del caso.
 """
 from __future__ import annotations
 
@@ -141,6 +146,26 @@ def _extraer_calidad(texto: str, ini: int, fin: int, ocultar: list[tuple[int, in
     return None
 
 
+def _calidad_de_columna_material(material_col: str):
+    """Ronda de correccion: la columna MATERIAL del xlsx describe el
+    elemento principal de la fila, no el conjunto -- evidencia: fila 7,
+    'BOLT DIN931 M12x60 A4-70 with NUT DIN934 M12 A4-80', donde la columna
+    dice exactamente 'A4-70', la calidad propia del tornillo, no la 'A4-80'
+    de la tuerca. Solo se usa como respaldo cuando el propio tramo del
+    elemento principal no trae calidad (filas 2 y 3 del MTO: la
+    descripcion no menciona ninguna calidad en absoluto).
+
+    A veces la columna trae una norma con su grado en vez de una calidad
+    suelta (fila 1: 'ASTM A193 GR B7/A194 GR 2H'): de ahi se toma solo lo
+    que el catalogo reconoce como calidad -- aqui, 'GR B7', la primera
+    que aparece -- nunca la cadena entera."""
+    if not material_col:
+        return None
+    norma = _extraer_norma(material_col, 0, len(material_col))
+    ocultar = [norma[2]] if norma is not None else []
+    return _extraer_calidad(material_col, 0, len(material_col), ocultar)
+
+
 # --------------------------------------------------------------------------
 # Construccion de celdas
 # --------------------------------------------------------------------------
@@ -156,7 +181,7 @@ class _DatosElemento:
     """Lo que se extrae de un elemento antes de saber si es principal, si
     hereda algo del ambito de fila o si su medida hay que extrapolarla."""
 
-    __slots__ = ("nombre", "norma", "calidad", "acabado", "medida", "longitud")
+    __slots__ = ("nombre", "norma", "calidad", "acabado", "medida", "longitud", "calidad_fuente")
 
     def __init__(self, texto: str, ini: int, fin: int):
         self.nombre = _extraer_nombre(texto, ini, fin)
@@ -171,6 +196,10 @@ class _DatosElemento:
             ocultar.append((ini + span_ocupado[0], ini + span_ocupado[1]))
         self.calidad = _extraer_calidad(texto, ini, fin, ocultar)
         self.acabado = _extraer_acabado(texto, ini, fin)
+        # "descripcion" (el tramo propio) salvo que se rellene desde la
+        # columna MATERIAL -- ver `_calidad_de_columna_material`. Determina
+        # contra que texto se verifica el literal de esta celda mas tarde.
+        self.calidad_fuente = "descripcion"
 
 
 def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
@@ -344,7 +373,13 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
     for atributo in ATRIBUTOS:
         celda = getattr(linea, atributo)
         if celda.procedencia in (Procedencia.EXTRAIDO, Procedencia.INFERIDO):
-            literales_ok[atributo] = verificar_literal(celda.literal, texto, celda.span)
+            # La calidad tomada de la columna MATERIAL vive en otra
+            # coordenada de texto: su span apunta a `fila.material_col`,
+            # no a la descripcion, asi que el literal se verifica contra
+            # esa misma columna.
+            fuente = fila.material_col if (atributo == "calidad"
+                                           and datos.calidad_fuente == "material_col") else texto
+            literales_ok[atributo] = verificar_literal(celda.literal, fuente, celda.span)
 
     motivos_coherencia = comprobar(linea, interruptores)
     linea = aplicar_confianza(linea, elem.votos, motivos_coherencia, literales_ok)
@@ -372,6 +407,15 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, interruptores: dict[str, bo
 
     datos = [_DatosElemento(texto, *elem.span) for elem in seg.elementos]
     _atribuir_ambito_a_principal(datos, texto, seg.ambito_fila)
+    if datos and datos[0].calidad is None:
+        # Ultimo respaldo, solo para el elemento principal (nunca para el
+        # resto del set -- ver `_calidad_de_columna_material`): la propia
+        # descripcion (ni su tramo ni el ambito de fila) trajo calidad,
+        # asi que se mira la columna MATERIAL del xlsx.
+        respaldo = _calidad_de_columna_material(fila.material_col)
+        if respaldo is not None:
+            datos[0].calidad = respaldo
+            datos[0].calidad_fuente = "material_col"
     medidas_resueltas = _extrapolar_medida(datos)
 
     lineas = []

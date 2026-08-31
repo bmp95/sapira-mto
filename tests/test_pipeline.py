@@ -2,7 +2,7 @@ from pathlib import Path
 
 from datos.guion_falso import puerto_de_guion
 from motor.modelos import Estado, Procedencia
-from motor.pipeline import procesar_mto
+from motor.pipeline import _calidad_de_columna_material, procesar_mto
 
 RUTA = Path("datos/MTO_tornilleria.xlsx")
 
@@ -70,3 +70,49 @@ def test_linea_sin_norma_va_a_revision():
         assert linea.norma.procedencia is Procedencia.AUSENTE
         assert linea.estado is Estado.REVISION_MANUAL
         assert any(m.codigo == "SIN_NORMA" for m in linea.motivos)
+
+
+def test_la_columna_material_da_la_calidad_del_principal():
+    """Ronda de correccion: fila 2, 'BOLT DIN 931 M20x90 with NUT DIN 934 M20'.
+    La descripcion no menciona ninguna calidad en absoluto, pero la columna
+    MATERIAL del xlsx trae 'A4-70' -- la del tornillo (evidencia: fila 7,
+    donde MATERIAL coincide exactamente con la calidad propia del
+    elemento principal y no con la de la tuerca). El tornillo pasa a
+    resolverse con esa calidad, procedencia EXTRAIDO y el span apuntando a
+    la columna MATERIAL, no a la descripcion."""
+    lineas = [l for l in procesar_mto(RUTA, puerto_de_guion()) if l.fila_origen == 2]
+    assert len(lineas) == 2
+    tornillo = next(l for l in lineas if l.nombre.valor == "TORNILLO")
+    assert tornillo.calidad.valor == "A4-70"
+    assert tornillo.calidad.procedencia is Procedencia.EXTRAIDO
+    assert tornillo.estado is Estado.RESUELTA
+
+
+def test_la_columna_material_no_alcanza_a_los_demas_elementos():
+    """Misma fila 2: la calidad de la columna MATERIAL es del tornillo
+    (elemento principal) y nunca se propaga a la tuerca -- es la regla mas
+    importante del caso. La tuerca sigue en revision por SIN_CALIDAD."""
+    lineas = [l for l in procesar_mto(RUTA, puerto_de_guion()) if l.fila_origen == 2]
+    assert len(lineas) == 2
+    tuerca = next(l for l in lineas if l.nombre.valor == "TUERCA")
+    assert tuerca.calidad.procedencia is Procedencia.AUSENTE
+    assert tuerca.estado is Estado.REVISION_MANUAL
+    assert any(m.codigo == "SIN_CALIDAD" for m in tuerca.motivos)
+
+
+def test_de_la_columna_solo_se_toma_lo_que_es_calidad():
+    """La columna MATERIAL de la fila 1 dice 'ASTM A193 GR B7/A194 GR 2H':
+    una norma con su grado, no una calidad suelta. Del texto entero solo se
+    reconoce 'GR B7' como calidad (la del elemento principal, el
+    esparrago), nunca la cadena completa ni el grado de la tuerca (GR 2H).
+
+    Se prueba el extractor directamente y no a traves de procesar_mto()
+    porque en la fila 1 real el esparrago ya trae su propia calidad en el
+    tramo de la descripcion ('GR B7'), asi que el pipeline nunca llega a
+    consultar la columna MATERIAL para esa fila -- este test verifica el
+    extractor en el caso exacto en que si haria falta."""
+    resultado = _calidad_de_columna_material("ASTM A193 GR B7/A194 GR 2H")
+    assert resultado is not None
+    valor, literal, _span = resultado
+    assert valor == "GR B7"
+    assert literal == "GR B7"
