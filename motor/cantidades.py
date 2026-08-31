@@ -26,7 +26,10 @@ _PATRONES_SUSTANTIVOS = (
 )
 
 # Patrones que NO pueden ser multiplicadores
-_PATRON_NORMA = r"(?:DIN|ISO|ASTM|ASME|EN|MSS)\s+\d+"
+# Las normas pueden tener una o dos palabras clave (DIN EN, MSS SP)
+# y el identificador puede ir separado por espacio, guion o pegado,
+# contiendo letras, dígitos y puntos
+_PATRON_NORMA = r"(?:DIN\s+EN|MSS\s+SP|DIN|ISO|ASME|ASTM|EN)[\s\-]*\S+"
 _PATRON_MEDIDA_METRICA = r"M\d+(?:X\d+)?"
 _PATRON_MEDIDA_PULGADA = r"\d+/\d+|\d+\""
 
