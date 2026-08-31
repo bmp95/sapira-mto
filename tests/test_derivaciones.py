@@ -17,6 +17,7 @@ def test_material_se_deriva_de_la_calidad(calidad, esperado):
 
 def test_todas_las_claves_del_catalogo_mapean():
     """Ninguna queda fuera: si una nueva entra al catalogo, este test lo caza."""
+    assert len(GRUPOS_CALIDAD) == 23
     sin_mapa = [c for c in GRUPOS_CALIDAD if material_de_calidad(c) is None]
     assert sin_mapa == []
 
