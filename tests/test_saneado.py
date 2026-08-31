@@ -1,9 +1,9 @@
-from motor.saneado import sanear
+from motor.saneado import _COMILLAS, sanear
 
 
 def test_comillas_tipograficas_y_prima_a_recta():
-    assert sanear('7/8″ X 130') == '7/8" X 130'
-    assert sanear('“7/8”') == '"7/8"'
+    assert sanear('7/8' + chr(0x2033) + ' X 130') == '7/8" X 130'
+    assert sanear(chr(0x201c) + '7/8' + chr(0x201d)) == '"7/8"'
 
 
 def test_colapsa_espacios():
@@ -21,27 +21,29 @@ def test_no_toca_el_resto():
     assert sanear(t) == t
 
 
-def test_el_fichero_fuente_no_perdio_ningun_codepoint():
-    """Verifica que motor/saneado.py contiene los codepoints no-ASCII necesarios."""
-    from pathlib import Path
-    
-    ruta = Path("motor/saneado.py")
-    contenido = ruta.read_text(encoding="utf-8")
-    
-    # Codepoints que _COMILLAS necesita como claves
-    codepoints_requeridos = {
-        0x201c,  # comilla curva doble de apertura
-        0x201d,  # comilla curva doble de cierre
-        0x2033,  # doble prima
-        0x2032,  # prima simple
-        0x2018,  # comilla curva simple de apertura
-        0x2019,  # comilla curva simple de cierre
-        0x00b4,  # acento agudo
+def test_simbolo_de_diametro_a_dia():
+    """Verifica que el símbolo de diámetro se convierte a 'DIA '."""
+    # El símbolo Ø se reemplaza con "DIA ", que colapsará espacios
+    assert sanear('50' + chr(0x00d8) + ' mm') == '50DIA mm'
+    assert sanear(chr(0x00d8)) == 'DIA'
+
+
+def test_comillas_curvas_siguen_en_el_diccionario():
+    """Valida que el diccionario en tiempo de ejecución tiene las entradas correctas
+    y que sanear realmente las convierte."""
+    esperado = {
+        chr(0x201c): '"', chr(0x201d): '"', chr(0x2033): '"',
+        chr(0x2032) + chr(0x2032): '"', chr(0x2032): "'",
+        chr(0x2018): "'", chr(0x2019): "'", 
+        chr(0x00b4): "'",  # acento agudo sin normalizar
+        chr(0x0301): "'",  # combining acute (resultado de NFKC)
     }
-    
-    # Extrae codepoints no-ASCII del archivo
-    codepoints_presentes = set(ord(c) for c in contenido if ord(c) > 127)
-    
-    # Verifica que están todos los requeridos
-    assert codepoints_requeridos <= codepoints_presentes, \
-        f"Faltan codepoints: {codepoints_requeridos - codepoints_presentes}"
+    # Verificar que el diccionario contiene todas las entradas esperadas
+    assert esperado.items() <= _COMILLAS.items(), \
+        f"Faltan entradas: {set(esperado.items()) - set(_COMILLAS.items())}"
+
+    # Verificar que cada entrada funciona en sanear
+    for malo, bueno in esperado.items():
+        resultado = sanear(malo).strip()  # strip porque NFKC puede agregar espacios
+        assert resultado == bueno, \
+            f"sanear({repr(malo)}) devolvió {repr(resultado)}, esperaba {repr(bueno)}"
