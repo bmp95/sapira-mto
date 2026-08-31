@@ -223,6 +223,16 @@ def _extrapolar_medida(datos: list[_DatosElemento]) -> list[tuple | None]:
 
 def _verificar_obligatoriedad(linea: LineaSalida) -> list[Motivo]:
     motivos: list[Motivo] = []
+    if linea.nombre.procedencia is Procedencia.AUSENTE:
+        # Defensivo: en las 30 lineas reales del MTO el nombre siempre se
+        # resuelve (viene del propio tramo o, en su defecto, de la norma
+        # via `nombre_de_norma`), pero `aplicar_confianza` salta las celdas
+        # AUSENTE igual que saltaba la calidad -- sin este cheque un nombre
+        # sin resolver pasaria de largo en vez de ir a revision.
+        motivos.append(Motivo(
+            codigo="SIN_NOMBRE", atributo="nombre",
+            texto="No se pudo determinar qu" + chr(0xe9) + " tipo de pieza es; "
+                  "sin nombre no hay material que comprar."))
     if linea.norma.procedencia is Procedencia.AUSENTE:
         motivos.append(Motivo(
             codigo="SIN_NORMA", atributo="norma",
