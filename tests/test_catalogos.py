@@ -1,4 +1,5 @@
-from motor.catalogos import emparejar, ACABADOS, CALIDADES_ALIAS, NORMAS_DIN_ISO, normalizar_norma
+from motor.catalogos import emparejar, ACABADOS, CALIDADES_ALIAS, GRUPOS_CALIDAD, NORMAS_DIN_ISO, normalizar_norma
+from motor.saneado import sanear
 
 
 def test_BL_no_casa_dentro_de_AUTOBLOCANTE():
@@ -62,3 +63,38 @@ def test_calidad_8_desnuda_en_posicion_de_calidad_si_se_extrae():
 def test_calidad_10_desnuda_en_posicion_de_calidad_si_se_extrae():
     t = "Tuerca DIN EN 1661 M10, 10, cincada"
     assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["10"]
+
+
+def test_calidad_304_no_sale_de_medida_304():
+    t = sanear("Tornillo DIN 933 M20 x 304, 8.8")
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["8.8"]
+
+
+def test_calidad_316_no_sale_de_medida_316():
+    t = sanear("VARILLA ROSCADA M12 x 316 DIN 975, 8.8")
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["8.8"]
+
+
+def test_calidad_304_en_posicion_de_calidad_si_se_extrae():
+    t = sanear("Tuerca DIN 934 M16, 304")
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["304"]
+
+
+def test_calidad_316_en_posicion_de_calidad_si_se_extrae():
+    t = sanear("Tornillo DIN 933 M8 x 20, 316, pavonado")
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["316"]
+
+
+def test_todas_las_calidades_puramente_numericas_llevan_tratamiento_estricto():
+    """Regla derivada del catalogo: toda clave de GRUPOS_CALIDAD formada solo por
+    digitos exige posicion de calidad (precedida por coma o principio de texto,
+    seguida de coma, punto o fin). Se afirma primero cuantas hay para que este
+    test no pase en falso con la coleccion vacia si algun dia dejan de existir."""
+    desnudas = [c for c in GRUPOS_CALIDAD if c.isdigit()]
+    assert len(desnudas) == 4
+    assert set(desnudas) == {"8", "10", "304", "316"}
+    for clave in desnudas:
+        suelta = "MEDIDA " + clave + " X ALGO"
+        assert clave not in {v for v, _, _ in emparejar(suelta, CALIDADES_ALIAS)}
+        legitima = "TORNILLO DIN 933 M10, " + clave + ", ACABADO"
+        assert [v for v, _, _ in emparejar(legitima, CALIDADES_ALIAS)] == [clave]

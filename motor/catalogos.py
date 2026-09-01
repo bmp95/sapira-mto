@@ -50,15 +50,16 @@ NOMBRES = {
 _ANTES = r"(?<![A-Za-z0-9.\-])"
 _DESPUES = r"(?![A-Za-z0-9.\-])"
 
-# Las calidades numericas desnudas (8 y 10) son ambiguas de verdad: el limite de
-# caracter de arriba no basta, porque '8' tambien queda suelto dentro de fracciones
-# ('5/8', '7/8' -- la barra no esta en la clase excluida) y '10' queda suelto despues
-# de que el saneado convierte el simbolo de diametro en 'DIA ' ('DIA 10' tiene un
-# espacio antes, no una letra). Regla 5 del cliente: si no se sabe si un valor esta
-# marcado como calidad, no se extrae. Por eso estas dos claves, y solo estas dos,
-# casan unicamente en posicion de calidad: precedidas por coma o principio de texto,
-# seguidas de coma, punto o fin de texto. El resto del catalogo sigue con _ANTES/_DESPUES.
-_CALIDADES_DESNUDAS = frozenset({"8", "10"})
+# Una calidad puramente numerica (solo digitos, sin punto ni letra ni guion) es
+# ambigua de verdad: el limite de caracter de arriba no basta, porque un numero
+# suelto tambien aparece dentro de fracciones ('5/8', '7/8' -- la barra no esta en
+# la clase excluida), en 'DIA 10' (tras el saneado del simbolo de diametro, separado
+# solo por un espacio) y en medidas o longitudes en milimetros ('M20 x 304'). Regla 5
+# del cliente: si no se sabe si un valor esta marcado como calidad, no se extrae. La
+# regla es del catalogo, no de una lista fija: cualquier clave que sea solo digitos
+# (hoy 8, 10, 304 y 316; 8.8/10.9/12.9 llevan punto y no cuentan) casa unicamente en
+# posicion de calidad: precedida por coma o principio de texto, seguida de coma,
+# punto o fin de texto. El resto del catalogo sigue con _ANTES/_DESPUES sin cambios.
 _ANTES_DESNUDA = r"(?:(?<=^)|(?<=,))\s*"
 _DESPUES_DESNUDA = r"\s*(?=[,.]|$)"
 
@@ -69,7 +70,7 @@ def emparejar(texto: str, tabla: dict[str, str]) -> list[tuple[str, str, tuple[i
     hallazgos: list[tuple[str, str, tuple[int, int]]] = []
     ocupado: list[tuple[int, int]] = []
     for clave in sorted(tabla, key=len, reverse=True):
-        if clave in _CALIDADES_DESNUDAS:
+        if clave.isdigit():
             patron = _ANTES_DESNUDA + "(" + re.escape(clave) + ")" + _DESPUES_DESNUDA
             grupo = 1
         else:
