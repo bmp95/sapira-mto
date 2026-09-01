@@ -61,12 +61,24 @@ class Metricas(BaseModel):
     total_lineas: int
     tasa_escape: float
     cobertura: float
-    ruido_revision: Optional[float]
     exactitud_segmentacion: float
     celdas_indecidibles: int
     por_atributo: dict[str, MetricaAtributo]
     fallas_escape: list[FallaEscape]
     fallas_segmentacion: list[FallaSegmentacion]
+    # Ronda de correccion 1: el ruido de revision no compara valores, compara
+    # si el MTO traia el dato. Una linea en REVISION_MANUAL es ruido solo si
+    # NINGUNO de los atributos que sus propios motivos senalan esta marcado
+    # `indecidible` en el gold -- si alguno lo esta, no hubo nada que el
+    # sistema pudiera haber resuelto: es una laguna real del dato de origen,
+    # no una duda de mas. Las dos cuentas suman `revisiones_evaluables`
+    # (las de filas con fallo de segmentacion quedan fuera de ambas, van en
+    # `fallas_segmentacion`).
+    revisiones_evaluables: int
+    revisiones_ruido: int
+    revisiones_dato_ausente: int
+    ruido_revision: Optional[float]
+    tasa_dato_ausente: Optional[float]
 
 
 def _agrupar_por_fila_sistema(lineas: list[LineaSalida]) -> dict[int, list[LineaSalida]]:
@@ -143,7 +155,8 @@ def evaluar(lineas: list[LineaSalida], gold: list[LineaGold]) -> Metricas:
     fallas_escape: list[FallaEscape] = []
     n_escapadas = 0
     revisiones_evaluables = 0
-    revisiones_sin_ruido = 0
+    revisiones_ruido = 0
+    revisiones_dato_ausente = 0
 
     for linea_sistema, linea_gold in pares:
         celdas_sistema = linea_sistema.celdas()
@@ -171,25 +184,40 @@ def evaluar(lineas: list[LineaSalida], gold: list[LineaGold]) -> Metricas:
 
         if linea_sistema.estado is Estado.RESUELTA and algun_fallo:
             n_escapadas += 1
+
         if linea_sistema.estado is Estado.REVISION_MANUAL:
             revisiones_evaluables += 1
-            if not algun_fallo:
-                revisiones_sin_ruido += 1
+            # No comparamos valores aqui: comparamos si el dato senalado
+            # por el propio motivo del sistema es determinable en el gold.
+            # Un motivo sin atributo (fallo estructural, LINEA_SIN_CELDAS_EVALUABLES)
+            # no es evidencia de nada -- se ignora, ni suma ni resta.
+            atributos_senalados = {mo.atributo for mo in linea_sistema.motivos if mo.atributo}
+            dato_ausente = any(celdas_gold[atributo][1] is ConfianzaGold.INDECIDIBLE
+                               for atributo in atributos_senalados)
+            if dato_ausente:
+                revisiones_dato_ausente += 1
+            else:
+                revisiones_ruido += 1
 
     total_lineas = len(lineas)
     resueltas = sum(1 for l in lineas if l.estado is Estado.RESUELTA)
-    ruido_revision = (revisiones_sin_ruido / revisiones_evaluables) if revisiones_evaluables else None
+    ruido_revision = (revisiones_ruido / revisiones_evaluables) if revisiones_evaluables else None
+    tasa_dato_ausente = (revisiones_dato_ausente / revisiones_evaluables) if revisiones_evaluables else None
 
     return Metricas(
         total_lineas=total_lineas,
         tasa_escape=n_escapadas / total_lineas,
         cobertura=resueltas / total_lineas,
-        ruido_revision=ruido_revision,
         exactitud_segmentacion=exactitud_segmentacion,
         celdas_indecidibles=celdas_indecidibles,
         por_atributo=por_atributo,
         fallas_escape=fallas_escape,
         fallas_segmentacion=fallas_segmentacion,
+        revisiones_evaluables=revisiones_evaluables,
+        revisiones_ruido=revisiones_ruido,
+        revisiones_dato_ausente=revisiones_dato_ausente,
+        ruido_revision=ruido_revision,
+        tasa_dato_ausente=tasa_dato_ausente,
     )
 
 
@@ -202,7 +230,6 @@ _E = chr(0xe9)  # e con tilde
 _I = chr(0xed)  # i con tilde
 _O = chr(0xf3)  # o con tilde
 _U = chr(0xfa)  # u con tilde
-_N = chr(0xf1)  # n con tilde
 
 
 def _pct(valor: Optional[float]) -> str:
@@ -219,10 +246,26 @@ def _formatear_informe(m: Metricas) -> str:
     l.append(f"- Cobertura: {_pct(m.cobertura)}")
     l.append(f"- Tasa de escape: {_pct(m.tasa_escape)} " +
              chr(0x2014) + " es el n" + _U + "mero que se compromete con el cliente")
-    l.append(f"- Ruido de revisi" + _O + f"n: {_pct(m.ruido_revision)}")
+    l.append("  > **Aviso:** medido contra el gold de desarrollo " + chr(0x2014) +
+             " las mismas 15 filas que se usaron para ajustar el sistema. Esta cifra "
+             "certifica consistencia con ese gold, no generalizaci" + _O + "n a filas no "
+             "vistas: eso solo lo mide el corpus de estr" + _E + "s (`datos/corpus_estres.py`).")
     l.append(f"- Exactitud de segmentaci" + _O + f"n: {_pct(m.exactitud_segmentacion)}")
     l.append(f"- Celdas indecidibles (excluidas de la comparaci" + _O + "n): "
              f"{m.celdas_indecidibles}")
+    l.append("")
+    l.append("## Revisi" + _O + "n manual: ruido vs. dato ausente")
+    l.append("")
+    l.append("De las l" + _I + "neas en REVISION_MANUAL emparejadas con el gold "
+             f"({m.revisiones_evaluables}), cu" + _A + "ntas dud" + _O + " el sistema sin "
+             "que hiciera falta (ruido: el gold s" + _I + " ten" + _I + "a el dato) y cu" +
+             _A + "ntas porque el MTO genuinamente no lo trae (dato ausente: hay que volver "
+             "a ingenier" + _I + "a).")
+    l.append("")
+    l.append(f"- Ruido de revisi" + _O + f"n: {_pct(m.ruido_revision)} "
+             f"({m.revisiones_ruido}/{m.revisiones_evaluables})")
+    l.append(f"- Revisiones por dato ausente: {_pct(m.tasa_dato_ausente)} "
+             f"({m.revisiones_dato_ausente}/{m.revisiones_evaluables})")
     l.append("")
     l.append("## Desglose por atributo")
     l.append("")

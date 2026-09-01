@@ -1,6 +1,6 @@
 from evaluacion.arnes import evaluar
 from evaluacion.cargar_gold import ConfianzaGold, LineaGold
-from motor.modelos import LineaSalida, Procedencia, Valor
+from motor.modelos import LineaSalida, Motivo, Procedencia, Valor
 
 CIERTA = ConfianzaGold.CIERTA
 INDECIDIBLE = ConfianzaGold.INDECIDIBLE
@@ -131,28 +131,103 @@ def test_exactitud_de_segmentacion_promedia_filas_alineadas_y_rotas():
 
 
 # --------------------------------------------------------------------------
-# Escenario extra: ruido de revision -- lineas en REVISION_MANUAL cuyos
-# atributos evaluables ya estaban todos bien en el gold, es decir, casos en
-# los que el sistema dudo sin necesidad.
+# Escenario extra (ronda de correccion 1): ruido de revision NO compara
+# valores -- compara si el MTO traia el dato. Una linea en REVISION_MANUAL
+# es ruido solo si NINGUNO de los atributos que sus propios `motivos`
+# senalan esta marcado `indecidible` en el gold. Si el gold tampoco podia
+# saberlo, el sistema acerto al dudar: es una laguna real del dato de
+# origen, no ruido -- y cuenta en la metrica hermana `revisiones_dato_ausente`.
 # --------------------------------------------------------------------------
 
-def test_ruido_de_revision_cuenta_solo_las_revisiones_que_ya_estaban_bien():
-    revision_innecesaria = _linea_sistema("L030", fila=30, confianza=70,
-                                          nombre="TORNILLO", calidad="10.9")
-    revision_necesaria = _linea_sistema("L031", fila=31, confianza=70,
-                                        nombre="TORNILLO", calidad="8.8")
+def _linea_en_revision_con_motivo(id_: str, fila: int, atributo_senalado: str,
+                                  nombre: str = "TORNILLO") -> LineaSalida:
+    linea = LineaSalida.vacia(id=id_, fila_origen=fila, cantidad=10)
+    linea.nombre = Valor(valor=nombre, procedencia=Procedencia.INFERIDO)
+    linea.confianza = 70
+    linea.motivos = [Motivo(codigo="SIN_CALIDAD", atributo=atributo_senalado,
+                            texto="motivo de prueba")]
+    return linea
+
+
+def test_ruido_de_revision_cuenta_solo_lo_que_el_gold_si_sabia():
+    """El sistema duda de 'calidad' en las dos lineas (mismo motivo). En la
+    30 el gold SI tenia un valor determinado -> el sistema dudo de mas,
+    ruido. En la 31 el gold tambien esta indecidible -> el sistema acerto
+    al dudar, no es ruido, es una laguna real del dato de origen."""
+    duda_innecesaria = _linea_en_revision_con_motivo("L030", fila=30, atributo_senalado="calidad")
+    duda_justificada = _linea_en_revision_con_motivo("L031", fila=31, atributo_senalado="calidad")
     gold = [
-        _gold_linea("L030", fila=30, nombre="TORNILLO", calidad="10.9"),
-        _gold_linea("L031", fila=31, nombre="TORNILLO", calidad="10.9"),
+        _gold_linea("L030", fila=30, nombre="TORNILLO", calidad="10.9", conf_calidad=CIERTA),
+        _gold_linea("L031", fila=31, nombre="TORNILLO", calidad=None, conf_calidad=INDECIDIBLE),
     ]
-    m = evaluar(lineas=[revision_innecesaria, revision_necesaria], gold=gold)
+    m = evaluar(lineas=[duda_innecesaria, duda_justificada], gold=gold)
+    assert m.revisiones_evaluables == 2
+    assert m.revisiones_ruido == 1
+    assert m.revisiones_dato_ausente == 1
     assert m.ruido_revision == 1 / 2
+    assert m.tasa_dato_ausente == 1 / 2
+
+
+def test_un_solo_atributo_indecidible_entre_varios_senalados_ya_marca_dato_ausente():
+    """Si el motivo senala 'calidad' y ademas hay un segundo motivo que
+    senala 'norma', y CUALQUIERA de los dos esta indecidible en el gold, la
+    linea entera es dato ausente -- basta con que uno de los atributos
+    senalados sea real y genuinamente inextraible."""
+    linea = LineaSalida.vacia(id="L032", fila_origen=32, cantidad=10)
+    linea.nombre = Valor(valor="TORNILLO", procedencia=Procedencia.INFERIDO)
+    linea.confianza = 70
+    linea.motivos = [
+        Motivo(codigo="SIN_CALIDAD", atributo="calidad", texto="motivo de prueba"),
+        Motivo(codigo="SIN_NORMA", atributo="norma", texto="motivo de prueba"),
+    ]
+    gold = [LineaGold(
+        id="L032", fila=32, cantidad=10, nombre="TORNILLO", conf_nombre=CIERTA,
+        material=None, conf_material=CIERTA,
+        calidad="10.9", conf_calidad=CIERTA,   # esta si la sabia el gold
+        medida=None, conf_medida=CIERTA,
+        longitud=None, conf_longitud=CIERTA,
+        norma=None, conf_norma=INDECIDIBLE,     # esta no -- basta esta sola
+        acabado=None, conf_acabado=CIERTA,
+    )]
+    m = evaluar(lineas=[linea], gold=gold)
+    assert m.revisiones_dato_ausente == 1
+    assert m.revisiones_ruido == 0
+
+
+def test_motivo_sin_atributo_no_cuenta_como_evidencia_de_dato_ausente():
+    """Un motivo estructural (LINEA_SIN_CELDAS_EVALUABLES, sin atributo
+    asociado) no aporta evidencia ni a favor ni en contra: si es el unico
+    motivo, la linea cae en ruido por defecto, no en dato ausente, aunque
+    el gold tenga celdas indecidibles que el motivo nunca senalo."""
+    linea = LineaSalida.vacia(id="L040", fila_origen=40, cantidad=10)
+    linea.nombre = Valor(valor="TORNILLO", procedencia=Procedencia.INFERIDO)
+    linea.confianza = 0
+    linea.motivos = [Motivo(codigo="LINEA_SIN_CELDAS_EVALUABLES", atributo=None,
+                            texto="motivo de prueba", factor_limitante="ausente")]
+    gold = [_gold_linea("L040", fila=40, nombre="TORNILLO", calidad=None,
+                        conf_calidad=INDECIDIBLE)]
+    m = evaluar(lineas=[linea], gold=gold)
+    assert m.revisiones_ruido == 1
+    assert m.revisiones_dato_ausente == 0
+
+
+def test_ruido_y_dato_ausente_suman_las_revisiones_evaluables():
+    duda_innecesaria = _linea_en_revision_con_motivo("L030", fila=30, atributo_senalado="calidad")
+    duda_justificada = _linea_en_revision_con_motivo("L031", fila=31, atributo_senalado="calidad")
+    gold = [
+        _gold_linea("L030", fila=30, nombre="TORNILLO", calidad="10.9", conf_calidad=CIERTA),
+        _gold_linea("L031", fila=31, nombre="TORNILLO", calidad=None, conf_calidad=INDECIDIBLE),
+    ]
+    m = evaluar(lineas=[duda_innecesaria, duda_justificada], gold=gold)
+    assert m.revisiones_ruido + m.revisiones_dato_ausente == m.revisiones_evaluables
 
 
 def test_ruido_de_revision_es_none_sin_lineas_en_revision():
     m = evaluar(lineas=[_resuelta_bien()],
                gold=[_gold_linea("L002", fila=2, nombre="TORNILLO", calidad="10.9")])
+    assert m.revisiones_evaluables == 0
     assert m.ruido_revision is None
+    assert m.tasa_dato_ausente is None
 
 
 # --------------------------------------------------------------------------
