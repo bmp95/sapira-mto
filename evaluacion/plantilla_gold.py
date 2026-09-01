@@ -21,10 +21,11 @@ wb = openpyxl.Workbook()
 ws = wb.active
 ws.title = "gold"
 
-cab = ["id", "fila", "descripcion original"]
-for a in ATRIBUTOS:
+cab = ["id", "fila", "MTO: descripcion", "MTO: MATERIAL", "MTO: MEDIDA", "MTO: CANT.",
+       "nombre", "conf", "cantidad"]
+for a in ATRIBUTOS[1:]:
     cab += [a, "conf"]
-cab += ["cantidad", "notas"]
+cab += ["notas"]
 ws.append(cab)
 
 for c in range(1, len(cab) + 1):
@@ -41,6 +42,11 @@ for f in filas:
         ws.cell(row=r, column=2, value=f.item)
         if h == 0:
             ws.cell(row=r, column=3, value=f.descripcion).alignment = Alignment(wrap_text=True, vertical="top")
+            ws.cell(row=r, column=4, value=f.material_col)
+            ws.cell(row=r, column=5, value=f.medida_col)
+            ws.cell(row=r, column=6, value=f.cantidad)
+            for c in range(3, 7):
+                ws.cell(row=r, column=c).font = Font(color=GRIS, size=9)
         if h % 2 == 1:
             for c in range(1, len(cab) + 1):
                 ws.cell(row=r, column=c).fill = PatternFill("solid", fgColor=BANDA)
@@ -54,20 +60,26 @@ dv = DataValidation(type="list", formula1='"cierta,interpretada,indecidible"', a
 dv.prompt = "cierta = esta escrito en el MTO | interpretada = lo decides tu con una regla | indecidible = ni las reglas ni tu lo sabeis"
 dv.promptTitle = "Cuanto te fias de esta celda"
 ws.add_data_validation(dv)
-for i in range(len(ATRIBUTOS)):
-    col = get_column_letter(4 + i * 2 + 1)
+COLS_CONF = [8] + [11 + i * 2 for i in range(len(ATRIBUTOS) - 1)]
+for ci in COLS_CONF:
+    col = get_column_letter(ci)
     dv.add(f"{col}2:{col}{ultima}")
 
 anchos = {"A": 9, "B": 6, "C": 62}
 ws.column_dimensions["A"].width = anchos["A"]
 ws.column_dimensions["B"].width = anchos["B"]
 ws.column_dimensions["C"].width = anchos["C"]
-for i in range(len(ATRIBUTOS)):
-    ws.column_dimensions[get_column_letter(4 + i * 2)].width = 13
-    ws.column_dimensions[get_column_letter(4 + i * 2 + 1)].width = 12
-ws.column_dimensions[get_column_letter(4 + len(ATRIBUTOS) * 2)].width = 9
-ws.column_dimensions[get_column_letter(4 + len(ATRIBUTOS) * 2 + 1)].width = 34
-ws.freeze_panes = "D2"
+ws.column_dimensions["D"].width = 26
+ws.column_dimensions["E"].width = 12
+ws.column_dimensions["F"].width = 8
+ws.column_dimensions["G"].width = 15
+ws.column_dimensions["H"].width = 12
+ws.column_dimensions["I"].width = 9
+for i in range(len(ATRIBUTOS) - 1):
+    ws.column_dimensions[get_column_letter(10 + i * 2)].width = 13
+    ws.column_dimensions[get_column_letter(11 + i * 2)].width = 12
+ws.column_dimensions[get_column_letter(10 + (len(ATRIBUTOS) - 1) * 2)].width = 34
+ws.freeze_panes = "G2"
 
 # Hoja de instrucciones
 ins = wb.create_sheet("como se rellena")
@@ -113,6 +125,6 @@ for i, (t, negrita) in enumerate(texto, start=1):
         c.font = Font(bold=True, color=ROJO if t and t[0].isupper() else "000000")
 ins.column_dimensions["A"].width = 100
 
-ruta = "datos/gold_set_PLANTILLA.xlsx"
+ruta = "datos/gold_set_PLANTILLA_v3.xlsx"
 wb.save(ruta)
 print("escrita:", ruta, "|", ultima - 1, "huecos de linea para 15 filas")
