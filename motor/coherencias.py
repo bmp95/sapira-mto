@@ -92,7 +92,7 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
                     {nombre, nom_esperado} == {"ESPARRAGO", "VARILLA ROSCADA"}
                 )
                 if es_equivalencia:
-                    motivos.append(Motivo(codigo="NOMBRE_Y_NORMA_EQUIVALENTES", atributo="nombre",
+                    motivos.append(Motivo(codigo="NOMBRE_Y_NORMA_EQUIVALENTES",
                                           texto=f"La norma {norma} sugiere {nom_esperado}, pero se indica {nombre} — equivalentes en el oficio."))
                 else:
                     motivos.append(Motivo(codigo="NOMBRE_CONTRADICE_NORMA", atributo="nombre",
