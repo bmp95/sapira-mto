@@ -37,3 +37,28 @@ def test_normalizacion_de_norma():
 
 def test_no_hay_coincidencia_difusa():
     assert normalizar_norma("DIN 9331") == "DIN 9331"  # NO es DIN 933
+
+
+def test_calidad_8_no_sale_de_fraccion_5_8():
+    t = 'STUD BOLT 5/8" X 4-1/2" LG'
+    assert emparejar(t, CALIDADES_ALIAS) == []
+
+
+def test_calidad_8_no_sale_de_fraccion_7_8():
+    t = 'STUD BOLT 7/8" X 130 LG, ASTM A193, GR B7'
+    assert "8" not in {v for v, _, _ in emparejar(t, CALIDADES_ALIAS)}
+
+
+def test_calidad_10_no_sale_de_DIA_10():
+    t = "Tornillo DIN 933 DIA 10 x 40, 8.8"
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["8.8"]
+
+
+def test_calidad_8_desnuda_en_posicion_de_calidad_si_se_extrae():
+    t = "Tuerca DIN 6923 M10, 8, bicromatada"
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["8"]
+
+
+def test_calidad_10_desnuda_en_posicion_de_calidad_si_se_extrae():
+    t = "Tuerca DIN EN 1661 M10, 10, cincada"
+    assert [v for v, _, _ in emparejar(t, CALIDADES_ALIAS)] == ["10"]
