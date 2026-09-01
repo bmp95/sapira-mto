@@ -54,6 +54,34 @@ _NOMBRES_SIN_LONGITUD_OBLIGATORIA = {"TUERCA", "ARANDELA"}
 
 _REGLA_MEDIDA_EXTRAPOLADA = "MEDIDA-EXTRAPOLADA-SET"
 _REGLA_LONGITUD_METRICA = "LONGITUD-MM-POR-MEDIDA-METRICA"
+_REGLA_LONGITUD_IMPERIAL_FORZADA = "LONGITUD-MM-FORZADA-POR-POLITICA"
+
+
+# --------------------------------------------------------------------------
+# Politicas: decisiones de criterio propio, no reglas escritas del cliente.
+# Ronda de correccion 2. Cada una lleva interruptor porque hay que poder
+# apagarla delante del cliente y medir lo que cuesta -- este diccionario y
+# su docstring por clave son el material del one-pager para esa pregunta.
+# --------------------------------------------------------------------------
+
+POLITICAS_POR_DEFECTO: dict[str, bool] = {
+    # Las reglas dicen "material: se extrae el que aparezca" (reglas seccion
+    # 4) pero el MTO casi nunca lo escribe; derivarlo de la calidad es nuestra
+    # lectura de la decision 1 del diseno, no una regla citada del cliente.
+    "derivar_material": True,
+    # Que la columna MATERIAL del xlsx describa al elemento principal es una
+    # inferencia nuestra sobre los datos del cliente (evidencia: fila 7), no
+    # algo que las reglas escritas digan en ningun sitio.
+    "columna_material_al_principal": True,
+    # reglas_tornilleria.md seccion 10, punto 4, lo dice explicito: "no esta
+    # dicho a que elementos alcanza" el acabado de cierre de un set. Repartir
+    # EXTRAIDO al principal e INFERIDO al resto es criterio nuestro.
+    "acabado_de_cierre_a_todo_el_set": True,
+    # Que un numero sin unidad tras una norma imperial se lea como INFERIDO
+    # (revision) y no como milimetros asumidos es una lectura de la decision
+    # 4.3 del diseno, no una regla que las reglas del cliente escriban.
+    "longitud_imperial_sin_unidad_a_revision": True,
+}
 
 
 # --------------------------------------------------------------------------
@@ -90,13 +118,18 @@ def _extraer_acabado(texto: str, ini: int, fin: int):
     return hallazgos[0] if hallazgos else None
 
 
-def _extraer_medida_longitud(texto: str, ini: int, fin: int):
+def _extraer_medida_longitud(texto: str, ini: int, fin: int, politicas: dict[str, bool]):
     """Devuelve (medida, longitud, span_ocupado_relativo).
 
-    `medida` y `longitud` son (valor, literal, span_absoluto) o None.
-    `longitud` ademas trae la procedencia como cuarto elemento: DERIVADO si
-    la medida es metrica (mm por definicion del formato M<n>), INFERIDO si
-    es imperial y el numero no trae unidad (decision seccion 4.3 del diseno).
+    `medida` es (valor, literal, span_absoluto) o None. `longitud` es
+    (valor, literal, span_absoluto, procedencia, regla_o_None) o None.
+
+    Si la medida es metrica, la longitud es DERIVADO (mm por definicion del
+    formato M<n>). Si es imperial y el numero no trae unidad, la politica
+    `longitud_imperial_sin_unidad_a_revision` decide: activa (por defecto,
+    decision seccion 4.3 del diseno), INFERIDO -> revision; apagada, se
+    asume mm igual que en el caso metrico y la celda resuelve como DERIVADO.
+
     `span_ocupado_relativo` es la region del tramo que ya ha sido leida como
     medida/longitud, para no dejar que un digito suelto ahi (el "8" de
     7/8") se lea luego como si fuera una calidad catalogada.
@@ -109,7 +142,8 @@ def _extraer_medida_longitud(texto: str, ini: int, fin: int):
         longitud = None
         if m.group(2):
             l0, l1 = m.span(2)
-            longitud = (f"{m.group(2)} mm", m.group(2), (ini + l0, ini + l1), Procedencia.DERIVADO)
+            longitud = (f"{m.group(2)} mm", m.group(2), (ini + l0, ini + l1),
+                       Procedencia.DERIVADO, _REGLA_LONGITUD_METRICA)
         return medida, longitud, m.span()
     m = _RE_MEDIDA_IMPERIAL.search(tramo)
     if m:
@@ -118,7 +152,12 @@ def _extraer_medida_longitud(texto: str, ini: int, fin: int):
         longitud = None
         if m.group(2):
             l0, l1 = m.span(2)
-            longitud = (f"{m.group(2)} mm", m.group(2), (ini + l0, ini + l1), Procedencia.INFERIDO)
+            if politicas["longitud_imperial_sin_unidad_a_revision"]:
+                longitud = (f"{m.group(2)} mm", m.group(2), (ini + l0, ini + l1),
+                           Procedencia.INFERIDO, None)
+            else:
+                longitud = (f"{m.group(2)} mm", m.group(2), (ini + l0, ini + l1),
+                           Procedencia.DERIVADO, _REGLA_LONGITUD_IMPERIAL_FORZADA)
         return medida, longitud, m.span()
     return None, None, None
 
@@ -183,10 +222,10 @@ class _DatosElemento:
 
     __slots__ = ("nombre", "norma", "calidad", "acabado", "medida", "longitud", "calidad_fuente")
 
-    def __init__(self, texto: str, ini: int, fin: int):
+    def __init__(self, texto: str, ini: int, fin: int, politicas: dict[str, bool]):
         self.nombre = _extraer_nombre(texto, ini, fin)
         self.norma = _extraer_norma(texto, ini, fin)
-        medida, longitud, span_ocupado = _extraer_medida_longitud(texto, ini, fin)
+        medida, longitud, span_ocupado = _extraer_medida_longitud(texto, ini, fin, politicas)
         self.medida = medida
         self.longitud = longitud
         ocultar = []
@@ -203,16 +242,20 @@ class _DatosElemento:
 
 
 def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
-                                  ambito_fila: list[tuple[int, int]]) -> None:
+                                  ambito_fila: list[tuple[int, int]],
+                                  politicas: dict[str, bool]) -> None:
     """Decision seccion 4 del diseno: el ambito de fila (el ', 8.8, zincado' del
     final) se lee sobre el elemento principal (el primero: normalmente el
     tornillo o el esparrago) como si fuera su propio tramo -- EXTRAIDO.
 
     Para el resto de elementos del set la calidad NUNCA se atribuye (regla
-    mas importante del caso: si no trae calidad propia, a revision). El
-    acabado si se apunta, pero como INFERIDO (un juicio, no un dato), asi
-    que esa celda cae a revision aunque el coste real sea cero porque esos
-    elementos ya estan en revision por la calidad ausente."""
+    mas importante del caso, sin interruptor: si no trae calidad propia, a
+    revision). El acabado si se apunta, pero como INFERIDO (un juicio, no
+    un dato) y solo si la politica `acabado_de_cierre_a_todo_el_set` esta
+    activa -- reglas_tornilleria.md seccion 10 punto 4 dice explicitamente
+    que esto no esta decidido por el cliente, asi que es criterio nuestro y
+    lleva interruptor. Apagada, el acabado de cierre se queda en el
+    elemento principal y el resto no lo ve."""
     if not ambito_fila or not datos:
         return
     ini, fin = ambito_fila[0]
@@ -221,6 +264,8 @@ def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
         principal.calidad = _extraer_calidad(texto, ini, fin, [])
     if principal.acabado is None:
         principal.acabado = _extraer_acabado(texto, ini, fin)
+    if not politicas["acabado_de_cierre_a_todo_el_set"]:
+        return
     acabado_ambito = _extraer_acabado(texto, ini, fin)
     if acabado_ambito is None:
         return
@@ -329,7 +374,8 @@ def _linea_fila_rota(id_: str, fila: FilaMTO, motivo: Motivo) -> LineaSalida:
 
 def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bool,
                      datos: _DatosElemento, medida_resuelta,
-                     interruptores: dict[str, bool]) -> LineaSalida:
+                     interruptores_coherencia: dict[str, bool],
+                     politicas: dict[str, bool]) -> LineaSalida:
     linea = LineaSalida.vacia(id=id_, fila_origen=fila.item, cantidad=fila.cantidad * multiplicador(texto[elem.span[0]:elem.span[1]]))
 
     linea.nombre = _valor_extraido(datos.nombre)
@@ -351,10 +397,10 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
                              regla=_REGLA_MEDIDA_EXTRAPOLADA)
 
     if datos.longitud is not None:
-        valor, literal, span, proc = datos.longitud
+        valor, literal, span, proc, regla = datos.longitud
         if proc is Procedencia.DERIVADO:
             linea.longitud = Valor(valor=valor, literal=literal, span=span,
-                                   procedencia=Procedencia.DERIVADO, regla=_REGLA_LONGITUD_METRICA)
+                                   procedencia=Procedencia.DERIVADO, regla=regla)
         else:
             linea.longitud = Valor(valor=valor, literal=literal, span=span, procedencia=proc)
 
@@ -363,7 +409,7 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
         proc = Procedencia.EXTRAIDO if es_principal else Procedencia.INFERIDO
         linea.acabado = Valor(valor=valor, literal=literal, span=span, procedencia=proc)
 
-    if linea.calidad.procedencia is Procedencia.EXTRAIDO:
+    if politicas["derivar_material"] and linea.calidad.procedencia is Procedencia.EXTRAIDO:
         derivado = material_de_calidad(linea.calidad.valor)
         if derivado is not None:
             valor, regla = derivado
@@ -381,7 +427,7 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
                                            and datos.calidad_fuente == "material_col") else texto
             literales_ok[atributo] = verificar_literal(celda.literal, fuente, celda.span)
 
-    motivos_coherencia = comprobar(linea, interruptores)
+    motivos_coherencia = comprobar(linea, interruptores_coherencia)
     linea = aplicar_confianza(linea, elem.votos, motivos_coherencia, literales_ok)
 
     obligatoriedad = _verificar_obligatoriedad(linea)
@@ -396,7 +442,8 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
     return linea
 
 
-def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, interruptores: dict[str, bool],
+def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
+                   interruptores_coherencia: dict[str, bool],
                    siguiente_id) -> list[LineaSalida]:
     texto = fila.descripcion
     seg = segmentar_con_votacion(puerto, texto, pasadas=3)
@@ -405,9 +452,9 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, interruptores: dict[str, bo
     if motivo_roto is not None:
         return [_linea_fila_rota(siguiente_id(), fila, motivo_roto)]
 
-    datos = [_DatosElemento(texto, *elem.span) for elem in seg.elementos]
-    _atribuir_ambito_a_principal(datos, texto, seg.ambito_fila)
-    if datos and datos[0].calidad is None:
+    datos = [_DatosElemento(texto, *elem.span, politicas) for elem in seg.elementos]
+    _atribuir_ambito_a_principal(datos, texto, seg.ambito_fila, politicas)
+    if politicas["columna_material_al_principal"] and datos and datos[0].calidad is None:
         # Ultimo respaldo, solo para el elemento principal (nunca para el
         # resto del set -- ver `_calidad_de_columna_material`): la propia
         # descripcion (ni su tramo ni el ambito de fila) trajo calidad,
@@ -421,14 +468,17 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, interruptores: dict[str, bo
     lineas = []
     for i, (elem, d, medida_resuelta) in enumerate(zip(seg.elementos, datos, medidas_resueltas)):
         linea = _construir_linea(siguiente_id(), fila, texto, elem, i == 0, d,
-                                 medida_resuelta, interruptores)
+                                 medida_resuelta, interruptores_coherencia, politicas)
         lineas.append(linea)
     return lineas
 
 
 def procesar_mto(ruta: Path, puerto: PuertoLLM,
-                 interruptores: dict[str, bool] | None = None) -> list[LineaSalida]:
-    interruptores = interruptores if interruptores is not None else TODAS_ACTIVAS
+                 politicas: dict[str, bool] | None = None,
+                 interruptores_coherencia: dict[str, bool] | None = None) -> list[LineaSalida]:
+    politicas = politicas if politicas is not None else POLITICAS_POR_DEFECTO
+    interruptores_coherencia = (interruptores_coherencia if interruptores_coherencia is not None
+                                else TODAS_ACTIVAS)
     filas = leer_mto(ruta)
 
     contador = {"n": 0}
@@ -439,5 +489,5 @@ def procesar_mto(ruta: Path, puerto: PuertoLLM,
 
     lineas: list[LineaSalida] = []
     for fila in filas:
-        lineas.extend(_procesar_fila(fila, puerto, interruptores, siguiente_id))
+        lineas.extend(_procesar_fila(fila, puerto, politicas, interruptores_coherencia, siguiente_id))
     return lineas
