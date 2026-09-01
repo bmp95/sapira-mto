@@ -32,9 +32,31 @@ _NOMBRE_POR_NORMA = {
 }
 
 
+# Arreglo 3 (ronda de correccion 3, T10): normas que fijan el material por
+# si solas, sin pasar por la calidad -- otro entailment, igual que 8.8
+# implica AC. ASTM F436 es la norma de arandela de acero templado y no
+# existe una F436 inoxidable, asi que la norma sola decide.
+#
+# Esta tabla debe contener SOLO normas que fijan el material pase lo que
+# pase con el grado. ASTM A193 NO entra: sus grados B8 y B8M son
+# inoxidables. ASTM A194 tampoco: sus grados 8 y 8M son inoxidables.
+# Ninguna norma dimensional DIN o ISO entra: el mismo DIN 933 se fabrica
+# en acero y en inox -- la norma dimensional no fija material, solo forma.
+# Si hay duda de una norma, se deja fuera: dejarlo vacio cuesta 1 euro,
+# equivocarse cuesta 50.000.
+_MATERIAL_POR_NORMA = {
+    "ASTM F436": "AC",
+}
+
+
 def material_de_calidad(calidad: str) -> Optional[tuple[str, str]]:
     v = _MATERIAL.get(calidad.upper().strip())
     return (v, f"MAT-{calidad.upper().strip()}") if v else None
+
+
+def material_de_norma(norma: str) -> Optional[tuple[str, str]]:
+    v = _MATERIAL_POR_NORMA.get(norma.upper().strip())
+    return (v, f"MAT-{norma.upper().strip()}") if v else None
 
 
 def nombre_de_norma(norma: str) -> Optional[tuple[str, str]]:

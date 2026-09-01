@@ -31,7 +31,7 @@ from motor.cantidades import multiplicador
 from motor.catalogos import ACABADOS, CALIDADES_ALIAS, NOMBRES, emparejar, normalizar_norma
 from motor.coherencias import TODAS_ACTIVAS, comprobar
 from motor.confianza import aplicar_confianza
-from motor.derivaciones import material_de_calidad, nombre_de_norma
+from motor.derivaciones import material_de_calidad, material_de_norma, nombre_de_norma
 from motor.invariantes import UMBRAL_COBERTURA, cobertura, contar_sustantivos, hay_solape, verificar_literal
 from motor.lectura_mto import FilaMTO, leer_mto
 from motor.modelos import ATRIBUTOS, LineaSalida, Motivo, Procedencia, Valor
@@ -66,8 +66,10 @@ _REGLA_LONGITUD_IMPERIAL_FORZADA = "LONGITUD-MM-FORZADA-POR-POLITICA"
 
 POLITICAS_POR_DEFECTO: dict[str, bool] = {
     # Las reglas dicen "material: se extrae el que aparezca" (reglas seccion
-    # 4) pero el MTO casi nunca lo escribe; derivarlo de la calidad es nuestra
-    # lectura de la decision 1 del diseno, no una regla citada del cliente.
+    # 4) pero el MTO casi nunca lo escribe; derivarlo de la calidad -- o,
+    # cuando la calidad no alcanza, de una norma que lo fija por si sola
+    # (ASTM F436) -- es nuestra lectura de la decision 1 del diseno, no una
+    # regla citada del cliente.
     "derivar_material": True,
     # Que la columna MATERIAL del xlsx describa al elemento principal es una
     # inferencia nuestra sobre los datos del cliente (evidencia: fila 7), no
@@ -205,6 +207,30 @@ def _calidad_de_columna_material(material_col: str):
     return _extraer_calidad(material_col, 0, len(material_col), ocultar)
 
 
+# Arreglo 2 (ronda de correccion 3, T10): en 14 de las 15 filas la columna
+# MATERIAL trae calidad o norma, no material -- pero en la fila 14
+# ('Arandela plana DIN 125 M10, acero, zincada') es la unica fila donde esa
+# columna SI trae material, literal: 'acero'. Normalizacion semantica de
+# reglas_tornilleria.md seccion 4: ACERO/STEEL -> AC; el par INOX se anade
+# por simetria del mismo par de valores (AC / INOX) que nombra esa seccion.
+_MATERIALES_TEXTO = {
+    "ACERO": "AC", "STEEL": "AC",
+    "INOX": "INOX", "INOXIDABLE": "INOX", "STAINLESS STEEL": "INOX", "STAINLESS": "INOX",
+}
+
+
+def _material_de_columna_material(material_col: str):
+    """Solo se toma si hay una palabra reconocible de `_MATERIALES_TEXTO`
+    en la columna -- nunca se inventa. En las otras 14 filas esa columna
+    trae calidad (`8.8`) o norma con grado (`ASTM A193 GR B7`), y ninguna
+    de esas cadenas contiene una palabra de esta tabla, asi que no hay
+    riesgo de leer un material donde en realidad hay otra cosa."""
+    if not material_col:
+        return None
+    hallazgos = emparejar(material_col, _MATERIALES_TEXTO)
+    return hallazgos[0] if hallazgos else None
+
+
 # --------------------------------------------------------------------------
 # Construccion de celdas
 # --------------------------------------------------------------------------
@@ -241,12 +267,36 @@ class _DatosElemento:
         self.calidad_fuente = "descripcion"
 
 
+# Arreglo 1 (ronda de correccion 3, T10): el elemento principal se decide
+# por TIPO, no por posicion. Con el segmentador real, una fila puede
+# escribir la tuerca antes que el tornillo ("2 TUERCAS ... y 2 ARANDELAS
+# ... para TORNILLO ...") y `datos[0]` dejaba de ser el tornillo -- la
+# calidad de la columna MATERIAL, el acabado de cierre y el origen de la
+# extrapolacion de medida se iban al elemento equivocado.
+_TIPOS_PRINCIPALES = {"ESPARRAGO", "TORNILLO", "VARILLA ROSCADA"}
+
+
+def _indice_principal(datos: list[_DatosElemento]) -> int:
+    """El primer elemento cuyo propio tramo resuelve un tipo principal
+    (esparrago, tornillo o varilla roscada; tuerca y arandela son
+    accesorios). Si ninguno es principal -- una fila que solo describe
+    tuercas, como la 11 o la 13 -- el principal es el primer elemento,
+    que es lo que ya haciamos antes de este arreglo."""
+    for i, d in enumerate(datos):
+        tipo = d.nombre[0] if d.nombre is not None else None
+        if tipo in _TIPOS_PRINCIPALES:
+            return i
+    return 0
+
+
 def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
                                   ambito_fila: list[tuple[int, int]],
-                                  politicas: dict[str, bool]) -> None:
+                                  politicas: dict[str, bool],
+                                  indice_principal: int) -> None:
     """Decision seccion 4 del diseno: el ambito de fila (el ', 8.8, zincado' del
-    final) se lee sobre el elemento principal (el primero: normalmente el
-    tornillo o el esparrago) como si fuera su propio tramo -- EXTRAIDO.
+    final) se lee sobre el elemento principal (por tipo -- ver
+    `_indice_principal`, normalmente el tornillo o el esparrago, sea cual
+    sea su posicion en la fila) como si fuera su propio tramo -- EXTRAIDO.
 
     Para el resto de elementos del set la calidad NUNCA se atribuye (regla
     mas importante del caso, sin interruptor: si no trae calidad propia, a
@@ -259,7 +309,7 @@ def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
     if not ambito_fila or not datos:
         return
     ini, fin = ambito_fila[0]
-    principal = datos[0]
+    principal = datos[indice_principal]
     if principal.calidad is None:
         principal.calidad = _extraer_calidad(texto, ini, fin, [])
     if principal.acabado is None:
@@ -269,17 +319,25 @@ def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
     acabado_ambito = _extraer_acabado(texto, ini, fin)
     if acabado_ambito is None:
         return
-    for d in datos[1:]:
+    for i, d in enumerate(datos):
+        if i == indice_principal:
+            continue
         if d.acabado is None:
             d.acabado = acabado_ambito  # se marca INFERIDO mas abajo, no aqui
 
 
-def _extrapolar_medida(datos: list[_DatosElemento]) -> list[tuple | None]:
+def _extrapolar_medida(datos: list[_DatosElemento], indice_principal: int) -> list[tuple | None]:
     """reglas seccion 2 y seccion 6: la unica extrapolacion que permiten estas reglas es
     la de la medida. Devuelve, por elemento, o bien su propia medida
     EXTRAIDO (tal cual vino de `_DatosElemento`) o una tupla
-    (valor, literal) DERIVADA de la primera medida que aparezca en el set."""
-    fuente = next((d.medida for d in datos if d.medida is not None), None)
+    (valor, literal) DERIVADA de la medida propia del elemento principal;
+    si el principal no trae medida propia, la primera que aparezca en el
+    set (dentro del mismo conjunto atornillado todas las medidas propias
+    deben coincidir, asi que el origen no cambia el valor, pero preferir
+    al principal es mas trazable)."""
+    fuente = datos[indice_principal].medida
+    if fuente is None:
+        fuente = next((d.medida for d in datos if d.medida is not None), None)
     resultado = []
     for d in datos:
         if d.medida is not None:
@@ -409,22 +467,49 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
         proc = Procedencia.EXTRAIDO if es_principal else Procedencia.INFERIDO
         linea.acabado = Valor(valor=valor, literal=literal, span=span, procedencia=proc)
 
+    # Cadena de respaldo del material, cada eslabon solo si el anterior no
+    # resolvio nada: 1) derivado de la calidad propia (el caso normal);
+    # 2) Arreglo 3 -- derivado de la norma sola, para las normas que fijan
+    # material pase lo que pase con el grado (ASTM F436: arandelas de las
+    # filas 1 y 5, que no traen calidad propia); 3) Arreglo 2 -- palabra de
+    # material reconocible en la columna MATERIAL del xlsx, solo para el
+    # elemento principal (fila 14: 'acero'). Los dos primeros son
+    # entailments deterministas (DERIVADO) y comparten el interruptor
+    # `derivar_material`; el tercero es un literal de otra columna
+    # (EXTRAIDO) y comparte `columna_material_al_principal` con la calidad
+    # tomada de esa misma columna.
+    material_fuente_columna = False
     if politicas["derivar_material"] and linea.calidad.procedencia is Procedencia.EXTRAIDO:
         derivado = material_de_calidad(linea.calidad.valor)
         if derivado is not None:
             valor, regla = derivado
             linea.material = Valor(valor=valor, procedencia=Procedencia.DERIVADO, regla=regla)
+    if (politicas["derivar_material"] and linea.material.procedencia is Procedencia.AUSENTE
+            and linea.norma.valor is not None):
+        derivado = material_de_norma(linea.norma.valor)
+        if derivado is not None:
+            valor, regla = derivado
+            linea.material = Valor(valor=valor, procedencia=Procedencia.DERIVADO, regla=regla)
+    if (politicas["columna_material_al_principal"] and es_principal
+            and linea.material.procedencia is Procedencia.AUSENTE):
+        hallazgo = _material_de_columna_material(fila.material_col)
+        if hallazgo is not None:
+            valor, literal, span = hallazgo
+            linea.material = Valor(valor=valor, literal=literal, span=span,
+                                   procedencia=Procedencia.EXTRAIDO)
+            material_fuente_columna = True
 
     literales_ok: dict[str, bool] = {}
     for atributo in ATRIBUTOS:
         celda = getattr(linea, atributo)
         if celda.procedencia in (Procedencia.EXTRAIDO, Procedencia.INFERIDO):
-            # La calidad tomada de la columna MATERIAL vive en otra
-            # coordenada de texto: su span apunta a `fila.material_col`,
-            # no a la descripcion, asi que el literal se verifica contra
-            # esa misma columna.
-            fuente = fila.material_col if (atributo == "calidad"
-                                           and datos.calidad_fuente == "material_col") else texto
+            # La calidad (y, desde el Arreglo 2, el material) tomados de la
+            # columna MATERIAL viven en otra coordenada de texto: su span
+            # apunta a `fila.material_col`, no a la descripcion, asi que el
+            # literal se verifica contra esa misma columna.
+            de_columna = ((atributo == "calidad" and datos.calidad_fuente == "material_col")
+                          or (atributo == "material" and material_fuente_columna))
+            fuente = fila.material_col if de_columna else texto
             literales_ok[atributo] = verificar_literal(celda.literal, fuente, celda.span)
 
     motivos_coherencia = comprobar(linea, interruptores_coherencia)
@@ -453,21 +538,22 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
         return [_linea_fila_rota(siguiente_id(), fila, motivo_roto)]
 
     datos = [_DatosElemento(texto, *elem.span, politicas) for elem in seg.elementos]
-    _atribuir_ambito_a_principal(datos, texto, seg.ambito_fila, politicas)
-    if politicas["columna_material_al_principal"] and datos and datos[0].calidad is None:
-        # Ultimo respaldo, solo para el elemento principal (nunca para el
-        # resto del set -- ver `_calidad_de_columna_material`): la propia
-        # descripcion (ni su tramo ni el ambito de fila) trajo calidad,
-        # asi que se mira la columna MATERIAL del xlsx.
+    indice_principal = _indice_principal(datos)
+    _atribuir_ambito_a_principal(datos, texto, seg.ambito_fila, politicas, indice_principal)
+    if politicas["columna_material_al_principal"] and datos[indice_principal].calidad is None:
+        # Ultimo respaldo, solo para el elemento principal por TIPO (nunca
+        # para el resto del set -- ver `_calidad_de_columna_material`): la
+        # propia descripcion (ni su tramo ni el ambito de fila) trajo
+        # calidad, asi que se mira la columna MATERIAL del xlsx.
         respaldo = _calidad_de_columna_material(fila.material_col)
         if respaldo is not None:
-            datos[0].calidad = respaldo
-            datos[0].calidad_fuente = "material_col"
-    medidas_resueltas = _extrapolar_medida(datos)
+            datos[indice_principal].calidad = respaldo
+            datos[indice_principal].calidad_fuente = "material_col"
+    medidas_resueltas = _extrapolar_medida(datos, indice_principal)
 
     lineas = []
     for i, (elem, d, medida_resuelta) in enumerate(zip(seg.elementos, datos, medidas_resueltas)):
-        linea = _construir_linea(siguiente_id(), fila, texto, elem, i == 0, d,
+        linea = _construir_linea(siguiente_id(), fila, texto, elem, i == indice_principal, d,
                                  medida_resuelta, interruptores_coherencia, politicas)
         lineas.append(linea)
     return lineas

@@ -1,8 +1,12 @@
 from pathlib import Path
 
 from datos.guion_falso import puerto_de_guion
-from motor.modelos import Estado, Procedencia
-from motor.pipeline import POLITICAS_POR_DEFECTO, _calidad_de_columna_material, procesar_mto
+from motor.coherencias import TODAS_ACTIVAS
+from motor.lectura_mto import FilaMTO
+from motor.modelos import Elemento, Estado, Procedencia, Segmentacion
+from motor.pipeline import (POLITICAS_POR_DEFECTO, _calidad_de_columna_material,
+                            _procesar_fila, procesar_mto)
+from motor.puerto_llm import PuertoFalso
 
 RUTA = Path("datos/MTO_tornilleria.xlsx")
 
@@ -180,3 +184,112 @@ def test_apagar_el_acabado_de_cierre_deja_sin_acabado_a_tuercas_y_arandelas():
     assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
     assert tuerca.acabado.procedencia is Procedencia.AUSENTE
     assert arandela.acabado.procedencia is Procedencia.AUSENTE
+
+
+def test_el_principal_se_decide_por_tipo_no_por_posicion():
+    """Segmentador real, fila con la tuerca escrita antes que el tornillo:
+    '2 TUERCAS DIN 934 M20 y 2 ARANDELAS DIN 125 para TORNILLO DIN 931
+    M20x90, zincado'. Con `datos[0]` como principal (la logica de antes de
+    este arreglo) la tuerca se habria quedado con la calidad de la columna
+    MATERIAL y el acabado del cierre de fila. El principal se decide por
+    tipo (esparrago/tornillo/varilla roscada), no por posicion: el
+    tornillo es el principal aunque vaya tercero en el texto."""
+    texto = ("2 TUERCAS DIN 934 M20 y 2 ARANDELAS DIN 125 para TORNILLO "
+             "DIN 931 M20x90, zincado")
+    seg = Segmentacion(
+        elementos=[
+            Elemento(tipo_indicado="TUERCAS", span=(0, 21)),
+            Elemento(tipo_indicado="ARANDELAS", span=(24, 43)),
+            Elemento(tipo_indicado="TORNILLO", span=(49, 72)),
+        ],
+        ambito_fila=[(72, 81)],
+        conectores=[(21, 24), (43, 49)],
+    )
+    fila = FilaMTO(item=99, descripcion=texto, material_col="8.8", medida_col="M20",
+                   cantidad=10, unidad="uds")
+    puerto = PuertoFalso(respuestas={texto: seg})
+    contador = {"n": 0}
+
+    def siguiente_id():
+        contador["n"] += 1
+        return f"T{contador['n']}"
+
+    lineas = _procesar_fila(fila, puerto, POLITICAS_POR_DEFECTO, TODAS_ACTIVAS, siguiente_id)
+    assert len(lineas) == 3
+    tuerca = next(l for l in lineas if l.nombre.valor == "TUERCA")
+    tornillo = next(l for l in lineas if l.nombre.valor == "TORNILLO")
+
+    # La calidad de la columna MATERIAL va al tornillo, no a la tuerca.
+    assert tornillo.calidad.valor == "8.8"
+    assert tornillo.calidad.procedencia is Procedencia.EXTRAIDO
+    assert tuerca.calidad.procedencia is Procedencia.AUSENTE
+
+    # El acabado del cierre de fila va EXTRAIDO al tornillo (principal) e
+    # INFERIDO a la tuerca (accesorio), nunca al reves.
+    assert tornillo.acabado.valor == "CINCADO"
+    assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
+    assert tuerca.acabado.valor == "CINCADO"
+    assert tuerca.acabado.procedencia is Procedencia.INFERIDO
+
+
+def test_indice_principal_con_una_sola_tuerca_no_cambia_filas_11_y_13():
+    """Filas 11 y 13 del MTO solo describen una tuerca -- no hay ningun
+    elemento de tipo principal (esparrago/tornillo/varilla roscada) en la
+    fila. `_indice_principal` cae al primer elemento, que es exactamente
+    el comportamiento de antes de este arreglo: no debe cambiar nada."""
+    lineas = procesar_mto(RUTA, puerto_de_guion())
+    fila11 = next(l for l in lineas if l.fila_origen == 11)
+    fila13 = next(l for l in lineas if l.fila_origen == 13)
+
+    assert fila11.nombre.valor == "TUERCA"
+    assert fila11.calidad.valor == "A4-80"
+    assert fila11.material.valor == "INOX"
+    assert fila11.estado is Estado.RESUELTA
+
+    assert fila13.nombre.valor == "TUERCA"
+    assert fila13.calidad.valor == "8.8"
+    assert fila13.acabado.valor == "CINCADO"
+    assert fila13.material.valor == "AC"
+    assert fila13.estado is Estado.RESUELTA
+
+
+def test_la_columna_material_da_el_material_cuando_es_reconocible():
+    """Fila 14, 'Arandela plana DIN 125 M10, acero, zincada': es la unica
+    de las 15 filas donde la columna MATERIAL trae material en vez de
+    calidad o norma ('acero' -> AC). La arandela sigue en revision por
+    SIN_CALIDAD -- nunca tuvo calidad, ni propia ni de la columna -- pero
+    el material ya no se pierde."""
+    lineas = [l for l in procesar_mto(RUTA, puerto_de_guion()) if l.fila_origen == 14]
+    assert len(lineas) == 1
+    arandela = lineas[0]
+    assert arandela.material.valor == "AC"
+    assert arandela.material.procedencia is Procedencia.EXTRAIDO
+    assert arandela.calidad.procedencia is Procedencia.AUSENTE
+    assert arandela.estado is Estado.REVISION_MANUAL
+
+
+def test_arandelas_astm_f436_reciben_material_por_la_norma():
+    """Filas 1 y 5: la arandela es ASTM F436 y no trae calidad propia (ni
+    GR ni nada marcado como calidad), asi que antes se quedaba sin
+    material. F436 es la norma de arandela de acero templado y no existe
+    una version inoxidable: la norma sola fija el material."""
+    lineas = procesar_mto(RUTA, puerto_de_guion())
+    for fila_origen in (1, 5):
+        arandela = next(l for l in lineas
+                        if l.fila_origen == fila_origen and l.nombre.valor == "ARANDELA")
+        assert arandela.norma.valor == "ASTM F436"
+        assert arandela.material.valor == "AC"
+        assert arandela.material.procedencia is Procedencia.DERIVADO
+        assert arandela.calidad.procedencia is Procedencia.AUSENTE
+
+
+def test_por_defecto_todo_activo_sigue_dando_20_de_20_en_material():
+    """No regresion del efecto conjunto de los tres arreglos: con las
+    politicas por defecto, las 20 celdas de material evaluables (10 lineas
+    sin calidad ni norma que la fije quedan AUSENTE y no cuentan aqui)
+    quedan todas resueltas. Es lo que reporta `evaluacion.arnes` contra el
+    gold: 20/20, subido desde 17/20."""
+    lineas = procesar_mto(RUTA, puerto_de_guion())
+    resueltos = [l for l in lineas if l.material.procedencia is not Procedencia.AUSENTE]
+    assert len(resueltos) == 20
+    assert all(l.material.valor is not None for l in resueltos)

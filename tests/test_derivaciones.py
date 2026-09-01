@@ -1,6 +1,6 @@
 import pytest
 from motor.catalogos import GRUPOS_CALIDAD
-from motor.derivaciones import material_de_calidad, nombre_de_norma
+from motor.derivaciones import material_de_calidad, material_de_norma, nombre_de_norma
 
 
 @pytest.mark.parametrize("calidad,esperado", [
@@ -35,3 +35,22 @@ def test_calidad_desconocida_no_deriva_nada():
 def test_nombre_se_deriva_de_la_norma(norma, esperado):
     valor, regla = nombre_de_norma(norma)
     assert valor == esperado
+
+
+def test_material_se_deriva_de_la_norma_astm_f436():
+    """ASTM F436 es la norma de arandela de acero templado: no existe una
+    F436 inoxidable, asi que la norma sola fija el material."""
+    valor, regla = material_de_norma("ASTM F436")
+    assert valor == "AC"
+    assert regla.startswith("MAT-")
+
+
+def test_material_de_norma_no_decide_donde_el_grado_si_decide():
+    """ASTM A193 (grados B7 acero, B8/B8M inox) y ASTM A194 (grados 2H
+    acero, 8/8M inox) no pueden fijar material por si solas: el grado es
+    el que decide. Ninguna norma dimensional DIN/ISO entra tampoco -- el
+    mismo DIN 4017/ISO 4017 se fabrica en acero y en inox. Se prueba en
+    negativo, a proposito, para dejar escrito por que estas dos no estan."""
+    assert material_de_norma("ASTM A193") is None
+    assert material_de_norma("ASTM A194") is None
+    assert material_de_norma("ISO 4017") is None
