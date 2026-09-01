@@ -45,6 +45,15 @@ NOMBRES = {
     "WASHER": "ARANDELA", "ARANDELA": "ARANDELA", "ARANDELAS": "ARANDELA",
 }
 
+MATERIALES = {
+    "ACERO": "AC", "STEEL": "AC", "STAINLESS": "INOX", "STAINLESS STEEL": "INOX",
+    "ALUMINIO": "ALUMINIO", "ALUMINUM": "ALUMINIO", "ALUMINIUM": "ALUMINIO",
+    "LATON": "LATON", "LATÓN": "LATON", "BRASS": "LATON",
+    "BRONCE": "BRONCE", "BRONZE": "BRONCE",
+    "TITANIO": "TITANIO", "TITANIUM": "TITANIO",
+    "COBRE": "COBRE", "COPPER": "COBRE",
+}
+
 # Un token no puede estar pegado a letra, digito, punto o guion.
 # Esto es lo que impide que 'BL' case dentro de AUTOBLOCANTE y que '10' salga de M10.
 _ANTES = r"(?<![A-Za-z0-9.\-])"
