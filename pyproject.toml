@@ -9,6 +9,9 @@ dev = ["pytest>=8.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "red: llama de verdad a una API externa (red + clave); se salta salvo que se pase --red",
+]
 
 [tool.setuptools]
 packages = ["motor"]
