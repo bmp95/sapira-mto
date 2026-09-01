@@ -110,6 +110,45 @@ def test_nombre_con_norma_compatible_no_es_incoherencia():
     assert "NOMBRE_CONTRADICE_NORMA" not in codigos
 
 
+def test_esparrago_con_norma_varilla_es_equivalencia():
+    """ESPARRAGO con DIN 975 (norma de varilla) emite nota informativa, no contradicción."""
+    motivos = comprobar(_linea(nombre="ESPARRAGO", norma="DIN 975"), TODAS_ACTIVAS)
+    codigos = [m.codigo for m in motivos]
+    assert "NOMBRE_Y_NORMA_EQUIVALENTES" in codigos
+    assert "NOMBRE_CONTRADICE_NORMA" not in codigos
+
+
+def test_varilla_roscada_con_norma_varilla_no_es_incoherencia():
+    """VARILLA ROSCADA con DIN 975 coinciden, no hay motivo."""
+    codigos = [m.codigo for m in comprobar(
+        _linea(nombre="VARILLA ROSCADA", norma="DIN 975"), TODAS_ACTIVAS)]
+    assert "NOMBRE_CONTRADICE_NORMA" not in codigos
+    assert "NOMBRE_Y_NORMA_EQUIVALENTES" not in codigos
+
+
+def test_tuerca_con_norma_tornillo_es_incoherencia():
+    """TUERCA con ISO 4017 (norma de tornillo) es contradicción."""
+    codigos = [m.codigo for m in comprobar(
+        _linea(nombre="TUERCA", norma="ISO 4017"), TODAS_ACTIVAS)]
+    assert "NOMBRE_CONTRADICE_NORMA" in codigos
+
+
+def test_arandela_con_norma_tuerca_es_incoherencia():
+    """ARANDELA con ISO 4032 (norma de tuerca) es contradicción."""
+    codigos = [m.codigo for m in comprobar(
+        _linea(nombre="ARANDELA", norma="ISO 4032"), TODAS_ACTIVAS)]
+    assert "NOMBRE_CONTRADICE_NORMA" in codigos
+
+
+def test_esparrago_varilla_equivalencia_desactivada():
+    """Con esparrago_equivale_a_varilla apagado, vuelve a ser contradicción."""
+    apagado = {**TODAS_ACTIVAS, "esparrago_equivale_a_varilla": False}
+    codigos = [m.codigo for m in comprobar(
+        _linea(nombre="ESPARRAGO", norma="DIN 975"), apagado)]
+    assert "NOMBRE_CONTRADICE_NORMA" in codigos
+    assert "NOMBRE_Y_NORMA_EQUIVALENTES" not in codigos
+
+
 def test_aluminio_cincado_es_incoherente():
     codigos = [m.codigo for m in comprobar(
         _linea(material="ALUMINIO", acabado="CINCADO"), TODAS_ACTIVAS)]

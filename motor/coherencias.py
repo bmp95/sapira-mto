@@ -12,6 +12,7 @@ TODAS_ACTIVAS = {
     "inox_acabado": True, "sistema_medida": True, "grado_astm_nombre": True,
     "material_vs_calidad": True, "material_vs_norma": True, "nombre_vs_norma": True,
     "material_vs_acabado": True, "longitud_tuerca_arandela": True, "longitud_medida": True,
+    "esparrago_equivale_a_varilla": True,
 }
 
 _INOX = {"A2", "A2-70", "A2-80", "18-8", "304", "A4", "A4-70", "A4-80", "316"}
@@ -85,8 +86,17 @@ def comprobar(linea: LineaSalida, interruptores: dict[str, bool]) -> list[Motivo
         if nom_norma:
             nom_esperado, _ = nom_norma
             if nombre != nom_esperado:
-                motivos.append(Motivo(codigo="NOMBRE_CONTRADICE_NORMA", atributo="nombre",
-                                      texto=f"La norma {norma} implica nombre {nom_esperado}, pero se indica {nombre}."))
+                # ESPARRAGO y VARILLA ROSCADA son equivalentes en el oficio
+                es_equivalencia = (
+                    interruptores.get("esparrago_equivale_a_varilla") and
+                    {nombre, nom_esperado} == {"ESPARRAGO", "VARILLA ROSCADA"}
+                )
+                if es_equivalencia:
+                    motivos.append(Motivo(codigo="NOMBRE_Y_NORMA_EQUIVALENTES", atributo="nombre",
+                                          texto=f"La norma {norma} sugiere {nom_esperado}, pero se indica {nombre} — equivalentes en el oficio."))
+                else:
+                    motivos.append(Motivo(codigo="NOMBRE_CONTRADICE_NORMA", atributo="nombre",
+                                          texto=f"La norma {norma} implica nombre {nom_esperado}, pero se indica {nombre}."))
 
     # Material vs Acabado (generaliza inox_acabado)
     if interruptores.get("material_vs_acabado"):
