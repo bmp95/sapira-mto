@@ -1,11 +1,14 @@
 from pathlib import Path
 
+import openpyxl
+
 from datos.guion_falso import puerto_de_guion
 from motor.coherencias import TODAS_ACTIVAS
-from motor.lectura_mto import FilaMTO
+from motor.lectura_mto import FilaMTO, leer_mto
 from motor.modelos import Elemento, Estado, Procedencia, Segmentacion
-from motor.pipeline import (POLITICAS_POR_DEFECTO, _calidad_de_columna_material,
-                            _procesar_fila, procesar_mto)
+from motor.pipeline import (CODIGO_FALLO_DE_PROCESO, POLITICAS_POR_DEFECTO,
+                            _calidad_de_columna_material, _procesar_fila,
+                            contar_fallos_de_proceso, procesar_mto)
 from motor.puerto_llm import PuertoFalso
 
 RUTA = Path("datos/MTO_tornilleria.xlsx")
@@ -293,3 +296,86 @@ def test_por_defecto_todo_activo_sigue_dando_20_de_20_en_material():
     resueltos = [l for l in lineas if l.material.procedencia is not Procedencia.AUSENTE]
     assert len(resueltos) == 20
     assert all(l.material.valor is not None for l in resueltos)
+
+
+# --------------------------------------------------------------------------
+# El fallo de una fila no tumba el lote (ronda de correccion: corte de red a
+# mitad de una tirada de 300 filas abortaba las ~199 ya procesadas).
+# --------------------------------------------------------------------------
+
+def _escribir_mto_de_prueba(ruta: Path, descripciones: list[str]) -> None:
+    """xlsx minimo con el mismo layout que `motor.lectura_mto.leer_mto` espera:
+    cabecera en las filas 1-4 (contenido irrelevante, `leer_mto` empieza en la 5)."""
+    libro = openpyxl.Workbook()
+    hoja = libro.active
+    for _ in range(4):
+        hoja.append([None] * 6)
+    for item, descripcion in enumerate(descripciones, start=1):
+        hoja.append([item, descripcion, "", "", 1, "uds"])
+    libro.save(ruta)
+
+
+class _PuertoQueFallaEnUnTexto:
+    """Segmenta con normalidad salvo para `texto_que_falla`, donde lanza -- simula el
+    corte de red real: el puerto agoto sus reintentos y `segmentar_con_votacion` deja
+    escapar la excepcion sin controlar."""
+    def __init__(self, respuestas: dict[str, Segmentacion], texto_que_falla: str):
+        self.respuestas = respuestas
+        self.texto_que_falla = texto_que_falla
+
+    def segmentar(self, texto: str) -> Segmentacion:
+        if texto == self.texto_que_falla:
+            raise ConnectionError("corte de red simulado")
+        return self.respuestas[texto]
+
+    def extraer(self, tramo: str) -> list[dict]:
+        return []
+
+
+def test_una_fila_fallida_no_tumba_el_lote(tmp_path):
+    """Puerto falso que revienta en la tercera fila de cinco: la tirada debe devolver
+    lineas para las cinco filas -- la tercera en REVISION_MANUAL con motivo
+    FALLO_DE_PROCESO, confianza 0 y sin trazas tecnicas en el texto -- y las otras cuatro
+    procesadas con normalidad."""
+    ruta = tmp_path / "mto_prueba.xlsx"
+    descripciones = [
+        "Tornillo hexagonal DIN 933 M10 x 40, 8.8, zincado",
+        "Tuerca hexagonal DIN 934 M16, A4-80",
+        'STUD BOLT 3/4" X 110 LG, ASTM A193, GR B7',
+        "Tuerca autoblocante DIN 985 M12, 8.8, zincada",
+        "Arandela plana DIN 125 M10, acero, zincada",
+    ]
+    _escribir_mto_de_prueba(ruta, descripciones)
+    filas = leer_mto(ruta)
+    assert len(filas) == 5
+    texto_que_falla = filas[2].descripcion  # tercera fila (item 3)
+
+    respuestas = {
+        f.descripcion: Segmentacion(elementos=[
+            Elemento(tipo_indicado="X", span=(0, len(f.descripcion)))])
+        for f in filas if f.descripcion != texto_que_falla
+    }
+    puerto = _PuertoQueFallaEnUnTexto(respuestas, texto_que_falla)
+
+    lineas = procesar_mto(ruta, puerto)
+
+    assert sorted(set(l.fila_origen for l in lineas)) == [1, 2, 3, 4, 5]
+
+    fila_rota = [l for l in lineas if l.fila_origen == 3]
+    assert len(fila_rota) == 1
+    assert fila_rota[0].estado is Estado.REVISION_MANUAL
+    assert fila_rota[0].confianza == 0
+    assert [m.codigo for m in fila_rota[0].motivos] == [CODIGO_FALLO_DE_PROCESO]
+    texto_motivo = fila_rota[0].motivos[0].texto
+    assert "ConnectionError" not in texto_motivo  # sin nombres de excepcion
+    assert "Traceback" not in texto_motivo  # sin trazas tecnicas
+
+    assert contar_fallos_de_proceso(lineas) == 1
+
+    for item in (1, 2, 4, 5):
+        lineas_fila = [l for l in lineas if l.fila_origen == item]
+        assert len(lineas_fila) == 1
+        assert CODIGO_FALLO_DE_PROCESO not in [m.codigo for m in lineas_fila[0].motivos]
+        # se proceso de verdad: el nombre se resolvio por extraccion determinista,
+        # independiente del "X" de guion que puso el puerto falso.
+        assert lineas_fila[0].nombre.procedencia is Procedencia.EXTRAIDO

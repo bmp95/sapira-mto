@@ -24,6 +24,7 @@ entre elementos, es la regla mas importante del caso.
 """
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
@@ -55,6 +56,14 @@ _NOMBRES_SIN_LONGITUD_OBLIGATORIA = {"TUERCA", "ARANDELA"}
 _REGLA_MEDIDA_EXTRAPOLADA = "MEDIDA-EXTRAPOLADA-SET"
 _REGLA_LONGITUD_METRICA = "LONGITUD-MM-POR-MEDIDA-METRICA"
 _REGLA_LONGITUD_IMPERIAL_FORZADA = "LONGITUD-MM-FORZADA-POR-POLITICA"
+
+# Codigo del motivo con el que se marca una fila cuyo procesamiento reventó (excepcion no
+# controlada: corte de red que agoto los reintentos del puerto, o cualquier otro fallo). Es
+# publico -- lo usa `contar_fallos_de_proceso` mas abajo y lo puede usar el arnes/front sin
+# tener que conocer el string a mano.
+CODIGO_FALLO_DE_PROCESO = "FALLO_DE_PROCESO"
+
+_LOG = logging.getLogger(__name__)
 
 
 # --------------------------------------------------------------------------
@@ -426,6 +435,22 @@ def _linea_fila_rota(id_: str, fila: FilaMTO, motivo: Motivo) -> LineaSalida:
     return linea
 
 
+def _linea_fila_fallida(id_: str, fila: FilaMTO) -> LineaSalida:
+    """Una fila cuyo procesamiento lanzo una excepcion (tipicamente un corte de red que
+    agoto los reintentos del puerto -- ver motor/puerto_gemini.py) no puede llevarse por
+    delante al resto del lote: se marca a revision con confianza 0 y se sigue con la
+    siguiente fila (ver el `try`/`except` en `procesar_mto`). El texto es legible por un
+    comprador -- sin trazas tecnicas ni nombres de excepcion -- porque es lo unico que ve
+    quien tiene que decidir si relanzarla."""
+    linea = LineaSalida.vacia(id=id_, fila_origen=fila.item, cantidad=fila.cantidad)
+    linea.confianza = 0
+    linea.motivos = [Motivo(
+        codigo=CODIGO_FALLO_DE_PROCESO,
+        texto="No se ha podido procesar esta fila: error de conexi" + chr(0xf3) + "n con el "
+              "servicio o fallo inesperado del sistema. Vuelve a lanzarla.")]
+    return linea
+
+
 # --------------------------------------------------------------------------
 # Orquestacion
 # --------------------------------------------------------------------------
@@ -575,5 +600,22 @@ def procesar_mto(ruta: Path, puerto: PuertoLLM,
 
     lineas: list[LineaSalida] = []
     for fila in filas:
-        lineas.extend(_procesar_fila(fila, puerto, politicas, interruptores_coherencia, siguiente_id))
+        try:
+            lineas.extend(_procesar_fila(fila, puerto, politicas, interruptores_coherencia, siguiente_id))
+        except Exception as exc:
+            # Una excepcion no controlada al procesar una fila (tipicamente un corte de red
+            # que agoto los reintentos del puerto) no puede tumbar el lote entero -- en un
+            # MTO de veinte mil filas eso significa perder horas de trabajo por un parpadeo
+            # de red en una sola fila. Se marca esta fila para revision y se sigue.
+            _LOG.warning("Fila %d fallo durante el procesamiento y se marca para revision "
+                        "manual: %s: %s", fila.item, type(exc).__name__, exc)
+            lineas.append(_linea_fila_fallida(siguiente_id(), fila))
     return lineas
+
+
+def contar_fallos_de_proceso(lineas: list[LineaSalida]) -> int:
+    """Cuantas lineas de `lineas` vienen de una fila cuyo procesamiento fallo (marcadas con
+    `CODIGO_FALLO_DE_PROCESO` -- ver `_linea_fila_fallida`). Que una tirada termine con filas
+    fallidas tiene que ser visible para el arnes y el front, no algo que solo se note contando
+    a mano; esta funcion es la forma publica de preguntarlo sin conocer el codigo de motivo."""
+    return sum(1 for l in lineas if any(m.codigo == CODIGO_FALLO_DE_PROCESO for m in l.motivos))

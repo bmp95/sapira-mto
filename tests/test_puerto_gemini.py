@@ -3,13 +3,15 @@ falso inyectado, sin red -- ejercitan el calculo de spans, los descartes, la cac
 contabilidad de tokens, que es la logica propia de este puerto (lo que NO viene ya probado
 por el SDK de google-genai)."""
 import json
+import logging
 from pathlib import Path
 
+import httpx
 import pytest
 
 from motor.invariantes import hay_solape
 from motor.lectura_mto import leer_mto
-from motor.puerto_gemini import ErrorSinRed, PuertoGemini
+from motor.puerto_gemini import ErrorSinRed, PuertoGemini, _es_error_transitorio
 
 RUTA_MTO = Path("datos/MTO_tornilleria.xlsx")
 
@@ -225,8 +227,30 @@ def test_coste_sin_precio_configurado_para_el_modelo_lanza_error_claro(tmp_path)
 
 
 # --------------------------------------------------------------------------
-# Reintento con espera creciente ante el 429.
+# Reintento con espera creciente ante errores transitorios (429, 5xx, cortes de red).
 # --------------------------------------------------------------------------
+
+def test_es_error_transitorio_clasifica_codigos_y_cortes_de_red():
+    class _ConCodigo(Exception):
+        def __init__(self, code: int):
+            self.code = code
+
+    # Reintentable: 429 (limite de peticiones) y los 5xx de servidor.
+    for codigo in (429, 500, 502, 503, 504):
+        assert _es_error_transitorio(_ConCodigo(codigo)) is True
+
+    # No reintentable: 4xx que no se arreglan solos (clave invalida, peticion mal formada).
+    for codigo in (400, 401, 403):
+        assert _es_error_transitorio(_ConCodigo(codigo)) is False
+
+    # Cortes de transporte: desconexion del servidor, timeout, fallo de conexion.
+    assert _es_error_transitorio(httpx.RemoteProtocolError("Server disconnected")) is True
+    assert _es_error_transitorio(httpx.ConnectTimeout("timed out")) is True
+    assert _es_error_transitorio(httpx.ConnectError("connection refused")) is True
+
+    # Cualquier otra excepcion (bug, dato mal formado) no es transitoria.
+    assert _es_error_transitorio(ValueError("otra cosa")) is False
+
 
 class _ErrorDeCuota(Exception):
     def __init__(self, code: int):
@@ -282,6 +306,72 @@ def test_agota_reintentos_y_sin_cache_lanza_error_sin_red(tmp_path, monkeypatch)
         puerto.segmentar("TORNILLO M10")
 
     assert modelos.llamadas == 3  # intento inicial + 2 reintentos
+
+
+class _ModelosConCortesDeRed:
+    """Simula lo que reporto el coordinador: `httpx.RemoteProtocolError` en una tirada
+    real (desconexion del servidor a mitad de una tirada de 300 filas)."""
+    def __init__(self, fallos: int, respuesta_final: _RespuestaFalsa):
+        self.fallos = fallos
+        self.respuesta_final = respuesta_final
+        self.llamadas = 0
+
+    def generate_content(self, model, contents, config):
+        self.llamadas += 1
+        if self.llamadas <= self.fallos:
+            raise httpx.RemoteProtocolError("Server disconnected without sending a response.")
+        return self.respuesta_final
+
+
+def test_reintenta_ante_desconexion_de_red_y_acaba_devolviendo_la_segmentacion(tmp_path, monkeypatch, caplog):
+    esperas = []
+    monkeypatch.setattr("motor.puerto_gemini.time.sleep", lambda s: esperas.append(s))
+
+    datos = {
+        "elementos": [{"tipo_indicado": "TORNILLO", "texto": "TORNILLO M10"}],
+        "ambito_fila": [], "conectores": [],
+    }
+    modelos = _ModelosConCortesDeRed(fallos=2, respuesta_final=_RespuestaFalsa(datos))
+    cliente = _ClienteFalso([])
+    cliente.models = modelos
+    puerto = PuertoGemini(cliente=cliente, directorio_cache=tmp_path / "cache_llm",
+                          espera_base_s=1.0, max_reintentos=5)
+
+    with caplog.at_level(logging.WARNING, logger="motor.puerto_gemini"):
+        seg = puerto.segmentar("TORNILLO M10")
+
+    assert modelos.llamadas == 3
+    assert [e.tipo_indicado for e in seg.elementos] == ["TORNILLO"]
+    assert esperas == [1.0, 2.0]  # espera creciente: base * 2**intento
+    registros_de_reintento = [r for r in caplog.records if "reintento" in r.message]
+    assert len(registros_de_reintento) == 2  # los dos cortes de red quedan registrados
+
+
+class _ErrorDeClaveInvalida(Exception):
+    """Un 401 no es transitorio: reintentarlo no arregla una clave mala."""
+    def __init__(self):
+        super().__init__("401 UNAUTHENTICATED. API key not valid.")
+        self.code = 401
+
+
+def test_error_de_clave_invalida_no_se_reintenta_y_sale_a_la_primera(tmp_path):
+    class _ModelosConClaveInvalida:
+        def __init__(self):
+            self.llamadas = 0
+
+        def generate_content(self, model, contents, config):
+            self.llamadas += 1
+            raise _ErrorDeClaveInvalida()
+
+    modelos = _ModelosConClaveInvalida()
+    cliente = _ClienteFalso([])
+    cliente.models = modelos
+    puerto = PuertoGemini(cliente=cliente, directorio_cache=tmp_path / "cache_llm", max_reintentos=5)
+
+    with pytest.raises(ErrorSinRed):
+        puerto.segmentar("TEXTO CUALQUIERA")
+
+    assert modelos.llamadas == 1  # nada de reintentos: no es un error transitorio
 
 
 # --------------------------------------------------------------------------

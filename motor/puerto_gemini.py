@@ -29,6 +29,7 @@ import threading
 import time
 from pathlib import Path
 
+import httpx
 from google import genai
 from google.genai import types
 
@@ -38,6 +39,23 @@ from motor.modelos import Elemento, Segmentacion
 _LOG = logging.getLogger(__name__)
 
 MODELO_POR_DEFECTO = "gemini-3.7-flash"
+
+# Codigos HTTP que se reintentan: 429 (limite de peticiones, nivel gratuito) y los 5xx que
+# senalan un fallo transitorio del lado del servidor. NO incluye 4xx que no se van a
+# arreglar solos (401 clave invalida, 400 peticion mal formada, etc.): esos deben salir a
+# la primera con su mensaje, no esconderse detras de reintentos que nunca van a funcionar.
+_CODIGOS_HTTP_REINTENTABLES = {429, 500, 502, 503, 504}
+
+
+def _es_error_transitorio(exc: Exception) -> bool:
+    """Errores que vale la pena reintentar: 429/5xx del lado de la API, o un corte de
+    transporte (desconexion del servidor, timeout, fallo de conexion -- `httpx.TransportError`
+    cubre las tres). Todo lo demas (clave invalida, peticion mal formada, cualquier otro 4xx)
+    no es transitorio: reintentarlo no lo arregla, asi que sale a la primera."""
+    codigo = getattr(exc, "code", None)
+    if codigo in _CODIGOS_HTTP_REINTENTABLES:
+        return True
+    return isinstance(exc, httpx.TransportError)
 
 # Precios publicados por Google (precio de introduccion), en la unidad que se configure --
 # el metodo `coste_estimado` no hace conversion de divisa alguna, multiplica tal cual. Solo
@@ -201,7 +219,8 @@ class PuertoGemini:
             json.dump(contenido, f, ensure_ascii=False, indent=2)
 
     # ------------------------------------------------------------------
-    # Llamada al modelo: concurrencia limitada + reintento con espera creciente ante el 429.
+    # Llamada al modelo: concurrencia limitada + reintento con espera creciente ante
+    # errores transitorios (429, 5xx, cortes de transporte -- ver `_es_error_transitorio`).
     # ------------------------------------------------------------------
 
     def _llamar_modelo(self, texto: str) -> tuple[dict, dict, float]:
@@ -213,11 +232,11 @@ class PuertoGemini:
                     respuesta = self._cliente.models.generate_content(
                         model=self.modelo, contents=texto, config=self._config)
                 except Exception as exc:
-                    es_429 = getattr(exc, "code", None) == 429
-                    if es_429 and intento < self.max_reintentos:
+                    if _es_error_transitorio(exc) and intento < self.max_reintentos:
                         espera = self.espera_base_s * (2 ** intento)
-                        _LOG.warning("Gemini devolvio 429 (nivel gratuito); reintento %d tras %.1fs",
-                                    intento + 1, espera)
+                        _LOG.warning(
+                            "Gemini fallo con un error transitorio (%s); reintento %d tras %.1fs",
+                            type(exc).__name__, intento + 1, espera)
                         time.sleep(espera)
                         intento += 1
                         continue
