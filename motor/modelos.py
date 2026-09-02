@@ -10,6 +10,7 @@ ATRIBUTOS = ("nombre", "material", "calidad", "medida", "longitud", "norma", "ac
 class Procedencia(str, Enum):
     EXTRAIDO = "EXTRAIDO"
     DERIVADO = "DERIVADO"
+    HEREDADO = "HEREDADO"
     INFERIDO = "INFERIDO"
     AUSENTE = "AUSENTE"
 
@@ -22,6 +23,9 @@ class Estado(str, Enum):
 PUNTOS_PROCEDENCIA = {
     Procedencia.EXTRAIDO: 100,
     Procedencia.DERIVADO: 100,
+    # Una respuesta humana con clave exacta vale lo mismo que un dato escrito:
+    # no la esta suponiendo el sistema, la contesto una persona con autoridad.
+    Procedencia.HEREDADO: 100,
     Procedencia.INFERIDO: 70,
 }
 
@@ -39,8 +43,13 @@ class Valor(BaseModel):
     def _exige_evidencia(self):
         if self.procedencia is Procedencia.EXTRAIDO and self.span is None:
             raise ValueError("un valor EXTRAIDO necesita span")
+        # DERIVADO guarda la regla que lo dedujo; HEREDADO, el puntero al
+        # registro historico (quien contesto y cuando). Sin ese puntero un
+        # valor heredado es inauditable, que es justo lo que no puede pasar.
         if self.procedencia is Procedencia.DERIVADO and not self.regla:
             raise ValueError("un valor DERIVADO necesita regla")
+        if self.procedencia is Procedencia.HEREDADO and not self.regla:
+            raise ValueError("un valor HEREDADO necesita regla con su origen")
         return self
 
     @property

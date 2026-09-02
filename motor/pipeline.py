@@ -33,6 +33,7 @@ from motor.catalogos import ACABADOS, CALIDADES_ALIAS, NOMBRES, emparejar, norma
 from motor.coherencias import TODAS_ACTIVAS, comprobar
 from motor.confianza import aplicar_confianza
 from motor.derivaciones import material_de_calidad, material_de_norma, nombre_de_norma
+from motor.historico import Hallazgo, Historico, clave_de
 from motor.invariantes import (UMBRAL_COBERTURA, ambito_sin_dimensiones, cobertura,
                                contar_sustantivos, hay_solape, verificar_literal)
 from motor.lectura_mto import FilaMTO, leer_mto
@@ -389,6 +390,50 @@ def _extrapolar_medida(datos: list[_DatosElemento], indice_principal: int) -> li
 
 
 # --------------------------------------------------------------------------
+# Herencia desde el historico (§13.2)
+# --------------------------------------------------------------------------
+
+def _heredar_del_historico(linea: LineaSalida, historico: Historico | None) -> list[Motivo]:
+    """Ultimo recurso, y solo para lo que quedo AUSENTE: una respuesta que una
+    persona ya dio sobre esta misma pieza. Primero lo que dice el MTO, despues
+    lo que se deduce, y solo al final lo que alguien contesto una vez.
+
+    Las claves de TODOS los atributos pendientes se calculan antes de aplicar
+    ninguna herencia. Si se recalculasen sobre la marcha, heredar la calidad
+    cambiaria la clave con la que se busca el acabado y el resultado dependeria
+    del orden de ATRIBUTOS, que es arbitrario.
+    """
+    if historico is None:
+        return []
+    pendientes = [a for a in ATRIBUTOS
+                  if getattr(linea, a).procedencia is Procedencia.AUSENTE]
+    claves = {a: clave_de(linea, a) for a in pendientes}
+
+    motivos: list[Motivo] = []
+    for atributo in pendientes:
+        resultado = historico.buscar(claves[atributo], atributo)
+        if resultado.hallazgo is Hallazgo.CONFLICTO:
+            # Dos personas contestaron cosas distintas sobre la misma pieza.
+            # El sistema no elige entre ellas ni propone la mas frecuente.
+            motivos.append(Motivo(
+                codigo="HISTORICO_EN_CONFLICTO", atributo=atributo,
+                texto=f"El hist{chr(0xf3)}rico tiene respuestas distintas para "
+                      f"'{atributo}' sobre esta misma pieza: no se hereda ninguna."))
+            continue
+        if resultado.hallazgo is not Hallazgo.UNICA:
+            continue
+        r = resultado.respuesta
+        setattr(linea, atributo, Valor(
+            valor=resultado.valor, procedencia=Procedencia.HEREDADO,
+            regla=f"HIST-{r.autor}-{r.fecha}"))
+        motivos.append(Motivo(
+            codigo="VALOR_HEREDADO", atributo=atributo, valor_propuesto=resultado.valor,
+            texto=f"'{atributo}' = {resultado.valor}, heredado de la respuesta de "
+                  f"{r.autor} del {r.fecha} sobre {r.mto_origen} rev {r.revision_origen}."))
+    return motivos
+
+
+# --------------------------------------------------------------------------
 # Obligatoriedad (vive aqui, no en un validador aparte -- ver brief T10)
 # --------------------------------------------------------------------------
 
@@ -503,7 +548,8 @@ def _linea_fila_fallida(id_: str, fila: FilaMTO) -> LineaSalida:
 def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bool,
                      datos: _DatosElemento, medida_resuelta,
                      interruptores_coherencia: dict[str, bool],
-                     politicas: dict[str, bool]) -> LineaSalida:
+                     politicas: dict[str, bool],
+                     historico: Historico | None = None) -> LineaSalida:
     linea = LineaSalida.vacia(id=id_, fila_origen=fila.item, cantidad=fila.cantidad * multiplicador(texto[elem.span[0]:elem.span[1]]))
     linea.texto_origen = texto
     linea.tramo = elem.span
@@ -571,6 +617,12 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
                                    procedencia=Procedencia.EXTRAIDO)
             material_fuente_columna = True
 
+    # La herencia va aqui y no despues: un valor heredado tiene que pasar por
+    # las mismas comprobaciones de dominio que uno escrito (condicion 4 de
+    # §13.2). Si el historico ofrece 200HV para un tornillo, CALIDAD_SOLO_ARANDELA
+    # lo tumba igual que si viniera en el texto.
+    motivos_herencia = _heredar_del_historico(linea, historico)
+
     literales_ok: dict[str, bool] = {}
     for atributo in ATRIBUTOS:
         celda = getattr(linea, atributo)
@@ -592,6 +644,14 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
         linea.confianza = 0
         linea.motivos = linea.motivos + obligatoriedad
 
+    # VALOR_HEREDADO es informativo: no puede entrar en `motivos_coherencia`
+    # porque aplicar_confianza trata todo motivo con atributo como incoherencia
+    # y hundiria la celda que acaba de resolverse. El conflicto si bloquea.
+    if motivos_herencia:
+        linea.motivos = linea.motivos + motivos_herencia
+        if any(m.codigo == "HISTORICO_EN_CONFLICTO" for m in motivos_herencia):
+            linea.confianza = 0
+
     motivo_longitud = _motivo_longitud_inferida(linea)
     if motivo_longitud is not None:
         linea.motivos = linea.motivos + [motivo_longitud]
@@ -601,7 +661,7 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
 
 def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
                    interruptores_coherencia: dict[str, bool],
-                   siguiente_id) -> list[LineaSalida]:
+                   siguiente_id, historico: Historico | None = None) -> list[LineaSalida]:
     texto = fila.descripcion
     seg = segmentar_con_votacion(puerto, texto, pasadas=3)
 
@@ -626,14 +686,15 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
     lineas = []
     for i, (elem, d, medida_resuelta) in enumerate(zip(seg.elementos, datos, medidas_resueltas)):
         linea = _construir_linea(siguiente_id(), fila, texto, elem, i == indice_principal, d,
-                                 medida_resuelta, interruptores_coherencia, politicas)
+                                 medida_resuelta, interruptores_coherencia, politicas, historico)
         lineas.append(linea)
     return lineas
 
 
 def procesar_mto(ruta: Path, puerto: PuertoLLM,
                  politicas: dict[str, bool] | None = None,
-                 interruptores_coherencia: dict[str, bool] | None = None) -> list[LineaSalida]:
+                 interruptores_coherencia: dict[str, bool] | None = None,
+                 historico: Historico | None = None) -> list[LineaSalida]:
     politicas = politicas if politicas is not None else POLITICAS_POR_DEFECTO
     interruptores_coherencia = (interruptores_coherencia if interruptores_coherencia is not None
                                 else TODAS_ACTIVAS)
@@ -648,7 +709,8 @@ def procesar_mto(ruta: Path, puerto: PuertoLLM,
     lineas: list[LineaSalida] = []
     for fila in filas:
         try:
-            lineas.extend(_procesar_fila(fila, puerto, politicas, interruptores_coherencia, siguiente_id))
+            lineas.extend(_procesar_fila(fila, puerto, politicas, interruptores_coherencia,
+                                         siguiente_id, historico))
         except Exception as exc:
             # Una excepcion no controlada al procesar una fila (tipicamente un corte de red
             # que agoto los reintentos del puerto) no puede tumbar el lote entero -- en un

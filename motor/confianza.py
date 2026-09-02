@@ -14,13 +14,18 @@ from motor.modelos import LineaSalida, Motivo, Procedencia, Valor
 
 PUNTOS_VOTOS = {3: 100, 2: 67, 1: 33, 0: 0}
 
+# Ninguna de estas dos procedencias tiene un literal en el texto que verificar:
+# DERIVADO sale de una regla y HEREDADO de una respuesta humana anterior. El
+# factor se da por bueno porque no hay nada que comprobar, no porque se confie.
+_SIN_LITERAL = (Procedencia.DERIVADO, Procedencia.HEREDADO)
+
 
 def confianza_celda(valor: Valor, literal_ok: bool, votos: int, coherente: bool) -> tuple[int, str]:
     if valor.procedencia is Procedencia.AUSENTE:
         return 0, "ausente"
     factores = {
         "procedencia": valor.confianza_procedencia or 0,
-        "literal": 100 if (literal_ok or valor.procedencia is Procedencia.DERIVADO) else 0,
+        "literal": 100 if (literal_ok or valor.procedencia in _SIN_LITERAL) else 0,
         "segmentacion": PUNTOS_VOTOS.get(votos, 0),
         "coherencia": 100 if coherente else 0,
     }
@@ -44,7 +49,7 @@ def aplicar_confianza(linea: LineaSalida, votos: int, motivos: list[Motivo],
         # por bueno sin consultar el diccionario. Cualquier otra procedencia
         # exige que el llamador ya haya calculado su entrada; sin ella, KeyError
         # (sin valores por defecto silenciosos).
-        literal_ok = True if celda.procedencia is Procedencia.DERIVADO else literales_ok[nombre]
+        literal_ok = True if celda.procedencia in _SIN_LITERAL else literales_ok[nombre]
         c, factor = confianza_celda(celda, literal_ok, votos, nombre not in atributos_incoherentes)
         if c < peor:
             peor, peor_atributo, peor_factor = c, nombre, factor

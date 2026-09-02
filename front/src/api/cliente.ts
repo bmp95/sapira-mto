@@ -27,11 +27,12 @@ export async function resolverCelda(
   lineaId: string,
   atributo: string,
   valor: string,
+  autor: string,
 ): Promise<LineaSalida> {
   const respuesta = await fetch("/api/resolver", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sesion_id: sesionId, linea_id: lineaId, atributo, valor }),
+    body: JSON.stringify({ sesion_id: sesionId, linea_id: lineaId, atributo, valor, autor }),
   })
   if (!respuesta.ok) throw new Error(await extraerMensajeError(respuesta))
   return respuesta.json()

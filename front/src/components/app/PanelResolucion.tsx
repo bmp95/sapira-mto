@@ -3,6 +3,7 @@ import { CheckCircle2, Waypoints } from "lucide-react"
 import { toast } from "sonner"
 
 import { resolverCelda } from "@/api/cliente"
+import { guardarAutor, leerAutor } from "@/lib/autor"
 import { ATRIBUTOS, type Atributo, type LineaSalida, type Motivo } from "@/api/tipos"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -51,6 +52,7 @@ export function PanelResolucion({
 }: PanelResolucionProps) {
   const [guardando, setGuardando] = useState<Atributo | null>(null)
   const [valoresManuales, setValoresManuales] = useState<Record<string, string>>({})
+  const [autor, setAutor] = useState<string>(() => leerAutor())
 
   const { grupos, motivosGenerales } = useMemo(() => {
     const grupos: GrupoMotivo[] = []
@@ -71,9 +73,14 @@ export function PanelResolucion({
 
   async function resolver(atributo: Atributo, valor: string) {
     if (!linea || !valor.trim()) return
+    if (!autor.trim()) {
+      toast.error("Indica quién resuelve: la respuesta se guarda con su nombre.")
+      return
+    }
+    guardarAutor(autor)
     setGuardando(atributo)
     try {
-      const actualizada = await resolverCelda(sesionId, linea.id, atributo, valor.trim())
+      const actualizada = await resolverCelda(sesionId, linea.id, atributo, valor.trim(), autor.trim())
       onResuelto(actualizada)
       toast.success(`${ETIQUETA_ATRIBUTO[atributo]} resuelto para la fila ${linea.fila_origen}.`)
       if (actualizada.estado === "RESUELTA") {
@@ -99,6 +106,22 @@ export function PanelResolucion({
         </SheetHeader>
 
         <div className="flex flex-col gap-4 px-4 pb-6">
+          {/* La respuesta se guarda en el histórico con quien la dio: sin autor
+              no es auditable y el servidor la rechaza con un 422. */}
+          {linea.estado !== "RESUELTA" && (
+            <div className="space-y-1.5">
+              <Label htmlFor="autor-resolucion" className="text-xs text-muted-foreground">
+                Quién resuelve
+              </Label>
+              <Input
+                id="autor-resolucion"
+                value={autor}
+                placeholder="tu.nombre@empresa.com"
+                onChange={(e) => setAutor(e.target.value)}
+                onBlur={() => guardarAutor(autor)}
+              />
+            </div>
+          )}
           {linea.estado === "RESUELTA" ? (
             <div className="flex items-center gap-2 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
               <CheckCircle2 className="size-4" />
@@ -108,6 +131,7 @@ export function PanelResolucion({
             grupos.map((grupo) => {
               const conPropuesta = grupo.motivos.find((m) => m.valor_propuesto)
               const guardandoEste = guardando === grupo.atributo
+              const sinAutor = !autor.trim()
               return (
                 <div key={grupo.atributo} className="space-y-2 rounded-md border p-3">
                   <div className="flex items-center justify-between">
@@ -125,7 +149,7 @@ export function PanelResolucion({
                   {conPropuesta?.valor_propuesto ? (
                     <Button
                       size="sm"
-                      disabled={guardando !== null}
+                      disabled={guardando !== null || sinAutor}
                       onClick={() => resolver(grupo.atributo, conPropuesta.valor_propuesto!)}
                     >
                       {guardandoEste ? "Confirmando…" : `Usar «${conPropuesta.valor_propuesto}»`}
@@ -139,7 +163,7 @@ export function PanelResolucion({
                         id={`valor-${grupo.atributo}`}
                         placeholder="Escribe el valor correcto"
                         value={valoresManuales[grupo.atributo] ?? ""}
-                        disabled={guardando !== null}
+                        disabled={guardando !== null || sinAutor}
                         onChange={(e) =>
                           setValoresManuales((prev) => ({
                             ...prev,
@@ -154,7 +178,7 @@ export function PanelResolucion({
                       />
                       <Button
                         size="sm"
-                        disabled={guardando !== null || !(valoresManuales[grupo.atributo] ?? "").trim()}
+                        disabled={guardando !== null || sinAutor || !(valoresManuales[grupo.atributo] ?? "").trim()}
                         onClick={() => resolver(grupo.atributo, valoresManuales[grupo.atributo] ?? "")}
                       >
                         {guardandoEste ? "Confirmando…" : "Confirmar"}

@@ -3,7 +3,9 @@ compras sube el MTO, resuelve la cola de revision con un clic y exporta lo que v
 
 Cuatro endpoints:
   POST /api/procesar  -- sube un .xlsx, devuelve las lineas y un resumen de la pasada.
-  POST /api/resolver  -- escribe una celda con procedencia EXTRAIDO y recalcula la
+  POST /api/resolver  -- escribe una celda con procedencia HEREDADO (la contesto una
+                         persona, no se leyo del MTO), la registra en el historico y
+                         recalcula la
                          confianza y el estado de esa linea. El estado nunca se
                          escribe a mano: siempre se deriva (motor/modelos.py).
   GET  /api/exportar  -- .xlsx agrupado por material canonico (los siete atributos
@@ -20,6 +22,8 @@ from __future__ import annotations
 import tempfile
 import time
 import uuid
+from dataclasses import dataclass
+from datetime import date
 from io import BytesIO
 from pathlib import Path
 from typing import Optional
@@ -31,6 +35,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from motor.coherencias import TODAS_ACTIVAS, comprobar
+from motor.historico import Historico, RespuestaHistorica, clave_de
 from motor.confianza import PUNTOS_VOTOS, aplicar_confianza
 from motor.modelos import ATRIBUTOS, Estado, LineaSalida, Procedencia, Valor
 from motor.pipeline import (POLITICAS_POR_DEFECTO, _motivo_longitud_inferida,
@@ -57,6 +62,16 @@ class PeticionResolver(BaseModel):
     linea_id: str
     atributo: str
     valor: str
+    # Sin autor la respuesta no es auditable y no puede entrar en el historico
+    # (regla 4 de §13.2). Por eso no tiene valor por defecto: quien resuelve
+    # se identifica o no resuelve.
+    autor: str
+
+
+@dataclass
+class Sesion:
+    lineas: list[LineaSalida]
+    nombre_fichero: str
 
 
 # --------------------------------------------------------------------------
@@ -179,9 +194,23 @@ def _recalcular(linea: LineaSalida, atributo_resuelto: str) -> LineaSalida:
     return linea
 
 
-def _resolver_celda(linea: LineaSalida, atributo: str, valor: str) -> LineaSalida:
-    nueva = Valor(valor=valor, literal=valor, span=(0, len(valor)), procedencia=Procedencia.EXTRAIDO)
-    setattr(linea, atributo, nueva)
+def _resolver_celda(linea: LineaSalida, atributo: str, valor: str, autor: str,
+                    historico: Historico, mto_origen: str) -> LineaSalida:
+    """Una celda que rellena una persona NO es EXTRAIDO: no se leyo del MTO.
+
+    Antes se guardaba como EXTRAIDO con un span (0, len(valor)) que no apuntaba
+    a ninguna parte del texto original -- evidencia fabricada, exactamente lo
+    que el resto del sistema existe para impedir. Va como HEREDADO, sin span,
+    con quien contesto y cuando en la regla, y se registra en el historico para
+    que la siguiente revision de la misma pieza no vuelva a preguntar.
+    """
+    fecha = date.today().isoformat()
+    clave = clave_de(linea, atributo)
+    setattr(linea, atributo, Valor(valor=valor, procedencia=Procedencia.HEREDADO,
+                                   regla=f"HIST-{autor}-{fecha}"))
+    historico.registrar(RespuestaHistorica(
+        clave=clave, atributo=atributo, valor=valor, autor=autor, origen="comprador",
+        fecha=fecha, mto_origen=mto_origen, revision_origen=mto_origen))
     return _recalcular(linea, atributo)
 
 
@@ -247,7 +276,11 @@ def crear_app(puerto: Optional[PuertoLLM] = None, *,
     real del repo."""
     app = FastAPI(title="Reconciliaci" + _O + "n MTO " + chr(0x2014) + " Torniller" + _I + "a")
     app.state.puerto = puerto if puerto is not None else PuertoGemini()
-    app.state.sesiones: dict[str, list[LineaSalida]] = {}
+    app.state.sesiones: dict[str, Sesion] = {}
+    # El historico es del PROCESO, no de la sesion: su razon de ser es cruzar
+    # revisiones. Al volver a subir el MTO, lo que ya contesto una persona se
+    # hereda en vez de volver a preguntarse.
+    app.state.historico = Historico()
 
     @app.post("/api/procesar")
     async def procesar(archivo: UploadFile = File(...)):
@@ -267,13 +300,14 @@ def crear_app(puerto: Optional[PuertoLLM] = None, *,
                 raise HTTPException(status_code=400, detail=_mensaje_no_xlsx(nombre)) from exc
 
             inicio = time.monotonic()
-            lineas = procesar_mto(ruta_tmp, app.state.puerto, POLITICAS_POR_DEFECTO)
+            lineas = procesar_mto(ruta_tmp, app.state.puerto, POLITICAS_POR_DEFECTO,
+                                  historico=app.state.historico)
             segundos = time.monotonic() - inicio
         finally:
             ruta_tmp.unlink(missing_ok=True)
 
         sesion_id = uuid.uuid4().hex
-        app.state.sesiones[sesion_id] = lineas
+        app.state.sesiones[sesion_id] = Sesion(lineas=lineas, nombre_fichero=nombre)
 
         return {
             "sesion_id": sesion_id,
@@ -283,26 +317,29 @@ def crear_app(puerto: Optional[PuertoLLM] = None, *,
 
     @app.post("/api/resolver")
     def resolver(peticion: PeticionResolver):
-        lineas = app.state.sesiones.get(peticion.sesion_id)
-        if lineas is None:
+        sesion = app.state.sesiones.get(peticion.sesion_id)
+        if sesion is None:
             raise HTTPException(status_code=404,
                                 detail=_mensaje_sesion_no_encontrada(peticion.sesion_id))
         if peticion.atributo not in ATRIBUTOS:
             raise HTTPException(status_code=400,
                                 detail=_mensaje_atributo_invalido(peticion.atributo))
-        linea = next((l for l in lineas if l.id == peticion.linea_id), None)
+        linea = next((l for l in sesion.lineas if l.id == peticion.linea_id), None)
         if linea is None:
             raise HTTPException(status_code=404,
                                 detail=_mensaje_linea_no_encontrada(peticion.linea_id))
 
-        linea_actualizada = _resolver_celda(linea, peticion.atributo, peticion.valor)
+        linea_actualizada = _resolver_celda(linea, peticion.atributo, peticion.valor,
+                                            peticion.autor, app.state.historico,
+                                            sesion.nombre_fichero)
         return _linea_a_dict(linea_actualizada)
 
     @app.get("/api/exportar")
     def exportar(sesion_id: str):
-        lineas = app.state.sesiones.get(sesion_id)
-        if lineas is None:
+        sesion = app.state.sesiones.get(sesion_id)
+        if sesion is None:
             raise HTTPException(status_code=404, detail=_mensaje_sesion_no_encontrada(sesion_id))
+        lineas = sesion.lineas
 
         filas = _agrupar_por_material_canonico(lineas)
         contenido = _construir_xlsx_exportacion(filas)

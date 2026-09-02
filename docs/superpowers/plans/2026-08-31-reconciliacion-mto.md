@@ -1535,7 +1535,7 @@ git commit -m "añade historico de respuestas con clave canonica exacta"
 - Consumes: `Historico.buscar`, `clave_de` de Task 18; `aplicar_confianza` de Task 8
 - Produces: `procesar_mto(..., historico: Historico | None = None)`
 
-- [ ] **Paso 1: Escribir los tests que fallan**
+- [x] **Paso 1: Escribir los tests que fallan**
 
 ```python
 from motor.modelos import Procedencia, Estado
@@ -1580,18 +1580,18 @@ def test_una_incoherencia_cruzada_tumba_la_herencia():
     assert r.estado is Estado.REVISION_MANUAL   # HV solo aplica a arandelas
 ```
 
-- [ ] **Paso 2: Ver que fallan**
+- [x] **Paso 2: Ver que fallan**
 
-- [ ] **Paso 3: Implementar**
+- [x] **Paso 3: Implementar**
 
 - En `motor/modelos.py`: añadir `HEREDADO = "HEREDADO"` a `Procedencia` y `Procedencia.HEREDADO: 100` a `PUNTOS_PROCEDENCIA`. El validador `_exige_evidencia` debe exigir `regla` también para `HEREDADO`, igual que para `DERIVADO`: un valor heredado sin puntero a su registro es inauditable.
 - En `motor/confianza.py`: el factor `literal` se da por bueno para `HEREDADO` igual que para `DERIVADO`, porque no hay literal en el texto que verificar.
 - En `motor/pipeline.py`: **la herencia se intenta al final**, después de extraer, normalizar, derivar y comprobar coherencias. Sólo para atributos que hayan quedado `AUSENTE`. El orden importa: primero lo que dice el MTO, después lo que se deduce, y sólo al final lo que alguien contestó una vez.
 - Toda línea con un valor heredado lleva un `Motivo` de código `VALOR_HEREDADO` — **informativo, no de revisión** — con quién contestó, cuándo y sobre qué revisión, para que el front pueda enseñarlo.
 
-- [ ] **Paso 4: Ver que pasan los 5 tests, y que la suite entera sigue verde**
+- [x] **Paso 4: Ver que pasan los 5 tests, y que la suite entera sigue verde**
 
-- [ ] **Paso 5: Commit**
+- [x] **Paso 5: Commit**
 
 ```bash
 git add motor/modelos.py motor/confianza.py motor/pipeline.py tests/test_herencia.py

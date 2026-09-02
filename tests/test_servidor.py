@@ -120,13 +120,17 @@ def test_resolver_una_celda_suficiente_pasa_la_linea_a_resuelta(tmp_path):
 
     resp = cliente.post("/api/resolver", json={
         "sesion_id": datos["sesion_id"], "linea_id": linea["id"],
-        "atributo": "calidad", "valor": "8.8",
+        "atributo": "calidad", "valor": "8.8", "autor": "ana@epc.es",
     })
     assert resp.status_code == 200, resp.text
     actualizada = resp.json()
 
     assert actualizada["calidad"]["valor"] == "8.8"
-    assert actualizada["calidad"]["procedencia"] == "EXTRAIDO"
+    # No es EXTRAIDO: nadie lo leyo del MTO, lo contesto una persona. Y no
+    # lleva span, porque no hay ningun trozo del texto original al que apuntar.
+    assert actualizada["calidad"]["procedencia"] == "HEREDADO"
+    assert actualizada["calidad"]["span"] is None
+    assert "ana@epc.es" in actualizada["calidad"]["regla"]
     assert actualizada["confianza"] == 100
     assert actualizada["estado"] == "RESUELTA"
     assert [m["codigo"] for m in actualizada["motivos"]] == []
@@ -149,7 +153,7 @@ def test_resolver_una_celda_insuficiente_deja_la_linea_en_revision(tmp_path):
 
     resp = cliente.post("/api/resolver", json={
         "sesion_id": datos["sesion_id"], "linea_id": linea["id"],
-        "atributo": "calidad", "valor": "8.8",
+        "atributo": "calidad", "valor": "8.8", "autor": "ana@epc.es",
     })
     assert resp.status_code == 200, resp.text
     actualizada = resp.json()
@@ -165,7 +169,7 @@ def test_resolver_sesion_desconocida_da_404():
     cliente = _cliente()
     resp = cliente.post("/api/resolver", json={
         "sesion_id": "no-existe", "linea_id": "L001",
-        "atributo": "calidad", "valor": "8.8",
+        "atributo": "calidad", "valor": "8.8", "autor": "ana@epc.es",
     })
     assert resp.status_code == 404
 
@@ -175,7 +179,7 @@ def test_resolver_atributo_invalido_da_400():
     datos = _subir(cliente, RUTA_MTO)
     resp = cliente.post("/api/resolver", json={
         "sesion_id": datos["sesion_id"], "linea_id": datos["lineas"][0]["id"],
-        "atributo": "color", "valor": "azul",
+        "atributo": "color", "valor": "azul", "autor": "ana@epc.es",
     })
     assert resp.status_code == 400
 
@@ -229,3 +233,40 @@ def test_fichero_que_no_es_xlsx_da_error_claro_no_una_traza():
     assert "detail" in cuerpo
     assert isinstance(cuerpo["detail"], str) and len(cuerpo["detail"]) > 0
     assert "xlsx" in cuerpo["detail"].lower()
+
+
+def test_resolver_sin_autor_da_422():
+    """Sin quien contesta la respuesta no es auditable: no se acepta."""
+    cliente = _cliente()
+    datos = _subir(cliente, RUTA_MTO)
+    resp = cliente.post("/api/resolver", json={
+        "sesion_id": datos["sesion_id"], "linea_id": datos["lineas"][0]["id"],
+        "atributo": "calidad", "valor": "8.8",
+    })
+    assert resp.status_code == 422
+
+
+def test_lo_resuelto_a_mano_se_hereda_al_volver_a_subir_el_mto(tmp_path):
+    """El ciclo entero, que es el argumento de negocio: se pregunta una vez y
+    la siguiente revision de la misma pieza ya no pregunta."""
+    ruta = tmp_path / "una_tuerca.xlsx"
+    _escribir_xlsx(ruta, [("Tuerca hexagonal DIN 934 M16", 10)])
+    puerto = _puerto_de_un_elemento(["Tuerca hexagonal DIN 934 M16"], tipo="TUERCA")
+    cliente = _cliente(puerto)
+
+    primera = _subir(cliente, ruta)
+    linea = primera["lineas"][0]
+    assert linea["estado"] == "REVISION_MANUAL"
+
+    cliente.post("/api/resolver", json={
+        "sesion_id": primera["sesion_id"], "linea_id": linea["id"],
+        "atributo": "calidad", "valor": "8.8", "autor": "ana@epc.es",
+    })
+
+    # Misma pieza, revision siguiente: ya no hay nada que preguntar.
+    segunda = _subir(cliente, ruta)
+    heredada = segunda["lineas"][0]
+    assert heredada["calidad"]["valor"] == "8.8"
+    assert heredada["calidad"]["procedencia"] == "HEREDADO"
+    assert heredada["estado"] == "RESUELTA"
+    assert any(m["codigo"] == "VALOR_HEREDADO" for m in heredada["motivos"])
