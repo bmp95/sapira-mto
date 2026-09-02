@@ -205,3 +205,192 @@ Ochenta dólares de modelo por obra completa. Frente a las 2.500 horas de compra
 - **El gold set es pre-anotado y revisado, no independiente.** Yo lo rellené y tú lo validaste. Hay que decirlo.
 - **Sin cortacircuitos**: si la clave caduca a mitad de un MTO de veinte mil filas, el sistema reintenta fila a fila hasta el final en vez de parar y avisar.
 - **Idiomas**: portugués, italiano y alemán no están en el catálogo de nombres. Se arregla añadiendo filas a una tabla.
+
+---
+
+## 11. Los KPI, calculados paso a paso
+
+Esta sección es para que puedas rehacer cualquier número en la pizarra si te lo piden.
+
+### 11.1 El cociente 1:50.000, de dónde sale
+
+Lo dan ellos en la sección 1 del enunciado, sin ponerle número:
+
+- **Escape** (dar por buena una fila mal extraída): «entre tres y ocho semanas de retraso en el frente de obra afectado, y en algunos contratos penalización por hito».
+- **Revisión innecesaria**: «alrededor de 90 segundos por fila» de comprador.
+
+Pongo cifras conservadoras:
+
+```
+Coste de una revisión innecesaria
+  90 s de comprador  ×  ~30 €/h cargados  =  0,75 €     -> redondeo a 1 €
+
+Coste de un escape
+  Obra de 40 M€, retraso de 3-8 semanas en un frente.
+  Tomo el extremo BAJO: 3 semanas, y sólo el frente afectado, no la obra.
+  Coste directo de parada de frente + reposición de material + penalización
+  -> del orden de 50.000 €
+```
+
+**Cociente ≈ 1:50.000.** Es conservador por los dos lados: la revisión la valoro cara y el escape barato.
+
+### 11.2 Por qué ese cociente prohíbe adivinar
+
+Adivinar compensa sólo si el beneficio esperado supera la pérdida esperada:
+
+```
+P(acierto) × 1 €   >   P(fallo) × 50.000 €
+```
+
+Despejando, hace falta que `P(fallo) < 1/50.000`, es decir **menos del 0,002 %**.
+
+Aplicado al caso concreto: la calidad de una tuerca de un set. El enunciado dice que «un mismo set puede llevar tornillo A4-70 y tuerca A4-80», así que la heterogeneidad existe. Aunque fuera rara —pongamos un 5 %— eso está **2.500 veces por encima** del punto de equilibrio.
+
+**No existe una frecuencia plausible que justifique adivinar la calidad.** Por eso no hizo falta preguntarle a Adolfo con qué frecuencia pasa: el cociente decide solo.
+
+### 11.3 Volumen: de dónde salen las 100.000 filas por obra
+
+Del enunciado, sección 1:
+
+```
+MTO grande                     hasta 20.000 filas
+Tornillería                    entre el 15 % y el 25 %  ->  ~4.000 filas
+Revisiones antes de acabar     hasta 25
+
+  4.000 filas × 25 revisiones  =  100.000 filas de tornillería por obra
+```
+
+### 11.4 Lo que cuesta hoy
+
+```
+100.000 filas × 90 s          =  9.000.000 s  =  2.500 horas de comprador
+2.500 h × ~30 €/h cargados    =  ~75.000 € por obra, sólo en leer tornillería
+```
+
+Y son seis personas haciéndolo, con varias obras vivas a la vez.
+
+### 11.5 Lo que cuesta el sistema
+
+Medido, no estimado:
+
+```
+Tokens por llamada     ~190 entrada, ~170 salida     (medido en la prueba de humo)
+Precio Gemini 3.7 Flash  0,75 $/M entrada, 3,75 $/M salida
+
+  entrada: 190/1.000.000 × 0,75  =  0,000143 $
+  salida:  170/1.000.000 × 3,75  =  0,000638 $
+                                    ---------
+  por llamada                       0,00078 $   -> ~0,0008 $
+
+Una llamada por fila (la autoconsistencia se descartó)
+
+  100.000 filas × 0,0008 $  =  80 $ por obra
+```
+
+**80 $ de modelo contra 75.000 € de lectura manual.** El coste del modelo es ruido; eso hay que decirlo antes de que lo pregunte el CFO, y decir también que **por eso el coste no es el criterio de diseño**: si lo fuera, habría metido modelo en todas partes. Lo que decide es el escape.
+
+### 11.6 Latencia
+
+```
+Medido: 300 filas en 248 s  ->  0,83 s por fila
+1.000 filas  ->  ~14 minutos
+```
+
+Es secuencial con la concurrencia actual. Con la API de lotes baja a la mitad de coste y sin techo práctico de latencia. Va en la solución objetivo.
+
+### 11.7 La tasa de escape y por qué 1,5 % y no 0 %
+
+El dato medido:
+
+```
+Blind set, bloque A: 200 filas no vistas, verdad conocida por construcción
+Filas RESUELTAS con algún atributo distinto del gold:  0
+```
+
+Cero de doscientos. Pero **cero sucesos no significa probabilidad cero**. La regla de tres para el límite superior de un binomio con cero éxitos:
+
+```
+Límite superior al 95 % ≈ 3/n = 3/200 = 0,015 = 1,5 %
+```
+
+Es decir: con esta evidencia, **lo máximo que puedo afirmar es que el escape está por debajo del 1,5 %**. Comprometerme al 0 % medido sería vender humo, y en cuanto apareciera un solo escape en producción perdería toda la credibilidad.
+
+Si quisiera comprometerme al 0,5 % necesitaría unas 600 filas anotadas sin escapes; al 0,1 %, unas 3.000. **Eso es lo que costaría bajar el compromiso, y es un dato útil para negociar el alcance de la fase 2.**
+
+### 11.8 La cobertura, y por qué no es mía
+
+```
+MTO del cliente:  13 de 30 líneas resueltas  =  43,3 %
+Blind set:       148 de 200 filas resueltas  =  74,0 %
+```
+
+La diferencia no es que el sistema funcione peor con sus datos: es que **sus datos traen menos**. Concretamente:
+
+```
+Líneas en revisión en su MTO:                    17 de 30
+  de las cuales, por falta de calidad:           13   (las 7 arandelas + 6 tuercas)
+  por falta de norma:                             5
+  por longitud imperial sin unidad:               3
+  (algunas líneas acumulan más de un motivo)
+
+Ruido de revisión (el sistema dudó sin motivo):   0 de 17  =  0 %
+Revisiones por dato ausente:                     17 de 17  =  100 %
+```
+
+**Ese par de números es el argumento entero.** No hay ni una sola línea donde el sistema dudara pudiendo resolver. Las 17 son datos que el MTO no trae. Si su ingeniería escribiera la dureza de las arandelas, la cobertura subiría sola sin tocar una línea de código.
+
+### 11.9 El ahorro real, con la respuesta de Adolfo dentro
+
+Adolfo dijo que la calidad que falta **se consulta con ingeniería**. Eso cambia el cálculo, y hay que hacerlo honesto:
+
+```
+De 100.000 filas de tornillería por obra:
+  ~43 % resueltas solas         =  43.000 filas × 90 s ahorrados  =  1.075 h
+  ~57 % a revisión              =  57.000 filas
+
+De las que van a revisión, el sistema NO ahorra la consulta a ingeniería.
+Lo que ahorra es el tiempo de DESCUBRIR que hay que consultar, y formula
+la pregunta exacta.
+```
+
+Y aquí entra el histórico, que es donde está el valor grande:
+
+```
+Sin histórico:  la misma arandela sin dureza se pregunta en la revisión 9,
+                en la 12 y en la 15  ->  hasta 25 consultas por material
+Con histórico:  se pregunta UNA vez y las otras 24 la heredan
+
+  Reducción de consultas a ingeniería: divide por el número de revisiones
+```
+
+**Ése es el argumento de negocio principal, y no lo teníamos hasta que Adolfo contestó.** El ahorro de lectura es la mitad pequeña; la mitad grande es no repetir la pregunta.
+
+### 11.10 Las ablaciones, y qué demuestran
+
+```
+base (las cuatro políticas activas)              13/30
+sin derivar_material                             13/30    ( 0)
+sin columna_material_al_principal                11/30    (-2)
+sin acabado_de_cierre_a_todo_el_set              13/30    ( 0)
+sin longitud_imperial_sin_unidad_a_revision      16/30    (+3)
+```
+
+Lo que dice esta tabla es incómodo y por eso vale:
+
+**Tres de las cuatro decisiones que más debatí no mueven el número.** Derivar el material —la más discutida— no cambia ni una línea, porque un material ausente no bloquea. Sigue teniendo sentido para agrupar y pedir, pero **no por el motivo que le habría atribuido antes de medirlo**.
+
+**Ser conservador con la longitud ASTM cuesta 3 líneas, diez puntos de cobertura.** Es el precio exacto de no suponer una unidad, y lo pago a conciencia.
+
+### 11.11 Qué mediría en producción, que no es lo mismo
+
+Lo de arriba mide el sistema contra un patrón. En producción no hay patrón, así que las métricas son otras:
+
+| Métrica | Cómo se mide sin gold set | Para qué |
+|---|---|---|
+| Tasa de revisión por origen | Contando, por estudio de ingeniería | Detecta vocabulario nuevo antes de que caiga la cobertura |
+| Tiempo medio de cierre de una revisión | Marca de tiempo en la cola | Valida el supuesto de los 90 s |
+| Correcciones tras resolver | Cuántas veces se cambia un valor ya cerrado | Es el proxy del escape sin gold set |
+| Reutilizaciones del histórico | Cuántas respuestas se heredan | Mide el valor de la fase 2 |
+| Aprobaciones en bloque | Cuántas revisiones se cierran de golpe | **La alarma de erosión de la cola** |
+
+La última es la importante: **es el indicador de que el sistema está dejando de servir** aunque sus métricas internas sigan bien.
