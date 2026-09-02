@@ -3498,25 +3498,27 @@
   "fila": 135,
   "id": "L145",
   "cantidad": 346,
-  "nombre": "TUERCA",
-  "material": "AC",
-  "calidad": "GR 2H",
+  "nombre": null,
+  "material": null,
+  "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ASTM A194",
+  "norma": null,
   "acabado": null,
-  "estado": "RESUELTA",
-  "confianza": 100,
+  "estado": "REVISION_MANUAL",
+  "confianza": 0,
   "procedencias": {
-   "nombre": "DERIVADO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
+   "nombre": "AUSENTE",
+   "material": "AUSENTE",
+   "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
-  "motivos": []
+  "motivos": [
+   "PIEZA_SIN_NOMBRAR"
+  ]
  },
  {
   "fila": 136,
@@ -4507,7 +4509,7 @@
   "medida": "M12",
   "longitud": "100 mm",
   "norma": "ISO 4014",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -4517,7 +4519,7 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
@@ -4531,7 +4533,7 @@
   "medida": "M12",
   "longitud": null,
   "norma": "ISO 7042",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4541,9 +4543,10 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
@@ -4557,7 +4560,7 @@
   "medida": "M12",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4567,9 +4570,10 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
@@ -4577,83 +4581,31 @@
   "fila": 162,
   "id": "L187",
   "cantidad": 247,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "GRADE 5",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 1207",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 162,
-  "id": "L188",
-  "cantidad": 494,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 4035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 162,
-  "id": "L189",
-  "cantidad": 494,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7089",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 163,
-  "id": "L190",
+  "id": "L188",
   "cantidad": 300,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -4661,7 +4613,7 @@
   "medida": "M24",
   "longitud": "200 mm",
   "norma": "ISO 1207",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -4671,13 +4623,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 163,
-  "id": "L191",
+  "id": "L189",
   "cantidad": 300,
   "nombre": "TUERCA",
   "material": null,
@@ -4685,7 +4637,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 4035",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4695,15 +4647,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 163,
-  "id": "L192",
+  "id": "L190",
   "cantidad": 300,
   "nombre": "ARANDELA",
   "material": null,
@@ -4711,7 +4664,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4721,15 +4674,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 164,
-  "id": "L193",
+  "id": "L191",
   "cantidad": 316,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -4737,7 +4691,7 @@
   "medida": "M24",
   "longitud": "250 mm",
   "norma": "ISO 4014",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -4747,13 +4701,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 164,
-  "id": "L194",
+  "id": "L192",
   "cantidad": 316,
   "nombre": "TUERCA",
   "material": null,
@@ -4761,7 +4715,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 4032",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4771,15 +4725,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 164,
-  "id": "L195",
+  "id": "L193",
   "cantidad": 316,
   "nombre": "ARANDELA",
   "material": null,
@@ -4787,7 +4742,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 7089",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4797,15 +4752,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 165,
-  "id": "L196",
+  "id": "L194",
   "cantidad": 340,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -4813,7 +4769,7 @@
   "medida": "M16",
   "longitud": "50 mm",
   "norma": "ISO 4014",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -4823,13 +4779,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 165,
-  "id": "L197",
+  "id": "L195",
   "cantidad": 680,
   "nombre": "TUERCA",
   "material": null,
@@ -4837,7 +4793,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "ISO 4032",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4847,15 +4803,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 165,
-  "id": "L198",
+  "id": "L196",
   "cantidad": 680,
   "nombre": "ARANDELA",
   "material": null,
@@ -4863,7 +4820,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -4873,249 +4830,94 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 166,
-  "id": "L199",
+  "id": "L197",
   "cantidad": 211,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "8.8",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7046",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 166,
-  "id": "L200",
-  "cantidad": 422,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 7035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 166,
-  "id": "L201",
-  "cantidad": 422,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7094",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 167,
-  "id": "L202",
+  "id": "L198",
   "cantidad": 115,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "10.9",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7045",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 167,
-  "id": "L203",
-  "cantidad": 230,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "EN 1661",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 167,
-  "id": "L204",
-  "cantidad": 230,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7093",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 168,
-  "id": "L205",
+  "id": "L199",
   "cantidad": 442,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "8.8",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7045",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 168,
-  "id": "L206",
-  "cantidad": 442,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 4035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 168,
-  "id": "L207",
-  "cantidad": 442,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7094",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 169,
-  "id": "L208",
+  "id": "L200",
   "cantidad": 239,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5123,7 +4925,7 @@
   "medida": "M14",
   "longitud": "35 mm",
   "norma": "ISO 7046",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5133,13 +4935,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 169,
-  "id": "L209",
+  "id": "L201",
   "cantidad": 478,
   "nombre": "TUERCA",
   "material": null,
@@ -5147,7 +4949,7 @@
   "medida": "M14",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5157,15 +4959,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 169,
-  "id": "L210",
+  "id": "L202",
   "cantidad": 478,
   "nombre": "ARANDELA",
   "material": null,
@@ -5173,7 +4976,7 @@
   "medida": "M14",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5183,15 +4986,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 170,
-  "id": "L211",
+  "id": "L203",
   "cantidad": 57,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5199,7 +5003,7 @@
   "medida": "M24",
   "longitud": "40 mm",
   "norma": "ISO 4017",
-  "acabado": null,
+  "acabado": "FOSFATADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5209,13 +5013,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 170,
-  "id": "L212",
+  "id": "L204",
   "cantidad": 114,
   "nombre": "TUERCA",
   "material": null,
@@ -5223,7 +5027,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 7035",
-  "acabado": null,
+  "acabado": "FOSFATADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5233,15 +5037,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 170,
-  "id": "L213",
+  "id": "L205",
   "cantidad": 114,
   "nombre": "ARANDELA",
   "material": null,
@@ -5249,7 +5054,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "FOSFATADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5259,93 +5064,42 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 171,
-  "id": "L214",
+  "id": "L206",
   "cantidad": 420,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "GRADE 8",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 2009",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 171,
-  "id": "L215",
-  "cantidad": 420,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 7035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 171,
-  "id": "L216",
-  "cantidad": 420,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7089",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 172,
-  "id": "L217",
+  "id": "L207",
   "cantidad": 427,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5353,7 +5107,7 @@
   "medida": "M30",
   "longitud": "30 mm",
   "norma": "ISO 1207",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5363,13 +5117,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 172,
-  "id": "L218",
+  "id": "L208",
   "cantidad": 427,
   "nombre": "TUERCA",
   "material": null,
@@ -5377,7 +5131,7 @@
   "medida": "M30",
   "longitud": null,
   "norma": "ISO 10511",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5387,15 +5141,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 172,
-  "id": "L219",
+  "id": "L209",
   "cantidad": 427,
   "nombre": "ARANDELA",
   "material": null,
@@ -5403,7 +5158,7 @@
   "medida": "M30",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5413,15 +5168,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 173,
-  "id": "L220",
+  "id": "L210",
   "cantidad": 267,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5429,7 +5185,7 @@
   "medida": "M6",
   "longitud": "100 mm",
   "norma": "ISO 8677",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5439,13 +5195,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 173,
-  "id": "L221",
+  "id": "L211",
   "cantidad": 267,
   "nombre": "TUERCA",
   "material": null,
@@ -5453,7 +5209,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 7042",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5463,15 +5219,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 173,
-  "id": "L222",
+  "id": "L212",
   "cantidad": 267,
   "nombre": "ARANDELA",
   "material": null,
@@ -5479,7 +5236,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5489,15 +5246,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 174,
-  "id": "L223",
+  "id": "L213",
   "cantidad": 491,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5505,7 +5263,7 @@
   "medida": "M16",
   "longitud": "60 mm",
   "norma": "ISO 10642",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5515,13 +5273,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 174,
-  "id": "L224",
+  "id": "L214",
   "cantidad": 491,
   "nombre": "TUERCA",
   "material": null,
@@ -5529,7 +5287,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5539,15 +5297,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 174,
-  "id": "L225",
+  "id": "L215",
   "cantidad": 491,
   "nombre": "ARANDELA",
   "material": null,
@@ -5555,7 +5314,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5565,15 +5324,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 175,
-  "id": "L226",
+  "id": "L216",
   "cantidad": 303,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5581,7 +5341,7 @@
   "medida": "M14",
   "longitud": "150 mm",
   "norma": "ISO 4017",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5591,13 +5351,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 175,
-  "id": "L227",
+  "id": "L217",
   "cantidad": 303,
   "nombre": "TUERCA",
   "material": null,
@@ -5605,7 +5365,7 @@
   "medida": "M14",
   "longitud": null,
   "norma": "ISO 10511",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5615,15 +5375,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 175,
-  "id": "L228",
+  "id": "L218",
   "cantidad": 303,
   "nombre": "ARANDELA",
   "material": null,
@@ -5631,7 +5392,7 @@
   "medida": "M14",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5641,15 +5402,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 176,
-  "id": "L229",
+  "id": "L219",
   "cantidad": 159,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5657,7 +5419,7 @@
   "medida": "M30",
   "longitud": "80 mm",
   "norma": "ISO 10642",
-  "acabado": null,
+  "acabado": "BICROMATADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5667,13 +5429,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 176,
-  "id": "L230",
+  "id": "L220",
   "cantidad": 159,
   "nombre": "TUERCA",
   "material": null,
@@ -5681,7 +5443,7 @@
   "medida": "M30",
   "longitud": null,
   "norma": "ISO 10511",
-  "acabado": null,
+  "acabado": "BICROMATADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5691,15 +5453,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 176,
-  "id": "L231",
+  "id": "L221",
   "cantidad": 159,
   "nombre": "ARANDELA",
   "material": null,
@@ -5707,7 +5470,7 @@
   "medida": "M30",
   "longitud": null,
   "norma": "ISO 7089",
-  "acabado": null,
+  "acabado": "BICROMATADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5717,15 +5480,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 177,
-  "id": "L232",
+  "id": "L222",
   "cantidad": 71,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -5733,7 +5497,7 @@
   "medida": "M27",
   "longitud": "80 mm",
   "norma": "ISO 2009",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -5743,13 +5507,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 177,
-  "id": "L233",
+  "id": "L223",
   "cantidad": 71,
   "nombre": "TUERCA",
   "material": null,
@@ -5757,7 +5521,7 @@
   "medida": "M27",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5767,15 +5531,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 177,
-  "id": "L234",
+  "id": "L224",
   "cantidad": 71,
   "nombre": "ARANDELA",
   "material": null,
@@ -5783,7 +5548,7 @@
   "medida": "M27",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -5793,249 +5558,94 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 178,
-  "id": "L235",
+  "id": "L225",
   "cantidad": 59,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "10.9",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 2009",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 178,
-  "id": "L236",
-  "cantidad": 59,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 4035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 178,
-  "id": "L237",
-  "cantidad": 59,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7089",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 179,
-  "id": "L238",
+  "id": "L226",
   "cantidad": 348,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "GRADE 5",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 4014",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 179,
-  "id": "L239",
-  "cantidad": 348,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 4035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 179,
-  "id": "L240",
-  "cantidad": 348,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7093",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 180,
-  "id": "L241",
+  "id": "L227",
   "cantidad": 336,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "12.9",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 1207",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 180,
-  "id": "L242",
-  "cantidad": 672,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "EN 1661",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 180,
-  "id": "L243",
-  "cantidad": 672,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7093",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 181,
-  "id": "L244",
+  "id": "L228",
   "cantidad": 57,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6043,7 +5653,7 @@
   "medida": "M6",
   "longitud": "150 mm",
   "norma": "ISO 8677",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6053,13 +5663,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 181,
-  "id": "L245",
+  "id": "L229",
   "cantidad": 114,
   "nombre": "TUERCA",
   "material": null,
@@ -6067,7 +5677,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6077,15 +5687,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 181,
-  "id": "L246",
+  "id": "L230",
   "cantidad": 114,
   "nombre": "ARANDELA",
   "material": null,
@@ -6093,7 +5704,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6103,15 +5714,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 182,
-  "id": "L247",
+  "id": "L231",
   "cantidad": 248,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6119,7 +5731,7 @@
   "medida": "M12",
   "longitud": "60 mm",
   "norma": "ISO 7045",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6129,13 +5741,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 182,
-  "id": "L248",
+  "id": "L232",
   "cantidad": 496,
   "nombre": "TUERCA",
   "material": null,
@@ -6143,7 +5755,7 @@
   "medida": "M12",
   "longitud": null,
   "norma": "ISO 7035",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6153,15 +5765,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 182,
-  "id": "L249",
+  "id": "L233",
   "cantidad": 496,
   "nombre": "ARANDELA",
   "material": null,
@@ -6169,7 +5782,7 @@
   "medida": "M12",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6179,15 +5792,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 183,
-  "id": "L250",
+  "id": "L234",
   "cantidad": 484,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6195,7 +5809,7 @@
   "medida": "M20",
   "longitud": "30 mm",
   "norma": "ISO 4762",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6205,13 +5819,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 183,
-  "id": "L251",
+  "id": "L235",
   "cantidad": 484,
   "nombre": "TUERCA",
   "material": null,
@@ -6219,7 +5833,7 @@
   "medida": "M20",
   "longitud": null,
   "norma": "ISO 7035",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6229,15 +5843,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 183,
-  "id": "L252",
+  "id": "L236",
   "cantidad": 484,
   "nombre": "ARANDELA",
   "material": null,
@@ -6245,7 +5860,7 @@
   "medida": "M20",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6255,15 +5870,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 184,
-  "id": "L253",
+  "id": "L237",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6271,7 +5887,7 @@
   "medida": "M27",
   "longitud": "70 mm",
   "norma": "ISO 7045",
-  "acabado": null,
+  "acabado": "DACROMET",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6281,13 +5897,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 184,
-  "id": "L254",
+  "id": "L238",
   "cantidad": 80,
   "nombre": "TUERCA",
   "material": null,
@@ -6295,7 +5911,7 @@
   "medida": "M27",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "DACROMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6305,15 +5921,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 184,
-  "id": "L255",
+  "id": "L239",
   "cantidad": 80,
   "nombre": "ARANDELA",
   "material": null,
@@ -6321,7 +5938,7 @@
   "medida": "M27",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "DACROMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6331,15 +5948,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 185,
-  "id": "L256",
+  "id": "L240",
   "cantidad": 396,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6347,7 +5965,7 @@
   "medida": "M24",
   "longitud": "60 mm",
   "norma": "ISO 7045",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6357,13 +5975,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 185,
-  "id": "L257",
+  "id": "L241",
   "cantidad": 396,
   "nombre": "TUERCA",
   "material": null,
@@ -6371,7 +5989,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6381,15 +5999,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 185,
-  "id": "L258",
+  "id": "L242",
   "cantidad": 396,
   "nombre": "ARANDELA",
   "material": null,
@@ -6397,7 +6016,7 @@
   "medida": "M24",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6407,93 +6026,42 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 186,
-  "id": "L259",
+  "id": "L243",
   "cantidad": 125,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "10.9",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 10642",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 186,
-  "id": "L260",
-  "cantidad": 125,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 7042",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 186,
-  "id": "L261",
-  "cantidad": 125,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7093",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 187,
-  "id": "L262",
+  "id": "L244",
   "cantidad": 253,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6501,7 +6069,7 @@
   "medida": "M10",
   "longitud": "60 mm",
   "norma": "ISO 2009",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6511,13 +6079,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 187,
-  "id": "L263",
+  "id": "L245",
   "cantidad": 253,
   "nombre": "TUERCA",
   "material": null,
@@ -6525,7 +6093,7 @@
   "medida": "M10",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6535,15 +6103,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 187,
-  "id": "L264",
+  "id": "L246",
   "cantidad": 253,
   "nombre": "ARANDELA",
   "material": null,
@@ -6551,7 +6120,7 @@
   "medida": "M10",
   "longitud": null,
   "norma": "ISO 7089",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6561,15 +6130,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 188,
-  "id": "L265",
+  "id": "L247",
   "cantidad": 31,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6577,7 +6147,7 @@
   "medida": "M16",
   "longitud": "50 mm",
   "norma": "ISO 2009",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6587,13 +6157,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 188,
-  "id": "L266",
+  "id": "L248",
   "cantidad": 31,
   "nombre": "TUERCA",
   "material": null,
@@ -6601,7 +6171,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "ISO 4032",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6611,15 +6181,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 188,
-  "id": "L267",
+  "id": "L249",
   "cantidad": 31,
   "nombre": "ARANDELA",
   "material": null,
@@ -6627,7 +6198,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "ISO 7089",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6637,15 +6208,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 189,
-  "id": "L268",
+  "id": "L250",
   "cantidad": 296,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6669,7 +6241,7 @@
  },
  {
   "fila": 189,
-  "id": "L269",
+  "id": "L251",
   "cantidad": 592,
   "nombre": "TUERCA",
   "material": null,
@@ -6696,7 +6268,7 @@
  },
  {
   "fila": 189,
-  "id": "L270",
+  "id": "L252",
   "cantidad": 592,
   "nombre": "ARANDELA",
   "material": null,
@@ -6723,7 +6295,7 @@
  },
  {
   "fila": 190,
-  "id": "L271",
+  "id": "L253",
   "cantidad": 276,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6731,7 +6303,7 @@
   "medida": "M8",
   "longitud": "200 mm",
   "norma": "ISO 7046",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6741,13 +6313,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 190,
-  "id": "L272",
+  "id": "L254",
   "cantidad": 276,
   "nombre": "TUERCA",
   "material": null,
@@ -6755,7 +6327,7 @@
   "medida": "M8",
   "longitud": null,
   "norma": "ISO 7042",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6765,15 +6337,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 190,
-  "id": "L273",
+  "id": "L255",
   "cantidad": 276,
   "nombre": "ARANDELA",
   "material": null,
@@ -6781,7 +6354,7 @@
   "medida": "M8",
   "longitud": null,
   "norma": "ISO 7089",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6791,15 +6364,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 191,
-  "id": "L274",
+  "id": "L256",
   "cantidad": 270,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6807,7 +6381,7 @@
   "medida": "M6",
   "longitud": "180 mm",
   "norma": "ISO 4014",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6817,13 +6391,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 191,
-  "id": "L275",
+  "id": "L257",
   "cantidad": 270,
   "nombre": "TUERCA",
   "material": null,
@@ -6831,7 +6405,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 7035",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6841,15 +6415,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 191,
-  "id": "L276",
+  "id": "L258",
   "cantidad": 270,
   "nombre": "ARANDELA",
   "material": null,
@@ -6857,7 +6432,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6867,93 +6442,42 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 192,
-  "id": "L277",
+  "id": "L259",
   "cantidad": 21,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "10.9",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7046",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 192,
-  "id": "L278",
-  "cantidad": 21,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 7035",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 192,
-  "id": "L279",
-  "cantidad": 21,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7089",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 193,
-  "id": "L280",
+  "id": "L260",
   "cantidad": 345,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -6961,7 +6485,7 @@
   "medida": "M27",
   "longitud": "20 mm",
   "norma": "ISO 8677",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -6971,13 +6495,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 193,
-  "id": "L281",
+  "id": "L261",
   "cantidad": 690,
   "nombre": "TUERCA",
   "material": null,
@@ -6985,7 +6509,7 @@
   "medida": "M27",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -6995,15 +6519,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 193,
-  "id": "L282",
+  "id": "L262",
   "cantidad": 690,
   "nombre": "ARANDELA",
   "material": null,
@@ -7011,7 +6536,7 @@
   "medida": "M27",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "PAVONADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7021,15 +6546,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 194,
-  "id": "L283",
+  "id": "L263",
   "cantidad": 287,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7037,7 +6563,7 @@
   "medida": "M30",
   "longitud": "25 mm",
   "norma": "ISO 4017",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -7047,13 +6573,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 194,
-  "id": "L284",
+  "id": "L264",
   "cantidad": 574,
   "nombre": "TUERCA",
   "material": null,
@@ -7061,7 +6587,7 @@
   "medida": "M30",
   "longitud": null,
   "norma": "ISO 7042",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7071,15 +6597,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 194,
-  "id": "L285",
+  "id": "L265",
   "cantidad": 574,
   "nombre": "ARANDELA",
   "material": null,
@@ -7087,7 +6614,7 @@
   "medida": "M30",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7097,15 +6624,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 195,
-  "id": "L286",
+  "id": "L266",
   "cantidad": 273,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7113,7 +6641,7 @@
   "medida": "M8",
   "longitud": "25 mm",
   "norma": "ISO 4014",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -7123,13 +6651,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 195,
-  "id": "L287",
+  "id": "L267",
   "cantidad": 546,
   "nombre": "TUERCA",
   "material": null,
@@ -7137,7 +6665,7 @@
   "medida": "M8",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7147,15 +6675,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 195,
-  "id": "L288",
+  "id": "L268",
   "cantidad": 546,
   "nombre": "ARANDELA",
   "material": null,
@@ -7163,7 +6692,7 @@
   "medida": "M8",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "CINCADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7173,171 +6702,68 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 196,
-  "id": "L289",
+  "id": "L269",
   "cantidad": 444,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "12.9",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 4762",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 196,
-  "id": "L290",
-  "cantidad": 888,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 10511",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 196,
-  "id": "L291",
-  "cantidad": 888,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7094",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 197,
-  "id": "L292",
+  "id": "L270",
   "cantidad": 340,
-  "nombre": "TORNILLO",
-  "material": "AC",
-  "calidad": "8.8",
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 8677",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "DERIVADO",
-   "calidad": "EXTRAIDO",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "LONGITUD_OBLIGATORIA_AUSENTE"
-  ]
- },
- {
-  "fila": 197,
-  "id": "L293",
-  "cantidad": 680,
-  "nombre": "TUERCA",
+  "nombre": null,
   "material": null,
   "calidad": null,
   "medida": null,
   "longitud": null,
-  "norma": "ISO 4032",
+  "norma": null,
   "acabado": null,
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
-   "nombre": "EXTRAIDO",
+   "nombre": "AUSENTE",
    "material": "AUSENTE",
    "calidad": "AUSENTE",
    "medida": "AUSENTE",
    "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
+   "norma": "AUSENTE",
    "acabado": "AUSENTE"
   },
   "motivos": [
-   "SIN_CALIDAD"
-  ]
- },
- {
-  "fila": 197,
-  "id": "L294",
-  "cantidad": 680,
-  "nombre": "ARANDELA",
-  "material": null,
-  "calidad": null,
-  "medida": null,
-  "longitud": null,
-  "norma": "ISO 7089",
-  "acabado": null,
-  "estado": "REVISION_MANUAL",
-  "confianza": 0,
-  "procedencias": {
-   "nombre": "EXTRAIDO",
-   "material": "AUSENTE",
-   "calidad": "AUSENTE",
-   "medida": "AUSENTE",
-   "longitud": "AUSENTE",
-   "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
-  },
-  "motivos": [
-   "SIN_CALIDAD"
+   "PIEZA_SIN_NOMBRAR"
   ]
  },
  {
   "fila": 198,
-  "id": "L295",
+  "id": "L271",
   "cantidad": 111,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7345,7 +6771,7 @@
   "medida": "M16",
   "longitud": "130 mm",
   "norma": "ISO 1207",
-  "acabado": null,
+  "acabado": "BICROMATADO",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -7355,13 +6781,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 198,
-  "id": "L296",
+  "id": "L272",
   "cantidad": 222,
   "nombre": "TUERCA",
   "material": null,
@@ -7369,7 +6795,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "EN 1661",
-  "acabado": null,
+  "acabado": "BICROMATADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7379,15 +6805,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 198,
-  "id": "L297",
+  "id": "L273",
   "cantidad": 222,
   "nombre": "ARANDELA",
   "material": null,
@@ -7395,7 +6822,7 @@
   "medida": "M16",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "BICROMATADO",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7405,15 +6832,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 199,
-  "id": "L298",
+  "id": "L274",
   "cantidad": 191,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7421,7 +6849,7 @@
   "medida": "M6",
   "longitud": "60 mm",
   "norma": "ISO 7045",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -7431,13 +6859,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 199,
-  "id": "L299",
+  "id": "L275",
   "cantidad": 382,
   "nombre": "TUERCA",
   "material": null,
@@ -7445,7 +6873,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 4035",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7455,15 +6883,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 199,
-  "id": "L300",
+  "id": "L276",
   "cantidad": 382,
   "nombre": "ARANDELA",
   "material": null,
@@ -7471,7 +6900,7 @@
   "medida": "M6",
   "longitud": null,
   "norma": "ISO 7093",
-  "acabado": null,
+  "acabado": "GEOMET",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7481,15 +6910,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 200,
-  "id": "L301",
+  "id": "L277",
   "cantidad": 329,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7497,7 +6927,7 @@
   "medida": "M14",
   "longitud": "40 mm",
   "norma": "ISO 4014",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "RESUELTA",
   "confianza": 100,
   "procedencias": {
@@ -7507,13 +6937,13 @@
    "medida": "EXTRAIDO",
    "longitud": "DERIVADO",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "EXTRAIDO"
   },
   "motivos": []
  },
  {
   "fila": 200,
-  "id": "L302",
+  "id": "L278",
   "cantidad": 329,
   "nombre": "TUERCA",
   "material": null,
@@ -7521,7 +6951,7 @@
   "medida": "M14",
   "longitud": null,
   "norma": "ISO 7035",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7531,15 +6961,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 200,
-  "id": "L303",
+  "id": "L279",
   "cantidad": 329,
   "nombre": "ARANDELA",
   "material": null,
@@ -7547,7 +6978,7 @@
   "medida": "M14",
   "longitud": null,
   "norma": "ISO 7094",
-  "acabado": null,
+  "acabado": "GALVANIZADO EN CALIENTE",
   "estado": "REVISION_MANUAL",
   "confianza": 0,
   "procedencias": {
@@ -7557,15 +6988,16 @@
    "medida": "DERIVADO",
    "longitud": "AUSENTE",
    "norma": "EXTRAIDO",
-   "acabado": "AUSENTE"
+   "acabado": "INFERIDO"
   },
   "motivos": [
+   "CONFIANZA_INSUFICIENTE",
    "SIN_CALIDAD"
   ]
  },
  {
   "fila": 201,
-  "id": "L304",
+  "id": "L280",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7589,7 +7021,7 @@
  },
  {
   "fila": 202,
-  "id": "L305",
+  "id": "L281",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7613,7 +7045,7 @@
  },
  {
   "fila": 203,
-  "id": "L306",
+  "id": "L282",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7637,7 +7069,7 @@
  },
  {
   "fila": 204,
-  "id": "L307",
+  "id": "L283",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7663,7 +7095,7 @@
  },
  {
   "fila": 205,
-  "id": "L308",
+  "id": "L284",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7689,7 +7121,7 @@
  },
  {
   "fila": 206,
-  "id": "L309",
+  "id": "L285",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7713,7 +7145,7 @@
  },
  {
   "fila": 207,
-  "id": "L310",
+  "id": "L286",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7739,7 +7171,7 @@
  },
  {
   "fila": 208,
-  "id": "L311",
+  "id": "L287",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7765,7 +7197,7 @@
  },
  {
   "fila": 209,
-  "id": "L312",
+  "id": "L288",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7791,7 +7223,7 @@
  },
  {
   "fila": 210,
-  "id": "L313",
+  "id": "L289",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7817,7 +7249,7 @@
  },
  {
   "fila": 211,
-  "id": "L314",
+  "id": "L290",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7843,7 +7275,7 @@
  },
  {
   "fila": 212,
-  "id": "L315",
+  "id": "L291",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7869,7 +7301,7 @@
  },
  {
   "fila": 213,
-  "id": "L316",
+  "id": "L292",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -7895,7 +7327,7 @@
  },
  {
   "fila": 214,
-  "id": "L317",
+  "id": "L293",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7919,7 +7351,7 @@
  },
  {
   "fila": 215,
-  "id": "L318",
+  "id": "L294",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7943,7 +7375,7 @@
  },
  {
   "fila": 216,
-  "id": "L319",
+  "id": "L295",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7967,7 +7399,7 @@
  },
  {
   "fila": 217,
-  "id": "L320",
+  "id": "L296",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -7991,7 +7423,7 @@
  },
  {
   "fila": 218,
-  "id": "L321",
+  "id": "L297",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8015,7 +7447,7 @@
  },
  {
   "fila": 219,
-  "id": "L322",
+  "id": "L298",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8039,7 +7471,7 @@
  },
  {
   "fila": 220,
-  "id": "L323",
+  "id": "L299",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8063,7 +7495,7 @@
  },
  {
   "fila": 221,
-  "id": "L324",
+  "id": "L300",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8089,7 +7521,7 @@
  },
  {
   "fila": 222,
-  "id": "L325",
+  "id": "L301",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8115,7 +7547,7 @@
  },
  {
   "fila": 223,
-  "id": "L326",
+  "id": "L302",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8141,7 +7573,7 @@
  },
  {
   "fila": 224,
-  "id": "L327",
+  "id": "L303",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8167,7 +7599,7 @@
  },
  {
   "fila": 225,
-  "id": "L328",
+  "id": "L304",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8193,7 +7625,7 @@
  },
  {
   "fila": 226,
-  "id": "L329",
+  "id": "L305",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8219,7 +7651,7 @@
  },
  {
   "fila": 227,
-  "id": "L330",
+  "id": "L306",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -8245,7 +7677,7 @@
  },
  {
   "fila": 228,
-  "id": "L331",
+  "id": "L307",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8271,7 +7703,7 @@
  },
  {
   "fila": 229,
-  "id": "L332",
+  "id": "L308",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8297,7 +7729,7 @@
  },
  {
   "fila": 230,
-  "id": "L333",
+  "id": "L309",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8323,7 +7755,7 @@
  },
  {
   "fila": 231,
-  "id": "L334",
+  "id": "L310",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8349,7 +7781,7 @@
  },
  {
   "fila": 232,
-  "id": "L335",
+  "id": "L311",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8375,7 +7807,7 @@
  },
  {
   "fila": 233,
-  "id": "L336",
+  "id": "L312",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8401,7 +7833,7 @@
  },
  {
   "fila": 234,
-  "id": "L337",
+  "id": "L313",
   "cantidad": 100,
   "nombre": "TORNILLO",
   "material": null,
@@ -8427,7 +7859,7 @@
  },
  {
   "fila": 235,
-  "id": "L338",
+  "id": "L314",
   "cantidad": 50,
   "nombre": "TUERCA",
   "material": "AC",
@@ -8451,7 +7883,7 @@
  },
  {
   "fila": 236,
-  "id": "L339",
+  "id": "L315",
   "cantidad": 50,
   "nombre": "ARANDELA",
   "material": "AC",
@@ -8475,7 +7907,7 @@
  },
  {
   "fila": 237,
-  "id": "L340",
+  "id": "L316",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "INOX",
@@ -8502,7 +7934,7 @@
  },
  {
   "fila": 238,
-  "id": "L341",
+  "id": "L317",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8526,7 +7958,7 @@
  },
  {
   "fila": 239,
-  "id": "L342",
+  "id": "L318",
   "cantidad": 50,
   "nombre": "ARANDELA",
   "material": "AC",
@@ -8553,7 +7985,7 @@
  },
  {
   "fila": 240,
-  "id": "L343",
+  "id": "L319",
   "cantidad": 50,
   "nombre": "TUERCA",
   "material": "AC",
@@ -8579,7 +8011,7 @@
  },
  {
   "fila": 241,
-  "id": "L344",
+  "id": "L320",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8605,7 +8037,7 @@
  },
  {
   "fila": 242,
-  "id": "L345",
+  "id": "L321",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8629,7 +8061,7 @@
  },
  {
   "fila": 243,
-  "id": "L346",
+  "id": "L322",
   "cantidad": 50,
   "nombre": "TUERCA",
   "material": "AC",
@@ -8655,7 +8087,7 @@
  },
  {
   "fila": 244,
-  "id": "L347",
+  "id": "L323",
   "cantidad": 50,
   "nombre": "ESPARRAGO",
   "material": "AC",
@@ -8681,7 +8113,7 @@
  },
  {
   "fila": 244,
-  "id": "L348",
+  "id": "L324",
   "cantidad": 50,
   "nombre": "VARILLA ROSCADA",
   "material": null,
@@ -8708,7 +8140,7 @@
  },
  {
   "fila": 245,
-  "id": "L349",
+  "id": "L325",
   "cantidad": 40,
   "nombre": "ESPARRAGO",
   "material": "AC",
@@ -8735,7 +8167,7 @@
  },
  {
   "fila": 246,
-  "id": "L350",
+  "id": "L326",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8759,7 +8191,7 @@
  },
  {
   "fila": 247,
-  "id": "L351",
+  "id": "L327",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8785,7 +8217,7 @@
  },
  {
   "fila": 248,
-  "id": "L352",
+  "id": "L328",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8809,7 +8241,7 @@
  },
  {
   "fila": 249,
-  "id": "L353",
+  "id": "L329",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8833,7 +8265,7 @@
  },
  {
   "fila": 250,
-  "id": "L354",
+  "id": "L330",
   "cantidad": 20,
   "nombre": null,
   "material": null,
@@ -8859,7 +8291,7 @@
  },
  {
   "fila": 251,
-  "id": "L355",
+  "id": "L331",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8883,7 +8315,7 @@
  },
  {
   "fila": 252,
-  "id": "L356",
+  "id": "L332",
   "cantidad": 20,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -8910,7 +8342,7 @@
  },
  {
   "fila": 253,
-  "id": "L357",
+  "id": "L333",
   "cantidad": 40,
   "nombre": "TORNILLO",
   "material": null,
@@ -8937,7 +8369,7 @@
  },
  {
   "fila": 254,
-  "id": "L358",
+  "id": "L334",
   "cantidad": 30,
   "nombre": null,
   "material": null,
@@ -8963,7 +8395,7 @@
  },
  {
   "fila": 255,
-  "id": "L359",
+  "id": "L335",
   "cantidad": 30,
   "nombre": "TUERCA",
   "material": "AC",
@@ -8987,7 +8419,7 @@
  },
  {
   "fila": 256,
-  "id": "L360",
+  "id": "L336",
   "cantidad": 60,
   "nombre": null,
   "material": null,
@@ -9013,7 +8445,7 @@
  },
  {
   "fila": 257,
-  "id": "L361",
+  "id": "L337",
   "cantidad": 60,
   "nombre": null,
   "material": null,
@@ -9039,7 +8471,7 @@
  },
  {
   "fila": 258,
-  "id": "L362",
+  "id": "L338",
   "cantidad": 60,
   "nombre": null,
   "material": null,
@@ -9065,7 +8497,7 @@
  },
  {
   "fila": 259,
-  "id": "L363",
+  "id": "L339",
   "cantidad": 60,
   "nombre": null,
   "material": null,
@@ -9091,7 +8523,7 @@
  },
  {
   "fila": 260,
-  "id": "L364",
+  "id": "L340",
   "cantidad": 60,
   "nombre": null,
   "material": null,
@@ -9117,7 +8549,7 @@
  },
  {
   "fila": 261,
-  "id": "L365",
+  "id": "L341",
   "cantidad": 60,
   "nombre": null,
   "material": null,
@@ -9143,7 +8575,7 @@
  },
  {
   "fila": 262,
-  "id": "L366",
+  "id": "L342",
   "cantidad": 160,
   "nombre": "TUERCA",
   "material": null,
@@ -9169,7 +8601,7 @@
  },
  {
   "fila": 262,
-  "id": "L367",
+  "id": "L343",
   "cantidad": 160,
   "nombre": "ARANDELA",
   "material": null,
@@ -9195,7 +8627,7 @@
  },
  {
   "fila": 262,
-  "id": "L368",
+  "id": "L344",
   "cantidad": 80,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -9219,7 +8651,7 @@
  },
  {
   "fila": 263,
-  "id": "L369",
+  "id": "L345",
   "cantidad": 80,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -9243,7 +8675,7 @@
  },
  {
   "fila": 263,
-  "id": "L370",
+  "id": "L346",
   "cantidad": 160,
   "nombre": "TUERCA",
   "material": null,
@@ -9270,7 +8702,7 @@
  },
  {
   "fila": 263,
-  "id": "L371",
+  "id": "L347",
   "cantidad": 320,
   "nombre": "ARANDELA",
   "material": null,
@@ -9297,7 +8729,7 @@
  },
  {
   "fila": 264,
-  "id": "L372",
+  "id": "L348",
   "cantidad": 30,
   "nombre": "ESPARRAGO",
   "material": "AC",
@@ -9323,7 +8755,7 @@
  },
  {
   "fila": 264,
-  "id": "L373",
+  "id": "L349",
   "cantidad": 60,
   "nombre": "TUERCA",
   "material": null,
@@ -9349,7 +8781,7 @@
  },
  {
   "fila": 264,
-  "id": "L374",
+  "id": "L350",
   "cantidad": 60,
   "nombre": "ARANDELA",
   "material": null,
@@ -9375,7 +8807,7 @@
  },
  {
   "fila": 265,
-  "id": "L375",
+  "id": "L351",
   "cantidad": 60,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -9399,7 +8831,7 @@
  },
  {
   "fila": 265,
-  "id": "L376",
+  "id": "L352",
   "cantidad": 60,
   "nombre": "TORNILLO",
   "material": null,
@@ -9425,7 +8857,7 @@
  },
  {
   "fila": 266,
-  "id": "L377",
+  "id": "L353",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9451,7 +8883,7 @@
  },
  {
   "fila": 267,
-  "id": "L378",
+  "id": "L354",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9477,7 +8909,7 @@
  },
  {
   "fila": 268,
-  "id": "L379",
+  "id": "L355",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9503,7 +8935,7 @@
  },
  {
   "fila": 269,
-  "id": "L380",
+  "id": "L356",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9529,7 +8961,7 @@
  },
  {
   "fila": 270,
-  "id": "L381",
+  "id": "L357",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9555,7 +8987,7 @@
  },
  {
   "fila": 271,
-  "id": "L382",
+  "id": "L358",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9581,7 +9013,7 @@
  },
  {
   "fila": 272,
-  "id": "L383",
+  "id": "L359",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9607,7 +9039,7 @@
  },
  {
   "fila": 273,
-  "id": "L384",
+  "id": "L360",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9633,7 +9065,7 @@
  },
  {
   "fila": 274,
-  "id": "L385",
+  "id": "L361",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9659,7 +9091,7 @@
  },
  {
   "fila": 275,
-  "id": "L386",
+  "id": "L362",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -9685,7 +9117,7 @@
  },
  {
   "fila": 276,
-  "id": "L387",
+  "id": "L363",
   "cantidad": 240,
   "nombre": "ESPARRAGO",
   "material": null,
@@ -9714,7 +9146,7 @@
  },
  {
   "fila": 276,
-  "id": "L388",
+  "id": "L364",
   "cantidad": 120,
   "nombre": null,
   "material": null,
@@ -9744,7 +9176,7 @@
  },
  {
   "fila": 277,
-  "id": "L389",
+  "id": "L365",
   "cantidad": 150,
   "nombre": "VARILLA ROSCADA",
   "material": "AC",
@@ -9772,7 +9204,7 @@
  },
  {
   "fila": 277,
-  "id": "L390",
+  "id": "L366",
   "cantidad": 100,
   "nombre": null,
   "material": null,
@@ -9802,7 +9234,7 @@
  },
  {
   "fila": 278,
-  "id": "L391",
+  "id": "L367",
   "cantidad": 10800,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -9828,7 +9260,7 @@
  },
  {
   "fila": 279,
-  "id": "L392",
+  "id": "L368",
   "cantidad": 45,
   "nombre": "TORNILLO",
   "material": null,
@@ -9856,7 +9288,7 @@
  },
  {
   "fila": 280,
-  "id": "L393",
+  "id": "L369",
   "cantidad": 30,
   "nombre": "ESPARRAGO",
   "material": null,
@@ -9884,7 +9316,7 @@
  },
  {
   "fila": 281,
-  "id": "L394",
+  "id": "L370",
   "cantidad": 200,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -9910,7 +9342,7 @@
  },
  {
   "fila": 282,
-  "id": "L395",
+  "id": "L371",
   "cantidad": 400,
   "nombre": "ARANDELA",
   "material": "AC",
@@ -9937,7 +9369,7 @@
  },
  {
   "fila": 283,
-  "id": "L396",
+  "id": "L372",
   "cantidad": 160,
   "nombre": "TUERCA",
   "material": "AC",
@@ -9961,7 +9393,7 @@
  },
  {
   "fila": 284,
-  "id": "L397",
+  "id": "L373",
   "cantidad": 300,
   "nombre": null,
   "material": null,
@@ -9987,7 +9419,7 @@
  },
  {
   "fila": 285,
-  "id": "L398",
+  "id": "L374",
   "cantidad": 300,
   "nombre": null,
   "material": null,
@@ -10013,7 +9445,7 @@
  },
  {
   "fila": 286,
-  "id": "L399",
+  "id": "L375",
   "cantidad": 500,
   "nombre": null,
   "material": null,
@@ -10039,7 +9471,7 @@
  },
  {
   "fila": 287,
-  "id": "L400",
+  "id": "L376",
   "cantidad": 250,
   "nombre": null,
   "material": null,
@@ -10065,7 +9497,7 @@
  },
  {
   "fila": 288,
-  "id": "L401",
+  "id": "L377",
   "cantidad": 12,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -10089,7 +9521,7 @@
  },
  {
   "fila": 289,
-  "id": "L402",
+  "id": "L378",
   "cantidad": 25,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -10113,7 +9545,7 @@
  },
  {
   "fila": 290,
-  "id": "L403",
+  "id": "L379",
   "cantidad": 40,
   "nombre": "VARILLA ROSCADA",
   "material": "AC",
@@ -10137,7 +9569,7 @@
  },
  {
   "fila": 291,
-  "id": "L404",
+  "id": "L380",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -10161,7 +9593,7 @@
  },
  {
   "fila": 292,
-  "id": "L405",
+  "id": "L381",
   "cantidad": 50,
   "nombre": "ARANDELA",
   "material": "AC",
@@ -10185,7 +9617,7 @@
  },
  {
   "fila": 293,
-  "id": "L406",
+  "id": "L382",
   "cantidad": 50,
   "nombre": "ESPARRAGO",
   "material": "AC",
@@ -10211,7 +9643,7 @@
  },
  {
   "fila": 294,
-  "id": "L407",
+  "id": "L383",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "AC",
@@ -10238,7 +9670,7 @@
  },
  {
   "fila": 295,
-  "id": "L408",
+  "id": "L384",
   "cantidad": 50,
   "nombre": "TUERCA",
   "material": "INOX",
@@ -10264,7 +9696,7 @@
  },
  {
   "fila": 296,
-  "id": "L409",
+  "id": "L385",
   "cantidad": 50,
   "nombre": "TORNILLO",
   "material": "INOX",
@@ -10288,7 +9720,7 @@
  },
  {
   "fila": 297,
-  "id": "L410",
+  "id": "L386",
   "cantidad": 20,
   "nombre": null,
   "material": null,
@@ -10314,7 +9746,7 @@
  },
  {
   "fila": 298,
-  "id": "L411",
+  "id": "L387",
   "cantidad": 5,
   "nombre": null,
   "material": null,
@@ -10340,7 +9772,7 @@
  },
  {
   "fila": 299,
-  "id": "L412",
+  "id": "L388",
   "cantidad": 10,
   "nombre": null,
   "material": null,
@@ -10366,7 +9798,7 @@
  },
  {
   "fila": 300,
-  "id": "L413",
+  "id": "L389",
   "cantidad": 8,
   "nombre": null,
   "material": null,
