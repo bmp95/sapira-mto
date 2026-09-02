@@ -1,0 +1,619 @@
+<meta charset="utf-8">
+<title>Como funciona, en diagramas</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  :root{
+    --hueso:#EFECE7; --tinta:#221F1D; --acento:#B54D47;
+    --gris:#857D77; --linea:#D8D2CA; --suave:#F7F5F2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Arial,sans-serif;color:var(--tinta);-webkit-font-smoothing:antialiased}
+  .pagina{
+    width:210mm; height:297mm; padding:12mm 13mm 10mm 13mm; background:#fff;
+    display:flex; flex-direction:column; gap:4.4mm; overflow:hidden;
+  }
+  .pagina + .pagina{page-break-before:always}
+
+  /* ---------- cabeceras ---------- */
+  .titular{display:flex; align-items:flex-start; justify-content:space-between; gap:8mm;
+           border-bottom:1.6pt solid var(--tinta); padding-bottom:3mm}
+  .titular h1{font-size:19pt; line-height:1.05; letter-spacing:-.4pt}
+  .titular .sub{font-size:9pt; color:var(--gris); margin-top:1.4mm}
+  .titular img{height:7.4mm; margin-top:1mm}
+  .titular .marca{text-align:right; flex:0 0 auto}
+  .titular .marca span{display:block; font-size:6.4pt; letter-spacing:.9pt; text-transform:uppercase; color:var(--gris); margin-bottom:1.4mm}
+
+  .corrido{display:flex; align-items:baseline; justify-content:space-between;
+           border-bottom:1px solid var(--linea); padding-bottom:2.2mm}
+  .corrido b{font-size:11pt}
+  .corrido span{font-size:7.4pt; letter-spacing:1pt; text-transform:uppercase; color:var(--gris)}
+
+  h2{font-size:12.5pt; letter-spacing:-.2pt; margin-bottom:1.6mm}
+  h2 .num{color:var(--acento); margin-right:2mm}
+  .entradilla{font-size:9pt; line-height:1.5; color:var(--tinta); margin-bottom:2.8mm}
+  .entradilla b{font-weight:650}
+
+  .dos{display:grid; grid-template-columns:1fr 68mm; gap:8mm; flex:1 1 auto; min-height:0}
+
+  /* ---------- tarjetas de paso ---------- */
+  .flujo{display:flex; flex-direction:column}
+  .paso{position:relative; border:1px solid var(--linea); border-radius:1.2mm;
+        padding:1.9mm 3mm; background:#fff}
+  .paso + .paso{margin-top:3.8mm}
+  .paso + .paso::before{content:""; position:absolute; left:50%; top:-3.8mm; height:3.8mm; width:1px; background:#C6BFB6}
+  .paso + .paso::after{content:""; position:absolute; left:50%; top:-1.9mm; transform:translateX(-50%);
+       border-left:1.1mm solid transparent; border-right:1.1mm solid transparent; border-top:1.7mm solid #C6BFB6}
+  .paso .cab{display:flex; align-items:center; justify-content:space-between; gap:3mm}
+  .paso .cab b{font-size:9pt}
+  .paso .cab b i{font-style:normal; color:var(--acento); margin-right:1.6mm}
+  .paso p{font-size:7.8pt; line-height:1.4; color:var(--gris); margin-top:.9mm}
+  .paso p code{font-family:Consolas,monospace; font-size:7.2pt; color:var(--tinta); background:var(--suave); padding:0 .6mm}
+  .paso.modelo{border:1.6pt solid var(--acento); background:#FCF7F6}
+  .paso.modelo p{color:#6E4340}
+  .paso.entrada, .paso.salida{background:var(--hueso); border-color:var(--hueso); text-align:center}
+  .paso.entrada b, .paso.salida b{font-size:8.4pt}
+
+  .chip{font-size:6.2pt; letter-spacing:.7pt; text-transform:uppercase; font-weight:700;
+        padding:.7mm 1.7mm; border-radius:.8mm; white-space:nowrap; flex:0 0 auto}
+  .c-cod{background:#E5E1DA; color:#5C5550}
+  .c-mod{background:var(--acento); color:#fff}
+
+  /* ---------- notas al margen ---------- */
+  .notas{display:flex; flex-direction:column; gap:3.2mm}
+  .nota{font-size:8.2pt; line-height:1.45}
+  .nota b{display:block; font-size:8.6pt; margin-bottom:.8mm}
+  .nota b i{font-style:normal; color:var(--acento); margin-right:1.4mm}
+  .nota .g{color:var(--gris)}
+  .destacado{background:var(--hueso); border-left:2.2pt solid var(--acento);
+             padding:3mm 3.4mm; font-size:8.4pt; line-height:1.48}
+  .destacado b{font-weight:700}
+
+  .bifurca{display:grid; grid-template-columns:1fr 1fr; gap:4mm; margin-top:3.8mm; position:relative}
+  .bifurca::before{content:""; position:absolute; left:50%; top:-3.8mm; height:3.8mm; width:1px; background:#C6BFB6}
+  .rama{border-radius:1.2mm; padding:2.4mm 3mm; text-align:center}
+  .rama b{display:block; font-size:9pt}
+  .rama span{font-size:7.4pt; line-height:1.35; display:block; margin-top:.8mm}
+  .rama.ok{background:#221F1D; color:#fff}
+  .rama.ok span{color:#B9AFA6}
+  .rama.rev{background:#FCF7F6; border:1.4pt solid var(--acento); color:var(--acento)}
+  .rama.rev span{color:#6E4340}
+
+  .agente{display:grid; grid-template-columns:1fr 1.35fr 1fr; gap:9mm; align-items:stretch; position:relative}
+  .caja{border:1px solid var(--linea); border-radius:1.2mm; padding:2.6mm 3mm; background:#fff}
+  .caja.nucleo{border:1.6pt solid var(--acento); background:#FCF7F6}
+  .caja h3{font-size:6.6pt; letter-spacing:.9pt; text-transform:uppercase; color:var(--gris); margin-bottom:1.4mm}
+  .caja.nucleo h3{color:var(--acento)}
+  .caja p{font-size:8pt; line-height:1.42}
+  .caja p + p{margin-top:1.4mm}
+  .caja .g{color:var(--gris)}
+  .caja pre{font-family:Consolas,monospace; font-size:6.9pt; white-space:pre; line-height:1.5; color:#6E4340;
+            background:#fff; border:1px solid #E6D3D1; border-radius:.8mm; padding:1.8mm 2mm; margin-top:1.6mm;
+            white-space:pre-wrap}
+  .agente .flecha{position:absolute; top:50%; width:9mm; text-align:center; color:#C6BFB6; font-size:11pt; line-height:0}
+  .veto{margin-top:3.4mm; background:var(--tinta); color:#E8E3DD; border-radius:1.2mm; padding:3mm 3.4mm}
+  .veto b{color:#fff; display:block; font-size:8.6pt; margin-bottom:1.6mm}
+  .veto ul{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:1.6mm 6mm; font-size:7.9pt; line-height:1.4}
+  .veto li{padding-left:3.4mm; position:relative; color:#C4BCB4}
+  .veto li::before{content:""; position:absolute; left:0; top:1.5mm; width:1.4mm; height:1.4mm; background:var(--acento); border-radius:50%}
+  .veto li b{display:inline; color:#fff; font-size:7.9pt}
+  .veto code{font-family:Consolas,monospace; font-size:7.3pt; color:#E3A9A2}
+
+  .frente{display:grid; grid-template-columns:1fr 1fr; gap:5mm}
+  .panel{border:1px solid var(--linea); border-radius:1.4mm; overflow:hidden; background:#fff}
+  .panel .barra{background:var(--suave); border-bottom:1px solid var(--linea); padding:1.8mm 2.6mm;
+                font-size:7.4pt; font-weight:700; display:flex; justify-content:space-between; align-items:center}
+  .panel .barra em{font-style:normal; font-weight:400; color:var(--gris); font-size:6.9pt}
+  .panel .interior{padding:2.4mm 2.6mm}
+  .fila{display:flex; gap:2mm; align-items:baseline; font-size:7.4pt; padding:1.4mm 0 1.4mm 2.4mm;
+        border-top:1px solid #EDEAE5; border-left:1.4mm solid transparent}
+  .fila:first-child{border-top:none}
+  .fila.ext{border-left-color:#221F1D}
+  .fila.der{border-left-color:#8A857E}
+  .fila.rev{border-left-color:var(--acento); background:#FCF7F6}
+  .fila .txt{flex:1 1 auto; color:var(--gris)}
+  .fila .txt b{color:var(--tinta); font-weight:600}
+  .fila .est{flex:0 0 auto; font-size:6.6pt; font-weight:700; letter-spacing:.4pt}
+  .fila.rev .est{color:var(--acento)}
+  .origen{font-size:7.2pt; line-height:1.6; background:var(--suave); border-radius:.8mm; padding:2mm;
+          font-family:Consolas,monospace; color:var(--gris)}
+  .origen mark{background:#F3D9D6; color:#6E4340; padding:.3mm .4mm; border-radius:.4mm}
+  .factor{display:flex; justify-content:space-between; font-size:7.2pt; padding:1.1mm 0; border-top:1px solid #EDEAE5}
+  .factor:first-of-type{border-top:none}
+  .factor b{font-weight:600}
+  .factor .v{font-weight:700; color:#5C5550}
+  .factor.limita .v{color:var(--acento)}
+  .factor.limita b{color:var(--acento)}
+
+  .pie-pag{margin-top:auto; padding-top:3mm; border-top:1px solid var(--linea);
+           font-size:7.4pt; color:var(--gris); display:flex; justify-content:space-between}
+</style>
+
+<!-- ================= PAGINA 1 ================= -->
+<div class="pagina">
+  <div class="titular">
+    <div>
+      <h1>Cómo funciona, en diagramas</h1>
+      <div class="sub">Reconciliación de MTOs · Tornillería — anexo visual de la guía interna</div>
+    </div>
+    <div class="marca">
+      <span>Caso técnico</span>
+      <img src="LOGO_B64" alt="Sapira">
+    </div>
+  </div>
+
+  <div>
+    <h2><span class="num">1</span>El recorrido de una fila</h2>
+    <div class="entradilla">
+      Esto es todo lo que le pasa a una fila del MTO desde que se lee el Excel hasta que cae en la cola.
+      Fíjate en una sola cosa: <b>de los ocho pasos, uno es modelo y siete son código.</b> Ése es el
+      argumento entero del diseño, y es lo que hace que la alucinación sea imposible por construcción y
+      no sólo improbable.
+    </div>
+  </div>
+
+  <div class="dos">
+    <div class="flujo">
+      <div class="paso entrada"><div class="cab"><b>MTO en Excel · una fila de texto libre</b></div></div>
+
+      <div class="paso">
+        <div class="cab"><b><i>1</i>Saneado</b><span class="chip c-cod">código</span></div>
+        <p>Normaliza sin interpretar: NFKC, comillas tipográficas a rectas, <code>Ø</code> a <code>DIA</code>,
+           y <code>DIN931</code> / <code>DIN-931</code> / <code>DIN 931</code> a una única forma.</p>
+      </div>
+
+      <div class="paso modelo">
+        <div class="cab"><b><i>2</i>Segmentación</b><span class="chip c-mod">modelo · 1 llamada</span></div>
+        <p>Parte la prosa en los elementos físicos que describe, más el ámbito de fila y los conectores.
+           <b>No ve los catálogos y no devuelve posiciones</b>: sólo texto copiado tal cual.</p>
+      </div>
+
+      <div class="paso">
+        <div class="cab"><b><i>3</i>Verificación literal</b><span class="chip c-cod">código</span></div>
+        <p>Busca cada trozo en el texto de origen. Si no aparece exactamente igual, se descarta como
+           <code>NO_LITERAL</code>. Aquí muere cualquier invención antes de tocar un atributo.</p>
+      </div>
+
+      <div class="paso">
+        <div class="cab"><b><i>4</i>Extracción por token</b><span class="chip c-cod">código</span></div>
+        <p>Cuatro catálogos cerrados —26 normas, 23 calidades, 21 acabados, nombres— con frontera de
+           token y el más largo primero. <b>Cero coincidencia difusa.</b></p>
+      </div>
+
+      <div class="paso">
+        <div class="cab"><b><i>5</i>Derivaciones</b><span class="chip c-cod">código</span></div>
+        <p>Calidad a material 21/21 y norma a nombre 25/25. Sólo lo que no admite alternativa; nunca
+           lo que «suele ser».</p>
+      </div>
+
+      <div class="paso">
+        <div class="cab"><b><i>6</i>Ámbito al principal</b><span class="chip c-cod">código</span></div>
+        <p>Lo que describe la fila entera se atribuye a la pieza principal, decidida <b>por tipo</b>
+           (espárrago, tornillo, varilla), no por el orden en que aparece.</p>
+      </div>
+
+      <div class="paso">
+        <div class="cab"><b><i>7</i>Invariantes y coherencias</b><span class="chip c-cod">código</span></div>
+        <p>Ocho invariantes que impiden inventar y omitir, más once comprobaciones de que dos atributos
+           escritos no se contradicen entre sí.</p>
+      </div>
+
+      <div class="paso">
+        <div class="cab"><b><i>8</i>Confianza</b><span class="chip c-cod">código</span></div>
+        <p>El mínimo de cuatro factores medidos. El estado no se escribe: <b>es una consecuencia</b>
+           del número.</p>
+      </div>
+
+      <div class="bifurca">
+        <div class="rama ok"><b>RESUELTA</b><span>confianza = 100<br>va a la cola de compra</span></div>
+        <div class="rama rev"><b>REVISIÓN_MANUAL</b><span>confianza &lt; 100<br>con el motivo concreto</span></div>
+      </div>
+    </div>
+
+    <div class="notas">
+      <div class="destacado">
+        <b>Lo que hay que entender de este diagrama:</b> el modelo no decide nada. Dice
+        <b>qué pone</b> en el texto; el código decide <b>qué significa</b>. Son dos trabajos
+        distintos y por eso están en dos sitios distintos.
+      </div>
+
+      <div class="nota"><b><i>2</i>Por qué el modelo no ve los catálogos</b>
+        <span class="g">Si le enseñas la lista de normas válidas, empieza a empujar lo que lee hacia la
+        opción más parecida de la lista. Sin lista no tiene nada hacia lo que empujar: sólo puede
+        copiar.</span></div>
+
+      <div class="nota"><b><i>2</i>Por qué se le pide texto y no posiciones</b>
+        <span class="g">Una posición no se puede comprobar: si dice «carácter 41 al 47», hay que creerle.
+        Un trozo de texto sí — el código lo busca en el origen. Así el modelo no puede fabricar una
+        posición ni siquiera queriendo.</span></div>
+
+      <div class="nota"><b><i>4</i>Por qué frontera de token</b>
+        <span class="g">Sin ella, <code>M10</code> daba calidad <code>10</code> y <code>5/8"</code> daba
+        calidad <code>8</code>. El peor caso fue <code>x 304</code>: lo leía como calidad 304, que es
+        inoxidable, y convertía un tornillo de acero al carbono en inox. Un fantasma numérico, no un
+        error del modelo.</span></div>
+
+      <div class="nota"><b><i>5</i>La diferencia entre deducir y suponer</b>
+        <span class="g">Un <code>8.8</code> es acero al carbono porque los sistemas de designación son
+        disjuntos por material: un inoxidable nunca se llama 8.8. Eso es entrañamiento. Que el
+        <code>130</code> de un espárrago ASTM sean milímetros es una suposición, porque ASTM admite las
+        dos unidades. Lo primero se da por bueno; lo segundo va a revisión y me cuesta tres líneas de
+        treinta.</span></div>
+
+      <div class="nota"><b><i>6</i>Por tipo y no por posición</b>
+        <span class="g">Los formatos reales de proveedor no respetan ningún orden. Decidir por posición
+        funciona con el MTO de ejemplo y se rompe con el primer proveedor de fuera.</span></div>
+    </div>
+  </div>
+
+  <div class="pie-pag"><span>Bernabé Muñoz · Caso técnico Senior FDE</span><span>1 / 4</span></div>
+</div>
+
+<!-- ================= PAGINA 2 ================= -->
+<div class="pagina">
+  <div class="corrido"><b>Cómo funciona, en diagramas</b><span>Confianza y procedencia</span></div>
+
+  <div>
+    <h2><span class="num">2</span>Cómo una celda se gana el <span style="color:var(--acento)">RESUELTA</span></h2>
+    <div class="entradilla">
+      La confianza no es una opinión del modelo. <b>El modelo nunca dice cuánto confía</b> — el número lo
+      calcula el código a partir de cuatro hechos que puede comprobar, y se queda con <b>el peor de los
+      cuatro</b>, no con la media.
+    </div>
+
+    <svg viewBox="0 0 700 246" style="width:100%;height:auto">
+      <defs><style>
+        .ft{font:600 10.5px "Segoe UI",Arial;fill:#221F1D}
+        .fd{font:9px "Segoe UI",Arial;fill:#857D77}
+        .rt{font:700 11.5px "Segoe UI",Arial}
+        .rd{font:9.5px "Segoe UI",Arial}
+      </style></defs>
+
+      <!-- los cuatro factores -->
+      <g>
+        <rect x="0"   y="0" width="166" height="42" rx="4" fill="#F7F5F2" stroke="#D8D2CA"/>
+        <text class="ft" x="11" y="19">Procedencia</text><text class="fd" x="11" y="33">100 o 70 seg&#250;n el origen</text>
+        <rect x="178" y="0" width="166" height="42" rx="4" fill="#F7F5F2" stroke="#D8D2CA"/>
+        <text class="ft" x="189" y="19">Literal verificado</text><text class="fd" x="189" y="33">&#191;est&#225; tal cual en el texto?</text>
+        <rect x="356" y="0" width="166" height="42" rx="4" fill="#F7F5F2" stroke="#D8D2CA"/>
+        <text class="ft" x="367" y="19">Segmentaci&#243;n</text><text class="fd" x="367" y="33">cobertura y cero solapes</text>
+        <rect x="534" y="0" width="166" height="42" rx="4" fill="#F7F5F2" stroke="#D8D2CA"/>
+        <text class="ft" x="545" y="19">Coherencia cruzada</text><text class="fd" x="545" y="33">11 comprobaciones</text>
+      </g>
+
+      <g stroke="#C6BFB6" stroke-width="1.3" fill="none">
+        <path d="M83 42 V56 H617 V42"/><path d="M261 42 V56"/><path d="M439 42 V56"/><path d="M350 56 V68"/>
+      </g>
+      <polygon points="346,68 350,78 354,68" fill="#C6BFB6"/>
+
+      <!-- puerta 1: el minimo -->
+      <rect x="196" y="80" width="308" height="38" rx="4" fill="#221F1D"/>
+      <text class="rt" x="350" y="97" text-anchor="middle" fill="#fff">m&#237;n &#8212; el peor de los cuatro</text>
+      <text class="rd" x="350" y="111" text-anchor="middle" fill="#B9AFA6">s&#243;lo sobre las celdas que tienen valor</text>
+      <line x1="350" y1="118" x2="350" y2="132" stroke="#C6BFB6" stroke-width="1.3"/>
+      <polygon points="346,132 350,142 354,132" fill="#C6BFB6"/>
+
+      <!-- puerta 2: el veto de obligatoriedad -->
+      <rect x="60" y="144" width="580" height="44" rx="4" fill="#FCF7F6" stroke="#B54D47" stroke-width="1.6"/>
+      <text class="rt" x="350" y="162" text-anchor="middle" fill="#B54D47">&#191;Falta nombre, norma, calidad o longitud obligatoria?</text>
+      <text class="rd" x="350" y="177" text-anchor="middle" fill="#6E4340">Si falta, la confianza se pone a cero valga lo que valga el m&#237;nimo de arriba</text>
+      <line x1="350" y1="188" x2="350" y2="198" stroke="#C6BFB6" stroke-width="1.3"/>
+
+      <!-- salidas -->
+      <g stroke="#C6BFB6" stroke-width="1.3" fill="none"><path d="M175 198 H525"/><path d="M175 198 V206"/><path d="M525 198 V206"/></g>
+      <polygon points="171,206 175,216 179,206" fill="#C6BFB6"/>
+      <polygon points="521,206 525,216 529,206" fill="#C6BFB6"/>
+
+      <rect x="18" y="216" width="314" height="30" rx="4" fill="#221F1D"/>
+      <text class="rt" x="175" y="230" text-anchor="middle" fill="#fff">= 100 &#8594; RESUELTA</text>
+      <text class="rd" x="175" y="242" text-anchor="middle" fill="#B9AFA6">sale a la cola sin que nadie la mire</text>
+
+      <rect x="368" y="216" width="314" height="30" rx="4" fill="#FCF7F6" stroke="#B54D47" stroke-width="1.6"/>
+      <text class="rt" x="525" y="230" text-anchor="middle" fill="#B54D47">&lt; 100 &#8594; REVISI&#211;N_MANUAL</text>
+      <text class="rd" x="525" y="242" text-anchor="middle" fill="#6E4340">con el factor o el campo que la tumb&#243;</text>
+    </svg>
+
+    <div class="destacado" style="margin-top:3.5mm">
+      <b>Por qué el mínimo y no la media.</b> Con una media, tres factores buenos tapan uno malo y la
+      celda sale resuelta con un defecto dentro — que es exactamente el escape que cuesta 50.000 €. Con
+      el mínimo, <b>un solo factor malo hunde la celda</b>. Y como el umbral es 100, no hay ningún número
+      intermedio elegido a ojo que alguien me pueda discutir.<br><br>
+      <b>Y por qué además hay un veto.</b> El índice sólo puntúa las celdas que <i>tienen</i> valor: una
+      celda vacía no puntúa mal, simplemente no puntúa. Por eso hay una segunda comprobación
+      independiente que la anula. <b>Las 17 líneas en revisión del MTO de ejemplo entran por esta
+      segunda puerta, no por la primera</b> — y por eso el ruido de revisión es 0 %: no es que el sistema
+      dude, es que el dato no está.
+    </div>
+  </div>
+
+  <div style="margin-top:1mm">
+    <h2><span class="num">3</span>De dónde sale cada valor</h2>
+    <div class="entradilla">
+      Cada celda lleva pegada su procedencia. No es un adorno: <b>es lo que decide si puntúa 100 o 70</b>,
+      y es lo que te deja auditar una línea seis meses después sin volver a procesarla.
+    </div>
+
+    <svg viewBox="0 0 700 268" style="width:100%;height:auto">
+      <defs><style>
+        .q{font:600 11px "Segoe UI",Arial;fill:#221F1D}
+        .e{font:700 11px "Segoe UI",Arial}
+        .n{font:9.5px "Segoe UI",Arial;fill:#857D77}
+        .p{font:700 9.5px "Segoe UI",Arial;fill:#857D77}
+      </style></defs>
+
+      <!-- espina del "no": la taxonomia es una cascada, no cinco ramas de una
+           misma pregunta. Solo se baja un peldano cuando el de arriba falla. -->
+      <path d="M8 30 V 246" stroke="#C6BFB6" stroke-width="1.3" fill="none"/>
+      <g class="p" text-anchor="middle">
+        <rect x="0" y="43"  width="17" height="13" fill="#fff"/><text x="8" y="53">no</text>
+        <rect x="0" y="95"  width="17" height="13" fill="#fff"/><text x="8" y="105">no</text>
+        <rect x="0" y="147" width="17" height="13" fill="#fff"/><text x="8" y="157">no</text>
+        <rect x="0" y="199" width="17" height="13" fill="#fff"/><text x="8" y="209">no</text>
+      </g>
+
+      <!-- nivel 1 -->
+      <text class="q" x="22" y="26">¿Está escrito en el MTO?</text>
+      <path d="M232 22 H286" stroke="#C6BFB6" stroke-width="1.3" fill="none"/>
+      <polygon points="286,18 296,22 286,26" fill="#C6BFB6"/>
+      <text class="p" x="259" y="14" text-anchor="middle">sí</text>
+      <rect x="300" y="8" width="122" height="28" rx="3" fill="#221F1D"/>
+      <text class="e" x="313" y="26" fill="#fff">EXTRAÍDO</text>
+      <text class="n" x="436" y="18">100 · guarda el trozo literal y su posición,</text>
+      <text class="n" x="436" y="31">verificados contra el texto de origen</text>
+
+      <!-- nivel 2 -->
+      <text class="q" x="22" y="78">¿Se deduce sin alternativa posible?</text>
+      <path d="M232 74 H286" stroke="#C6BFB6" stroke-width="1.3" fill="none"/>
+      <polygon points="286,70 296,74 286,78" fill="#C6BFB6"/>
+      <text class="p" x="259" y="66" text-anchor="middle">sí</text>
+      <rect x="300" y="60" width="122" height="28" rx="3" fill="#221F1D"/>
+      <text class="e" x="313" y="78" fill="#fff">DERIVADO</text>
+      <text class="n" x="436" y="70">100 · sólo si la otra opción no existe, y</text>
+      <text class="n" x="436" y="83">guarda el nombre de la regla que lo dedujo</text>
+
+      <!-- nivel 3 -->
+      <text class="q" x="22" y="130">¿Hay respuesta humana con clave exacta?</text>
+      <path d="M262 126 H286" stroke="#C6BFB6" stroke-width="1.3" fill="none"/>
+      <polygon points="286,122 296,126 286,130" fill="#C6BFB6"/>
+      <text class="p" x="274" y="118" text-anchor="middle">sí</text>
+      <rect x="300" y="112" width="122" height="28" rx="3" fill="#221F1D"/>
+      <text class="e" x="313" y="130" fill="#fff">HEREDADO</text>
+      <text class="n" x="436" y="122">100 · lo contestó una persona del equipo, y</text>
+      <text class="n" x="436" y="135">guarda quién la dio y cuándo</text>
+
+      <!-- nivel 4 -->
+      <text class="q" x="22" y="182">¿Hay un juicio de alta confianza?</text>
+      <path d="M232 178 H286" stroke="#C6BFB6" stroke-width="1.3" fill="none"/>
+      <polygon points="286,174 296,178 286,182" fill="#C6BFB6"/>
+      <text class="p" x="259" y="170" text-anchor="middle">sí</text>
+      <rect x="300" y="164" width="122" height="28" rx="3" fill="#FCF7F6" stroke="#B54D47" stroke-width="1.4"/>
+      <text class="e" x="313" y="182" fill="#B54D47">INFERIDO</text>
+      <text class="n" x="436" y="174">70 · juicio, por bueno que parezca.</text>
+      <text class="n" x="436" y="187">Setenta nunca es cien: va a revisión</text>
+
+      <!-- nivel 5: el fondo de la cascada -->
+      <path d="M8 246 H286" stroke="#C6BFB6" stroke-width="1.3" fill="none"/>
+      <polygon points="286,242 296,246 286,250" fill="#C6BFB6"/>
+      <rect x="300" y="232" width="122" height="28" rx="3" fill="#F7F5F2" stroke="#D8D2CA"/>
+      <text class="e" x="313" y="250" fill="#857D77">AUSENTE</text>
+      <text class="n" x="436" y="242">el dato no está y no se puede deducir. Va a</text>
+      <text class="n" x="436" y="255">revisión con la pregunta ya formulada</text>
+    </svg>
+
+    <div class="destacado" style="margin-top:2.4mm">
+      <b>Por qué HEREDADO puntúa 100 y no 70.</b> Un valor heredado no es una suposición del sistema: es
+      la respuesta que dio una persona de vuestro equipo a esta misma pregunta, recuperada por
+      coincidencia <b>exacta</b> de los otros seis atributos. Vale lo mismo que si estuviera escrito en el
+      MTO. Un valor inferido sigue siendo criterio mío — y setenta puntos es la forma de decir <b>esto lo
+      mira alguien</b> sin discutir cuánto de bueno es.
+    </div>
+  </div>
+
+  <div class="pie-pag"><span>Bernabé Muñoz · Caso técnico Senior FDE</span><span>2 / 4</span></div>
+</div>
+
+<!-- ================= PAGINA 3 ================= -->
+<div class="pagina">
+  <div class="corrido"><b>Cómo funciona, en diagramas</b><span>La economía y el histórico</span></div>
+
+  <div>
+    <h2><span class="num">4</span>La asimetría que decide todo</h2>
+    <div class="entradilla">
+      Antes de cualquier decisión técnica está ésta, y es aritmética, no criterio. Si te preguntan por qué
+      el sistema es tan conservador, la respuesta está entera en este dibujo.
+    </div>
+
+    <svg viewBox="0 0 700 128" style="width:100%;height:auto">
+      <defs><style>
+        .et{font:600 11px "Segoe UI",Arial;fill:#221F1D}
+        .ds{font:9.5px "Segoe UI",Arial;fill:#857D77}
+        .big{font:900 20px "Segoe UI Black","Segoe UI",Arial;fill:#B54D47}
+      </style></defs>
+
+      <text class="et" x="0" y="14">Revisión innecesaria — el sistema duda de una fila buena</text>
+      <rect x="0" y="22" width="3" height="18" fill="#857D77"/>
+      <text class="big" x="14" y="38" style="fill:#857D77">1 €</text>
+      <text class="ds" x="70" y="37">90 segundos de comprador</text>
+
+      <text class="et" x="0" y="66">Escape — se da por buena una fila mal extraída</text>
+      <rect x="0" y="74" width="700" height="18" fill="#B54D47"/>
+      <text class="big" x="14" y="90" style="fill:#fff">50.000 €</text>
+      <text class="ds" x="150" y="89" style="fill:#F3D9D6">de tres a ocho semanas de retraso en el frente de obra afectado</text>
+
+      <text class="ds" x="0" y="116">A esta escala, la barra del euro mediría 4 micras de ancho: no cabe dibujarla. Adivinar sólo</text>
+      <text class="ds" x="0" y="128">compensaría si nos equivocásemos menos de <tspan style="font-weight:700;fill:#221F1D">una vez cada cincuenta mil</tspan> — el 0,002 %.</text>
+    </svg>
+
+    <div class="destacado" style="margin-top:3mm">
+      <b>Y por eso no hubo que preguntarle a Adolfo</b> con qué frecuencia una tuerca lleva calidad
+      distinta que su tornillo. Aunque fuera rara —pongamos un 5 %—, está <b>2.500 veces por encima</b>
+      del punto en que adivinar saldría a cuenta. El cociente decide solo: no existe una frecuencia
+      plausible que justifique suponer la calidad.
+    </div>
+  </div>
+
+  <div style="margin-top:2mm">
+    <h2><span class="num">5</span>El histórico: preguntar una vez, no veinticinco</h2>
+    <div class="entradilla">
+      Aquí está el valor grande del sistema, y no lo teníamos hasta que Adolfo contestó que la calidad que
+      falta <b>se consulta con ingeniería</b>. Una obra pasa por hasta 25 revisiones y la misma arandela sin
+      dureza reaparece en casi todas.
+    </div>
+
+    <svg viewBox="0 0 700 176" style="width:100%;height:auto">
+      <defs><style>
+        .rv{font:700 10.5px "Segoe UI",Arial;fill:#221F1D}
+        .tx{font:9.5px "Segoe UI",Arial;fill:#857D77}
+        .lb{font:600 9.5px "Segoe UI",Arial;fill:#B54D47}
+        .kk{font:9px Consolas,monospace;fill:#221F1D}
+      </style></defs>
+
+      <line x1="0" y1="34" x2="700" y2="34" stroke="#D8D2CA" stroke-width="1.4"/>
+
+      <!-- rev 9: se pregunta -->
+      <circle cx="70" cy="34" r="9" fill="#B54D47"/>
+      <text class="rv" x="70" y="18" text-anchor="middle">Revisión 9</text>
+      <text class="lb" x="70" y="58" text-anchor="middle">SE PREGUNTA</text>
+      <text class="tx" x="70" y="72" text-anchor="middle">una vez</text>
+
+      <!-- rev 12, 15, 21 heredan -->
+      <g>
+        <circle cx="270" cy="34" r="8" fill="#fff" stroke="#221F1D" stroke-width="1.6"/>
+        <text class="rv" x="270" y="18" text-anchor="middle">Revisión 12</text>
+        <text class="tx" x="270" y="58" text-anchor="middle">hereda</text>
+      </g>
+      <g>
+        <circle cx="450" cy="34" r="8" fill="#fff" stroke="#221F1D" stroke-width="1.6"/>
+        <text class="rv" x="450" y="18" text-anchor="middle">Revisión 15</text>
+        <text class="tx" x="450" y="58" text-anchor="middle">hereda</text>
+      </g>
+      <g>
+        <circle cx="630" cy="34" r="8" fill="#fff" stroke="#221F1D" stroke-width="1.6"/>
+        <text class="rv" x="630" y="18" text-anchor="middle">Revisión 21</text>
+        <text class="tx" x="630" y="58" text-anchor="middle">hereda</text>
+      </g>
+
+      <path d="M79 34 H261" stroke="#B54D47" stroke-width="1.4" stroke-dasharray="3 3" fill="none"/>
+      <path d="M279 34 H441" stroke="#B54D47" stroke-width="1.4" stroke-dasharray="3 3" fill="none"/>
+      <path d="M459 34 H621" stroke="#B54D47" stroke-width="1.4" stroke-dasharray="3 3" fill="none"/>
+
+      <!-- la clave -->
+      <rect x="0" y="88" width="700" height="76" rx="4" fill="#F7F5F2" stroke="#D8D2CA"/>
+      <text class="rv" x="14" y="107">La clave canónica: los otros seis atributos, exactos</text>
+      <text class="kk" x="14" y="126">ARANDELA · ACERO · — · M16 · — · DIN 125 · CINCADO   →   calidad = 200 HV   (J. Pérez, 12-03)</text>
+      <text class="tx" x="14" y="144">Coincidencia exacta o no hay herencia. Si esa misma arandela viene sin acabado, es otra clave y se</text>
+      <text class="tx" x="14" y="157">vuelve a preguntar. Si dos respuestas humanas se contradicen, no hereda ninguna: sale a revisión.</text>
+    </svg>
+
+    <div class="destacado" style="margin-top:3mm">
+      <b>Esto no reduce el coste de la consulta: lo divide.</b> Con 25 revisiones por obra, preguntar una
+      vez en lugar de veinticinco es el argumento de negocio principal — bastante más grande que el ahorro
+      de lectura. Está diseñado y especificado; a fecha de hoy, no construido del todo.
+    </div>
+  </div>
+
+  <div class="pie-pag"><span>Bernabé Muñoz · Caso técnico Senior FDE</span><span>3 / 4</span></div>
+</div>
+
+<!-- ================= PAGINA 4 ================= -->
+<div class="pagina">
+  <div class="corrido"><b>Cómo funciona, en diagramas</b><span>El agente y el frente</span></div>
+
+  <div style="margin-top:2mm">
+    <h2><span class="num">6</span>El único agente, por dentro</h2>
+    <div class="entradilla">
+      Todo el uso de modelo del sistema es esto. <b>Una llamada por fila</b>, y su instrucción completa cabe
+      en seis líneas donde no aparece ni una norma ni una calidad.
+    </div>
+
+    <div class="agente">
+      <div class="caja">
+        <h3>Entrada</h3>
+        <p>El texto de la fila, ya saneado. <span class="g">Y nada más: ni la columna de material, ni las
+        filas vecinas, ni el catálogo de normas válidas.</span></p>
+      </div>
+
+      <div class="caja nucleo">
+        <h3>El agente · 1 llamada</h3>
+        <p>Gemini 3.7 Flash con salida estructurada. Sólo tiene un trabajo: <b>partir la prosa en las piezas
+        que se compran por separado.</b></p>
+        <pre>Devuelve, para cada elemento, el
+sustantivo tal como aparece y el
+TROZO LITERAL que le pertenece.
+Copia los trozos LITERALMENTE.
+No normalices, no traduzcas,
+no interpretes, no anadas nada.</pre>
+      </div>
+
+      <div class="caja">
+        <h3>Salida</h3>
+        <p><b>elementos[ ]</b> <span class="g">— sustantivo y trozo literal de cada pieza</span></p>
+        <p><b>ambito_fila[ ]</b> <span class="g">— lo que describe la fila entera</span></p>
+        <p><b>conectores[ ]</b> <span class="g">— las palabras de unión</span></p>
+      </div>
+    </div>
+
+    <div class="veto">
+      <b>Lo que hace el código con esa salida antes de que nadie más la vea</b>
+      <ul>
+        <li><b>Localiza cada trozo él mismo</b> con <code>str.find</code> sobre el origen: el modelo no
+            devuelve posiciones, así que no puede fabricar una.</li>
+        <li><b>Descarta como <code>NO_LITERAL</code></b> todo trozo que no aparezca exactamente igual en
+            el texto de la fila.</li>
+        <li><b>Aísla el fallo por fila</b> y reintenta con espera en 429 y 5xx: un corte de red ya no
+            tumba el lote entero.</li>
+        <li><b>Contabiliza</b> tokens, latencia y coste de cada llamada, y cachea en disco para no pagar
+            dos veces lo mismo.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:1mm">
+    <h2><span class="num">7</span>Qué ve el comprador</h2>
+    <div class="entradilla">
+      El frente tiene dos pestañas y una regla de diseño: <b>nunca dice «no estoy seguro»</b>. Dice qué
+      tumbó la línea. Fíjate en la traza de la derecha: <b>los cuatro factores están a 100 y aun así va a
+      revisión</b>, porque falta un campo obligatorio. Eso es lo que se cierra en un clic.
+    </div>
+
+    <div class="frente">
+      <div class="panel">
+        <div class="barra">Cola <em>color por procedencia</em></div>
+        <div class="interior" style="padding:0 2.6mm">
+          <div class="fila ext"><span class="txt"><b>TORNILLO</b> M16 x 80 · 8.8 · DIN 931</span><span class="est">100</span></div>
+          <div class="fila der"><span class="txt"><b>TUERCA</b> M16 · ACERO <i>derivado de 8.8</i></span><span class="est">100</span></div>
+          <div class="fila rev"><span class="txt"><b>ARANDELA</b> M16 · DIN 125 · <i>falta calidad</i></span><span class="est">REVISIÓN</span></div>
+          <div class="fila ext"><span class="txt"><b>ESPÁRRAGO</b> M20 x 130 · B7</span><span class="est">100</span></div>
+          <div class="fila rev"><span class="txt"><b>ESPÁRRAGO</b> · longitud <i>130 sin unidad</i></span><span class="est">REVISIÓN</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="barra">Traza <em>de la línea seleccionada</em></div>
+        <div class="interior">
+          <div class="origen">TORNILLO M16 X 80 8.8 DIN 931 C/W 1 TUERCA Y <mark>2 ARANDELA DIN 125</mark> CINCADO</div>
+          <div style="margin-top:2.2mm">
+            <div class="factor"><b>Procedencia</b><span class="v">100 · extraído</span></div>
+            <div class="factor"><b>Literal verificado</b><span class="v">100</span></div>
+            <div class="factor"><b>Segmentación</b><span class="v">100</span></div>
+            <div class="factor"><b>Coherencia cruzada</b><span class="v">100</span></div>
+            <div class="factor" style="border-top:1.2pt solid var(--tinta); margin-top:.6mm">
+              <b>Mínimo de las celdas con valor</b><span class="v">100</span></div>
+            <div class="factor limita"><b>Campo obligatorio ausente · CALIDAD</b><span class="v">confianza = 0</span></div>
+            <div class="factor" style="border-top:1.2pt solid var(--tinta)">
+              <b>Estado</b><span class="v" style="color:var(--acento)">REVISIÓN_MANUAL</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="destacado" style="margin-top:3.4mm">
+      <b>La decisión de interfaz que más importa no se ve en la captura:</b> no se puede aprobar en bloque
+      un lote con motivos distintos. Si la cola crece y el comprador empieza a cerrar veinte revisiones en
+      treinta segundos, ha dejado de mirarlas y el escape entra igual — con todas las métricas internas en
+      verde. Por eso el sistema cuenta las aprobaciones en bloque y las trata como <b>alarma</b>, no como
+      productividad.
+    </div>
+  </div>
+
+  <div class="pie-pag"><span>Bernabé Muñoz · Caso técnico Senior FDE</span><span>4 / 4</span></div>
+</div>

@@ -1,0 +1,264 @@
+<meta charset="utf-8">
+<title>De aqui a produccion</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  :root{
+    --hueso:#EFECE7;
+    --tinta:#221F1D;
+    --acento:#B54D47;
+    --gris:#857D77;
+    --linea:#D8D2CA;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:#fff; color:var(--tinta);
+    -webkit-font-smoothing:antialiased;
+  }
+  .hoja{
+    width:210mm; height:297mm; padding:11mm 12mm 9mm 12mm;
+    display:flex; flex-direction:column; gap:4.6mm;
+    background:#fff;
+  }
+
+  /* ---------- cabecera ---------- */
+  .cab{display:flex; align-items:flex-start; justify-content:space-between; gap:8mm}
+  .cab h1{font-size:26pt; line-height:1.02; letter-spacing:-.6pt; font-weight:700}
+  .cab .sub{font-size:9.6pt; color:var(--gris); margin-top:1.6mm; line-height:1.35}
+  .cab .sub b{color:var(--tinta); font-weight:600}
+  .destinatario{text-align:right; flex:0 0 auto; padding-top:1mm}
+  .destinatario span{display:block; font-size:6.6pt; letter-spacing:.9pt; text-transform:uppercase; color:var(--gris); margin-bottom:1.8mm}
+  .destinatario img{height:8.4mm; display:block; margin-left:auto}
+
+  /* ---------- resumen ---------- */
+  .resumen{
+    border-left:2.2pt solid var(--acento); padding:1mm 0 1mm 4mm;
+    font-size:9.4pt; line-height:1.5;
+  }
+  .resumen b{font-weight:600}
+  .resumen .clave{color:var(--acento); font-weight:600}
+
+  /* ---------- banda de cifras ---------- */
+  .cifras{display:grid; grid-template-columns:repeat(4,1fr); background:var(--hueso); border-radius:1.6mm}
+  .cifra{padding:4mm 3.4mm; border-left:1px solid var(--linea)}
+  .cifra:first-child{border-left:none}
+  .cifra .n{font-family:"Segoe UI Black","Segoe UI",Arial,sans-serif; font-weight:900; font-size:22pt; line-height:1; color:var(--acento); letter-spacing:-.8pt}
+  .cifra .q{font-size:8.4pt; font-weight:600; margin-top:1.6mm; line-height:1.25}
+  .cifra .d{font-size:7.4pt; color:var(--gris); margin-top:.9mm; line-height:1.3}
+
+  /* ---------- bloques ---------- */
+  h2{font-size:7.4pt; letter-spacing:1.1pt; text-transform:uppercase; color:var(--gris); font-weight:600;
+     padding-bottom:1.2mm; border-bottom:1px solid var(--linea); margin-bottom:2.3mm}
+
+  .cuerpo{display:grid; grid-template-columns:1fr 62mm; gap:7mm; flex:1 1 auto; min-height:0}
+  .izq{display:flex; flex-direction:column; gap:4.6mm; min-width:0}
+  .der{display:flex; flex-direction:column; gap:3.2mm}
+
+  .pilares{display:grid; grid-template-columns:1fr 1fr; gap:3.4mm 5mm}
+  .pilar{font-size:8.4pt; line-height:1.42}
+  .pilar b{display:block; font-size:9pt; font-weight:700; margin-bottom:.9mm}
+  .pilar .nota{color:var(--gris)}
+
+  .lista{list-style:none; font-size:8.2pt; line-height:1.4}
+  .lista li{padding:1.3mm 0 1.3mm 4.2mm; border-top:1px solid var(--linea); position:relative}
+  .lista li:first-child{border-top:none; padding-top:0}
+  .lista li::before{content:""; position:absolute; left:0; top:2.6mm; width:1.5mm; height:1.5mm; background:var(--acento); border-radius:50%}
+  .lista li:first-child::before{top:1.1mm}
+  .lista b{font-weight:650}
+  .lista .g{color:var(--gris)}
+  .der .lista{font-size:8pt; line-height:1.34}
+  .der .lista li{padding:1.1mm 0 1.1mm 4.2mm}
+
+  .umbrales{width:100%; border-collapse:collapse; font-size:8pt}
+  .umbrales td{padding:1.35mm 0; border-top:1px solid var(--linea); vertical-align:baseline}
+  .umbrales tr:first-child td{border-top:none}
+  .umbrales td:last-child{text-align:right; font-weight:700; color:var(--acento); white-space:nowrap; padding-left:2mm}
+
+  /* ---------- pie ---------- */
+  .pie{background:var(--tinta); color:#F4F1EC; border-radius:1.6mm; padding:4.6mm 5mm;
+       display:flex; align-items:center; gap:5mm}
+  .pie .et{flex:0 0 auto; font-size:6.8pt; letter-spacing:1pt; text-transform:uppercase;
+           color:#B9AFA6; border-right:1px solid #4A433E; padding-right:5mm; line-height:1.5}
+  .pie .et b{display:block; color:#fff; font-size:13pt; letter-spacing:-.2pt; text-transform:none; font-weight:700}
+  .pie p{font-size:8.6pt; line-height:1.48}
+  .pie p b{color:#fff; font-weight:650}
+  .pie em{font-style:normal; color:#E3A9A2}
+</style>
+
+<div class="hoja">
+
+  <div class="cab">
+    <div>
+      <h1>De aquí a producción</h1>
+      <div class="sub">
+        <b>Reconciliación de MTOs · Tornillería</b> — Caso técnico Senior FDE<br>
+        Bernabé Muñoz · Septiembre 2026
+      </div>
+    </div>
+    <div class="destinatario">
+      <span>Preparado para</span>
+      <img src="LOGO_B64" alt="Sapira">
+    </div>
+  </div>
+
+  <div class="resumen">
+    El cuello de botella no es la precisión del modelo: es que <b>un escape cuesta 50.000 € y una
+    revisión de más cuesta 1 €</b>. De ahí sale toda la arquitectura — <span class="clave">el sistema no
+    adivina nunca</span>: resuelve el 43 % de las líneas sin intervención y del resto formula la pregunta
+    exacta. Las 17 líneas que hoy van a revisión son dato que el MTO no trae, ninguna es duda del sistema:
+    <b>la cobertura la fija vuestra ingeniería, no mi código.</b>
+  </div>
+
+  <div class="cifras">
+    <div class="cifra"><div class="n">0 %</div><div class="q">Tasa de escape</div><div class="d">sobre 300 filas no vistas</div></div>
+    <div class="cifra"><div class="n">0</div><div class="q">Invenciones</div><div class="d">en 100 filas adversarias</div></div>
+    <div class="cifra"><div class="n">0 %</div><div class="q">Ruido de revisión</div><div class="d">17 de 17 son dato ausente</div></div>
+    <div class="cifra"><div class="n">80 $</div><div class="q">Modelo por obra</div><div class="d">frente a 2.500 h de comprador</div></div>
+  </div>
+
+  <div>
+    <h2>Timeline — cinco puertas, cada una con criterio de salida medible</h2>
+    <svg viewBox="0 0 720 104" style="width:100%;height:auto" role="img" aria-label="Cinco puertas de despliegue">
+      <defs>
+        <style>
+          .nm{font:600 10.5px "Segoe UI",Arial;fill:#221F1D}
+          .cr{font:9px "Segoe UI",Arial;fill:#857D77}
+          .sm{font:700 9px "Segoe UI",Arial;fill:#221F1D}
+          .du{font:9px "Segoe UI",Arial;fill:#857D77}
+          .nu{font:700 11px "Segoe UI",Arial;fill:#fff}
+          .nub{font:700 11px "Segoe UI",Arial;fill:#B54D47}
+        </style>
+      </defs>
+      <line x1="34" y1="46" x2="686" y2="46" stroke="#D8D2CA" stroke-width="1.6"/>
+      <line x1="34" y1="46" x2="424" y2="46" stroke="#B54D47" stroke-width="1.6"/>
+
+      <!-- duraciones sobre los tramos -->
+      <g class="du" text-anchor="middle">
+        <rect x="76"  y="39" width="46" height="14" fill="#fff"/><text x="99"  y="49">2 sem</text>
+        <rect x="207" y="39" width="46" height="14" fill="#fff"/><text x="230" y="49">4 sem</text>
+        <rect x="338" y="39" width="46" height="14" fill="#fff"/><text x="361" y="49">4 sem</text>
+        <rect x="469" y="39" width="46" height="14" fill="#fff"/><text x="492" y="49">6 sem</text>
+      </g>
+
+      <!-- P0 -->
+      <g text-anchor="middle">
+        <circle cx="34" cy="46" r="11" fill="#fff" stroke="#B54D47" stroke-width="1.8"/>
+        <text class="nub" x="34" y="50">0</text>
+        <text class="nm" x="34" y="20" text-anchor="start">Base</text>
+        <text class="cr" x="34" y="72" text-anchor="start">Hecho: escape medido</text>
+        <text class="cr" x="34" y="84" text-anchor="start">en 300 filas no vistas</text>
+      </g>
+      <!-- P1 -->
+      <g text-anchor="middle">
+        <circle cx="165" cy="46" r="11" fill="#B54D47"/><text class="nu" x="165" y="50">1</text>
+        <text class="nm" x="165" y="20">Patrón de medida</text>
+        <text class="cr" x="165" y="72">Desacuerdo entre</text>
+        <text class="cr" x="165" y="84">anotadores &lt; 5 %</text>
+      </g>
+      <!-- P2 -->
+      <g text-anchor="middle">
+        <circle cx="296" cy="46" r="11" fill="#B54D47"/><text class="nu" x="296" y="50">2</text>
+        <text class="nm" x="296" y="20">Piloto en sombra</text>
+        <text class="cr" x="296" y="72">Escape &lt; 1,5 % sobre</text>
+        <text class="cr" x="296" y="84">600 líneas reales</text>
+      </g>
+      <!-- P3 -->
+      <g text-anchor="middle">
+        <circle cx="427" cy="46" r="13" fill="#221F1D"/><text class="nu" x="427" y="50">3</text>
+        <text class="sm" x="427" y="20">PRODUCCIÓN · 1 familia</text>
+        <text class="cr" x="427" y="72">El comprador prefiere</text>
+        <text class="cr" x="427" y="84">la herramienta al Excel</text>
+      </g>
+      <!-- P4 -->
+      <g text-anchor="middle">
+        <circle cx="558" cy="46" r="11" fill="#fff" stroke="#857D77" stroke-width="1.6"/>
+        <text class="nu" x="558" y="50" style="fill:#857D77">4</text>
+        <text class="nm" x="558" y="20">Histórico</text>
+        <text class="cr" x="558" y="72">% de consultas</text>
+        <text class="cr" x="558" y="84">evitadas por herencia</text>
+      </g>
+      <!-- P5 -->
+      <g text-anchor="middle">
+        <circle cx="686" cy="46" r="11" fill="#fff" stroke="#857D77" stroke-width="1.6"/>
+        <text class="nu" x="686" y="50" style="fill:#857D77">5</text>
+        <text class="nm" x="686" y="20" text-anchor="end">Más familias</text>
+        <text class="cr" x="686" y="72" text-anchor="end">El criterio de la</text>
+        <text class="cr" x="686" y="84" text-anchor="end">puerta 2, por familia</text>
+      </g>
+
+      <text class="du" x="427" y="101" text-anchor="middle" style="fill:#B54D47;font-weight:700">10 semanas hasta producción · 16 hasta el histórico</text>
+    </svg>
+  </div>
+
+  <div class="cuerpo">
+    <div class="izq">
+      <div>
+        <h2>Los cuatro pilares de la decisión</h2>
+        <div class="pilares">
+          <div class="pilar"><b>El umbral es 100.</b>
+            No hay número elegido a ojo. Cada celda lleva una confianza que calcula el código como el
+            mínimo de cuatro hechos medidos. <span class="nota">O el valor viene por un camino que no
+            puede estar mal, o lo mira una persona.</span></div>
+          <div class="pilar"><b>Un solo agente.</b>
+            Los otros tres se descartaron midiendo, no opinando. El 90 % del sistema son tablas:
+            <span class="nota">ampliarlas es trabajo de un comprador con un Excel, no de un científico
+            de datos.</span></div>
+          <div class="pilar"><b>Piloto en sombra, no piloto normal.</b>
+            El sistema procesa en paralelo y nadie compra con su salida.
+            <span class="nota">Con el cociente 1:50.000, el primer escape en producción cuesta más que
+            todo el piloto.</span></div>
+          <div class="pilar"><b>El cuello de botella es el dato de origen.</b>
+            El 100 % de las revisiones son campos que ingeniería no escribe.
+            <span class="nota">Ahí está la palanca, y es vuestra: no se resuelve con más modelo.</span></div>
+        </div>
+      </div>
+
+      <div>
+        <h2>QA en producción — lo que hay que montar y hoy no existe</h2>
+        <ul class="lista">
+          <li><b>Muestreo de auditoría, 2 % semanal a ciegas.</b> <span class="g">Es la única forma de medir el escape cuando ya no hay patrón contra el que comparar.</span></li>
+          <li><b>Monitor de tasa de revisión por origen.</b> <span class="g">Si un estudio empieza a generar más revisiones, hay vocabulario nuevo. Avisa antes de que caiga la cobertura.</span></li>
+          <li><b>Alarma de aprobación en bloque.</b> <span class="g">Si un comprador cierra veinte revisiones en treinta segundos, ha dejado de mirarlas: es el indicador de que el sistema dejó de servir aunque las métricas internas sigan verdes.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="der">
+      <div>
+        <h2>Recursos · vuestro lado</h2>
+        <ul class="lista">
+          <li><b>Comprador senior, 4 h/sem</b> <span class="g">en las puertas 1 y 2. Es la fuente de la verdad, no un validador.</span></li>
+          <li><b>Segundo comprador, 8 h</b> <span class="g">sólo para la anotación ciega.</span></li>
+          <li><b>Ingeniería, 2 h/sem</b> <span class="g">— el cuello de botella real.</span></li>
+          <li><b>Lectura de la base de compras</b> <span class="g">y 3-5 MTO de obras distintas.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Recursos · nuestro lado</h2>
+        <ul class="lista">
+          <li><b>Un FDE a jornada completa</b> <span class="g">hasta la puerta 3.</span></li>
+          <li><b>Medio ingeniero de datos</b> <span class="g">desde la puerta 4.</span></li>
+          <li><b>Infraestructura despreciable.</b> <span class="g">Ni científicos de datos ni entrenar nada.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Umbrales que propongo</h2>
+        <table class="umbrales">
+          <tr><td>Tasa de escape, por muestreo</td><td>&lt; 1,5 %</td></tr>
+          <tr><td>Ruido de revisión</td><td>&lt; 5 %</td></tr>
+          <tr><td>Aprobaciones en bloque</td><td>&lt; 10 %</td></tr>
+          <tr><td>Subida de revisión por origen</td><td>&lt; 10 pp</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="pie">
+    <div class="et">Siguiente paso<b>Puerta 1</b>dos semanas</div>
+    <p><b>Dos compradores vuestros anotan 100 líneas a ciegas.</b> Su tasa de desacuerdo entre ellos es
+    la cota superior real de cualquier número que os prometa: si discrepan en el 8 % de las celdas,
+    hablar de un 97 % de acierto es ruido. <em>Sin esa medición, todo lo demás es mi criterio
+    contrastado contra sí mismo</em> — y ése es exactamente el error que este caso pone a prueba.</p>
+  </div>
+
+</div>
