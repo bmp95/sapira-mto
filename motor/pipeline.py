@@ -472,6 +472,10 @@ def _linea_fila_rota(id_: str, fila: FilaMTO, motivo: Motivo) -> LineaSalida:
     linea = LineaSalida.vacia(id=id_, fila_origen=fila.item, cantidad=fila.cantidad)
     linea.confianza = 0
     linea.motivos = [motivo]
+    # El texto original sigue siendo util en el panel de traza aunque la fila
+    # nunca llegara a segmentarse en elementos: no hay tramo que resaltar
+    # (no se inventa uno), pero si el texto completo sobre el que fallo.
+    linea.texto_origen = fila.descripcion
     return linea
 
 
@@ -488,6 +492,7 @@ def _linea_fila_fallida(id_: str, fila: FilaMTO) -> LineaSalida:
         codigo=CODIGO_FALLO_DE_PROCESO,
         texto="No se ha podido procesar esta fila: error de conexi" + chr(0xf3) + "n con el "
               "servicio o fallo inesperado del sistema. Vuelve a lanzarla.")]
+    linea.texto_origen = fila.descripcion
     return linea
 
 
@@ -500,6 +505,8 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
                      interruptores_coherencia: dict[str, bool],
                      politicas: dict[str, bool]) -> LineaSalida:
     linea = LineaSalida.vacia(id=id_, fila_origen=fila.item, cantidad=fila.cantidad * multiplicador(texto[elem.span[0]:elem.span[1]]))
+    linea.texto_origen = texto
+    linea.tramo = elem.span
 
     linea.nombre = _valor_extraido(datos.nombre)
     if linea.nombre.procedencia is Procedencia.AUSENTE and datos.norma is not None:

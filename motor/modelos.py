@@ -81,6 +81,16 @@ class LineaSalida(BaseModel):
     acabado: Valor
     confianza: int = 0
     motivos: list[Motivo] = []
+    # De que tramo del texto original salio esta linea, para el panel de
+    # traza del front: `texto_origen` es la descripcion saneada de la fila
+    # completa (todas las lineas de una misma fila comparten el mismo
+    # texto), `tramo` es el span de ESTE elemento dentro de ese texto --
+    # None cuando la fila entera fue a revision antes de segmentarse (una
+    # invariante rota o una excepcion) y no hay tramo de elemento que
+    # resaltar. Ambos con default para no romper ningun constructor
+    # existente (LineaSalida.vacia() y los tests que la usan): es aditivo.
+    texto_origen: str = ""
+    tramo: Optional[tuple[int, int]] = None
 
     @classmethod
     def vacia(cls, id: str, fila_origen: int, cantidad: int) -> "LineaSalida":

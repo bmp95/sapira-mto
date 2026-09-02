@@ -526,6 +526,51 @@ def test_pieza_sin_nombrar_manda_la_fila_a_revision():
     assert linea.nombre.procedencia is Procedencia.AUSENTE
 
 
+def test_texto_origen_y_tramo_se_rellenan_por_elemento():
+    """El panel de traza del front necesita saber de que tramo del texto
+    original salio cada linea -- las celdas ya llevan su propio span, pero
+    la linea no llevaba el texto completo de la fila ni el tramo de SU
+    elemento dentro de ese texto. Fila 10 es de un solo elemento
+    ('Tornillo hexagonal DIN 933 M10 x 40, 8.8, zincado'), asi que el
+    tramo del elemento cubre la fila entera."""
+    filas = leer_mto(RUTA)
+    fila10 = next(f for f in filas if f.item == 10)
+    lineas = [l for l in procesar_mto(RUTA, puerto_de_guion()) if l.fila_origen == 10]
+    assert len(lineas) == 1
+    linea = lineas[0]
+    assert linea.texto_origen == fila10.descripcion
+    assert linea.tramo == (0, len(fila10.descripcion))
+    assert linea.texto_origen[linea.tramo[0]:linea.tramo[1]] == fila10.descripcion
+
+
+def test_texto_origen_y_tramo_distintos_por_elemento_en_fila_con_set():
+    """Fila 1 tiene tres elementos (esparrago, tuerca, arandela): comparten
+    el mismo `texto_origen` (la fila es una sola) pero cada uno lleva SU
+    propio `tramo`, no el de otro elemento del set."""
+    lineas = [l for l in procesar_mto(RUTA, puerto_de_guion()) if l.fila_origen == 1]
+    assert len(lineas) == 3
+    textos = {l.texto_origen for l in lineas}
+    assert len(textos) == 1
+    tramos = [l.tramo for l in lineas]
+    assert len(set(tramos)) == 3
+    for linea in lineas:
+        assert linea.tramo is not None
+        ini, fin = linea.tramo
+        assert 0 <= ini < fin <= len(linea.texto_origen)
+
+
+def test_texto_origen_presente_incluso_cuando_la_fila_va_entera_a_revision():
+    """Fila rota por invariante (COBERTURA_INSUFICIENTE, SOLAPE_DE_TRAMOS,
+    etc.) o fila fallida por excepcion: el comprador sigue necesitando ver
+    el texto original en el panel de traza aunque no haya tramo de
+    elemento que resaltar (no se invento uno)."""
+    fila, puerto = _fila_de_pieza_sin_nombrar()
+    lineas = _procesar_una_fila_sintetica(fila, puerto)
+    assert len(lineas) == 1
+    assert lineas[0].texto_origen == fila.descripcion
+    assert lineas[0].tramo is None
+
+
 def test_pieza_sin_nombrar_con_interruptor_apagado_no_dispara():
     """Misma fila, con `dimensiones_en_ambito_a_revision` en False: vuelve
     el comportamiento de antes del arreglo -- la tuerca sale RESUELTA con
