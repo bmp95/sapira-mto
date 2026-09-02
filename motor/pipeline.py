@@ -57,7 +57,7 @@ _REGLA_MEDIDA_EXTRAPOLADA = "MEDIDA-EXTRAPOLADA-SET"
 _REGLA_LONGITUD_METRICA = "LONGITUD-MM-POR-MEDIDA-METRICA"
 _REGLA_LONGITUD_IMPERIAL_FORZADA = "LONGITUD-MM-FORZADA-POR-POLITICA"
 
-# Codigo del motivo con el que se marca una fila cuyo procesamiento reventó (excepcion no
+# Codigo del motivo con el que se marca una fila cuyo procesamiento revento (excepcion no
 # controlada: corte de red que agoto los reintentos del puerto, o cualquier otro fallo). Es
 # publico -- lo usa `contar_fallos_de_proceso` mas abajo y lo puede usar el arnes/front sin
 # tener que conocer el string a mano.
@@ -298,14 +298,36 @@ def _indice_principal(datos: list[_DatosElemento]) -> int:
     return 0
 
 
+def _buscar_en_ambito(texto: str, ambito_fila: list[tuple[int, int]], extractor):
+    """Prueba los tramos de `ambito_fila` EN ORDEN y devuelve el primer
+    hallazgo no nulo que de `extractor(texto, ini, fin)`, o None si ninguno
+    trae nada.
+
+    Bug real, encontrado con el segmentador real sobre un blind set de 300
+    filas (39/200 afectadas): el segmentador puede partir el cierre de fila
+    en varios tramos -- `ambito_fila: ['8.8', 'CINCADO']` en vez de uno
+    solo -- y leer solo `ambito_fila[0]` pierde todo lo que no sea el
+    primero. Con el segmentador de guion (Tarea 10, guion_falso.py) el
+    cierre siempre viene en un tramo unico, asi que el bug era invisible;
+    con el modelo real, no. Recorrer todos los tramos deja el caso de un
+    solo tramo exactamente igual (un bucle de un elemento)."""
+    for ini, fin in ambito_fila:
+        hallazgo = extractor(texto, ini, fin)
+        if hallazgo is not None:
+            return hallazgo
+    return None
+
+
 def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
                                   ambito_fila: list[tuple[int, int]],
                                   politicas: dict[str, bool],
                                   indice_principal: int) -> None:
     """Decision seccion 4 del diseno: el ambito de fila (el ', 8.8, zincado' del
-    final) se lee sobre el elemento principal (por tipo -- ver
-    `_indice_principal`, normalmente el tornillo o el esparrago, sea cual
-    sea su posicion en la fila) como si fuera su propio tramo -- EXTRAIDO.
+    final -- que puede venir partido en varios tramos, ver
+    `_buscar_en_ambito`) se lee sobre el elemento principal (por tipo --
+    ver `_indice_principal`, normalmente el tornillo o el esparrago, sea
+    cual sea su posicion en la fila) como si fuera su propio tramo --
+    EXTRAIDO.
 
     Para el resto de elementos del set la calidad NUNCA se atribuye (regla
     mas importante del caso, sin interruptor: si no trae calidad propia, a
@@ -317,15 +339,15 @@ def _atribuir_ambito_a_principal(datos: list[_DatosElemento], texto: str,
     elemento principal y el resto no lo ve."""
     if not ambito_fila or not datos:
         return
-    ini, fin = ambito_fila[0]
     principal = datos[indice_principal]
     if principal.calidad is None:
-        principal.calidad = _extraer_calidad(texto, ini, fin, [])
+        principal.calidad = _buscar_en_ambito(
+            texto, ambito_fila, lambda t, ini, fin: _extraer_calidad(t, ini, fin, []))
     if principal.acabado is None:
-        principal.acabado = _extraer_acabado(texto, ini, fin)
+        principal.acabado = _buscar_en_ambito(texto, ambito_fila, _extraer_acabado)
     if not politicas["acabado_de_cierre_a_todo_el_set"]:
         return
-    acabado_ambito = _extraer_acabado(texto, ini, fin)
+    acabado_ambito = _buscar_en_ambito(texto, ambito_fila, _extraer_acabado)
     if acabado_ambito is None:
         return
     for i, d in enumerate(datos):

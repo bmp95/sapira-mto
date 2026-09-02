@@ -379,3 +379,107 @@ def test_una_fila_fallida_no_tumba_el_lote(tmp_path):
         # se proceso de verdad: el nombre se resolvio por extraccion determinista,
         # independiente del "X" de guion que puso el puerto falso.
         assert lineas_fila[0].nombre.procedencia is Procedencia.EXTRAIDO
+
+
+# --------------------------------------------------------------------------
+# Bug real: el ambito de fila puede venir partido en varios tramos.
+# --------------------------------------------------------------------------
+
+def _fila_del_bug_de_ambito_partido(sufijo_ambito, ambito_fila):
+    """Construye la fila 'BOLT DIN 931 M12x100 with 2 NUT DIN 980 and 2
+    WASHER DIN 440' + `sufijo_ambito` (el cierre de fila, calidad '8.8' y
+    acabado 'CINCADO'), con la Segmentacion ya armada con los tramos de
+    elemento fijos y el `ambito_fila` que decide cada test -- 1, 2 o 3
+    tramos sobre el mismo contenido. Caso real reportado sobre un blind
+    set de 300 filas con el segmentador real (39/200 afectadas): el
+    segmentador puede devolver el cierre partido, `ambito_fila: ['8.8',
+    'CINCADO']`, y leer solo `ambito_fila[0]` perdia el acabado."""
+    texto = "BOLT DIN 931 M12x100 with 2 NUT DIN 980 and 2 WASHER DIN 440" + sufijo_ambito
+    seg = Segmentacion(
+        elementos=[
+            Elemento(tipo_indicado="BOLT", span=(0, 20)),
+            Elemento(tipo_indicado="NUT", span=(26, 39)),
+            Elemento(tipo_indicado="WASHER", span=(44, 60)),
+        ],
+        ambito_fila=ambito_fila,
+        conectores=[(20, 26), (39, 44)],
+    )
+    fila = FilaMTO(item=98, descripcion=texto, material_col="", medida_col="M12",
+                   cantidad=5, unidad="uds")
+    return fila, PuertoFalso(respuestas={texto: seg})
+
+
+def _procesar_una_fila_sintetica(fila, puerto, politicas=None):
+    politicas = politicas if politicas is not None else POLITICAS_POR_DEFECTO
+    contador = {"n": 0}
+
+    def siguiente_id():
+        contador["n"] += 1
+        return f"B{contador['n']}"
+
+    return _procesar_fila(fila, puerto, politicas, TODAS_ACTIVAS, siguiente_id)
+
+
+def test_ambito_de_fila_en_dos_tramos_el_principal_recibe_los_dos():
+    """Caso real del coordinador: ', 8.8' y ', CINCADO' llegan como dos
+    tramos separados de `ambito_fila`. El tornillo (principal) tiene que
+    recibir la calidad (del primer tramo) Y el acabado (del segundo) --
+    antes del arreglo, el acabado se perdia por completo."""
+    fila, puerto = _fila_del_bug_de_ambito_partido(
+        ", 8.8, CINCADO", ambito_fila=[(60, 65), (65, 74)])
+    lineas = _procesar_una_fila_sintetica(fila, puerto)
+    tornillo = next(l for l in lineas if l.nombre.valor == "TORNILLO")
+    assert tornillo.calidad.valor == "8.8"
+    assert tornillo.calidad.procedencia is Procedencia.EXTRAIDO
+    assert tornillo.acabado.valor == "CINCADO"
+    assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
+    assert tornillo.estado is Estado.RESUELTA
+
+
+def test_ambito_de_fila_en_un_solo_tramo_da_el_mismo_resultado():
+    """Mismo contenido exacto (', 8.8, CINCADO') pero como UN solo tramo de
+    `ambito_fila` -- el caso de las 15 filas del MTO del cliente, con el
+    segmentador de guion. El resultado tiene que ser identico al de dos
+    tramos: el arreglo no puede cambiar el comportamiento de lo que ya
+    funcionaba."""
+    fila, puerto = _fila_del_bug_de_ambito_partido(
+        ", 8.8, CINCADO", ambito_fila=[(60, 74)])
+    lineas = _procesar_una_fila_sintetica(fila, puerto)
+    tornillo = next(l for l in lineas if l.nombre.valor == "TORNILLO")
+    assert tornillo.calidad.valor == "8.8"
+    assert tornillo.calidad.procedencia is Procedencia.EXTRAIDO
+    assert tornillo.acabado.valor == "CINCADO"
+    assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
+    assert tornillo.estado is Estado.RESUELTA
+
+
+def test_ambito_de_fila_en_tres_tramos_con_acabado_en_el_ultimo():
+    """Tres tramos: ', 8.8' (calidad), ', revisado' (nada reconocible) y
+    ', CINCADO' (acabado, en el ULTIMO tramo). Tiene que encontrarse igual
+    que si viniera en el primero o el segundo -- se recorren todos."""
+    fila, puerto = _fila_del_bug_de_ambito_partido(
+        ", 8.8, revisado, CINCADO", ambito_fila=[(60, 65), (65, 75), (75, 84)])
+    lineas = _procesar_una_fila_sintetica(fila, puerto)
+    tornillo = next(l for l in lineas if l.nombre.valor == "TORNILLO")
+    assert tornillo.calidad.valor == "8.8"
+    assert tornillo.acabado.valor == "CINCADO"
+    assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
+    assert tornillo.estado is Estado.RESUELTA
+
+
+def test_ambito_partido_con_acabado_de_cierre_apagado_el_resto_sigue_sin_recibirlo():
+    """Con `acabado_de_cierre_a_todo_el_set` en False, el tornillo (
+    principal) sigue recibiendo calidad y acabado de los dos tramos del
+    ambito -- eso no lo gobierna esta politica -- pero la tuerca y la
+    arandela siguen sin acabado, igual que con un ambito de un tramo."""
+    fila, puerto = _fila_del_bug_de_ambito_partido(
+        ", 8.8, CINCADO", ambito_fila=[(60, 65), (65, 74)])
+    politicas = {**POLITICAS_POR_DEFECTO, "acabado_de_cierre_a_todo_el_set": False}
+    lineas = _procesar_una_fila_sintetica(fila, puerto, politicas)
+    tornillo = next(l for l in lineas if l.nombre.valor == "TORNILLO")
+    tuerca = next(l for l in lineas if l.nombre.valor == "TUERCA")
+    arandela = next(l for l in lineas if l.nombre.valor == "ARANDELA")
+    assert tornillo.acabado.valor == "CINCADO"
+    assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
+    assert tuerca.acabado.procedencia is Procedencia.AUSENTE
+    assert arandela.acabado.procedencia is Procedencia.AUSENTE
