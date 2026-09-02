@@ -33,7 +33,8 @@ from motor.catalogos import ACABADOS, CALIDADES_ALIAS, NOMBRES, emparejar, norma
 from motor.coherencias import TODAS_ACTIVAS, comprobar
 from motor.confianza import aplicar_confianza
 from motor.derivaciones import material_de_calidad, material_de_norma, nombre_de_norma
-from motor.invariantes import UMBRAL_COBERTURA, cobertura, contar_sustantivos, hay_solape, verificar_literal
+from motor.invariantes import (UMBRAL_COBERTURA, ambito_sin_dimensiones, cobertura,
+                               contar_sustantivos, hay_solape, verificar_literal)
 from motor.lectura_mto import FilaMTO, leer_mto
 from motor.modelos import ATRIBUTOS, LineaSalida, Motivo, Procedencia, Valor
 from motor.puerto_llm import PuertoLLM
@@ -92,6 +93,13 @@ POLITICAS_POR_DEFECTO: dict[str, bool] = {
     # (revision) y no como milimetros asumidos es una lectura de la decision
     # 4.3 del diseno, no una regla que las reglas del cliente escriban.
     "longitud_imperial_sin_unidad_a_revision": True,
+    # Ronda de correccion 5: ninguna regla del cliente habla de esto. Es una
+    # invariante de diseno propio para cazar un hueco real del segmentador
+    # real (mala clasificacion, no omision -- cobertura y recuento de
+    # sustantivos no lo ven: ver motor.invariantes.ambito_sin_dimensiones).
+    # Se apaga para poder mostrar, delante del cliente, cuanto cuesta en
+    # revisiones tenerla activa frente a dejarla dormida.
+    "dimensiones_en_ambito_a_revision": True,
 }
 
 
@@ -432,7 +440,7 @@ def _motivo_longitud_inferida(linea: LineaSalida) -> Motivo | None:
 # segmentador se salto entero (invariante 2 en motor/invariantes.py).
 # --------------------------------------------------------------------------
 
-def _motivo_invariante_rota(texto: str, seg) -> Motivo | None:
+def _motivo_invariante_rota(texto: str, seg, politicas: dict[str, bool]) -> Motivo | None:
     cob = cobertura(texto, seg)
     if cob < UMBRAL_COBERTURA:
         return Motivo(codigo="COBERTURA_INSUFICIENTE",
@@ -447,6 +455,16 @@ def _motivo_invariante_rota(texto: str, seg) -> Motivo | None:
                       texto=f"El esc" + chr(0xe1) + f"ner independiente cuenta "
                             f"{n_sustantivos} sustantivos de tipo pero la segmentaci" +
                             chr(0xf3) + f"n trae {len(seg.elementos)} elementos.")
+    if politicas["dimensiones_en_ambito_a_revision"] and not ambito_sin_dimensiones(texto, seg):
+        # Ronda de correccion 5: el segmentador metio en el ambito de fila
+        # la descripcion de una pieza que nunca nombro (solo sus
+        # dimensiones). No se inventa el elemento que falta -- eso seria
+        # justo el tipo de suposicion que este sistema no hace -- se manda
+        # la fila entera a revision para que lo mire una persona.
+        return Motivo(codigo="PIEZA_SIN_NOMBRAR",
+                      texto="Hay una descripci" + chr(0xf3) + "n con dimensiones que no se ha "
+                            "podido asignar a ninguna pieza. Probablemente la fila describe un "
+                            "elemento sin nombrarlo.")
     return None
 
 
@@ -580,7 +598,7 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
     texto = fila.descripcion
     seg = segmentar_con_votacion(puerto, texto, pasadas=3)
 
-    motivo_roto = _motivo_invariante_rota(texto, seg)
+    motivo_roto = _motivo_invariante_rota(texto, seg, politicas)
     if motivo_roto is not None:
         return [_linea_fila_rota(siguiente_id(), fila, motivo_roto)]
 

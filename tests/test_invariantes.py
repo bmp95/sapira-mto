@@ -1,5 +1,6 @@
 from motor.modelos import Elemento, Segmentacion
-from motor.invariantes import verificar_literal, cobertura, hay_solape, contar_sustantivos
+from motor.invariantes import (ambito_sin_dimensiones, cobertura, contar_sustantivos,
+                               hay_solape, verificar_literal)
 
 
 def test_literal_verificado():
@@ -43,3 +44,21 @@ def test_recuento_independiente_de_sustantivos():
     assert contar_sustantivos("Tornillo hexagonal DIN 933 con tuerca y arandela") == 3
     assert contar_sustantivos("STUD BOLT 7/8, 2 HEX. NUT, 2 WASHER") == 3
     assert contar_sustantivos("Tuerca hexagonal DIN 934 M16") == 1
+
+def test_ambito_sin_dimensiones_con_calidad_y_acabado_no_dispara():
+    """El ambito de fila describe la fila entera: calidad y acabado son
+    validos, no dimensiones."""
+    t = "NUT DIN 934, 8.8, zincado"
+    seg = Segmentacion(elementos=[Elemento(tipo_indicado="NUT", span=(0, 11))],
+                       ambito_fila=[(11, 25)])
+    assert ambito_sin_dimensiones(t, seg) is True
+
+
+def test_ambito_sin_dimensiones_con_medida_metrica_dispara():
+    """Una medida (M20) en el ambito de fila describe una pieza concreta,
+    no la fila entera: es la senal de que el segmentador metio ahi la
+    descripcion de un elemento que nunca nombro."""
+    t = "NUT DIN 934, M20"
+    seg = Segmentacion(elementos=[Elemento(tipo_indicado="NUT", span=(0, 11))],
+                       ambito_fila=[(11, 16)])
+    assert ambito_sin_dimensiones(t, seg) is False

@@ -483,3 +483,61 @@ def test_ambito_partido_con_acabado_de_cierre_apagado_el_resto_sigue_sin_recibir
     assert tornillo.acabado.procedencia is Procedencia.EXTRAIDO
     assert tuerca.acabado.procedencia is Procedencia.AUSENTE
     assert arandela.acabado.procedencia is Procedencia.AUSENTE
+
+
+# --------------------------------------------------------------------------
+# Bug real: el ambito de fila puede contener la descripcion de una pieza
+# que nunca se nombro (invariante nueva ambito_sin_dimensiones).
+# --------------------------------------------------------------------------
+
+def _fila_de_pieza_sin_nombrar():
+    """Caso real reportado por el coordinador contra un blind set de 300
+    filas: '3/4" IN DIA X 200MM LONG, FULLY THREADED, C/W 1 HEAVY HEXAGON
+    NUTS ASTM A194 GR 2H'. El texto nunca nombra la pieza principal -- no
+    dice 'stud', 'bolt' ni 'esparrago', solo sus dimensiones -- asi que el
+    segmentador real mete esa descripcion en el ambito de fila en vez de
+    crear un elemento. Cobertura=1.0 (todo el texto esta asignado a algo)
+    y recuento de sustantivos=1=elementos (de verdad solo hay un
+    sustantivo, NUTS): ninguna otra invariante lo caza."""
+    texto = ('3/4" IN DIA X 200MM LONG, FULLY THREADED, C/W 1 HEAVY HEXAGON '
+             'NUTS ASTM A194 GR 2H')
+    seg = Segmentacion(
+        elementos=[Elemento(tipo_indicado="NUTS", span=(46, 82))],
+        ambito_fila=[(0, 40)],
+        conectores=[(40, 46)],
+    )
+    fila = FilaMTO(item=97, descripcion=texto, material_col="", medida_col="",
+                   cantidad=1, unidad="uds")
+    return fila, PuertoFalso(respuestas={texto: seg})
+
+
+def test_pieza_sin_nombrar_manda_la_fila_a_revision():
+    """La fila entera tiene que ir a REVISION_MANUAL con motivo
+    PIEZA_SIN_NOMBRAR, sin inventar el esparrago que falta: la linea sale
+    vacia (nombre AUSENTE), no como una TUERCA resuelta con sus propios
+    datos -- que es exactamente el escape que describio el coordinador."""
+    fila, puerto = _fila_de_pieza_sin_nombrar()
+    lineas = _procesar_una_fila_sintetica(fila, puerto)
+    assert len(lineas) == 1
+    linea = lineas[0]
+    assert linea.estado is Estado.REVISION_MANUAL
+    assert linea.confianza == 0
+    assert [m.codigo for m in linea.motivos] == ["PIEZA_SIN_NOMBRAR"]
+    assert linea.nombre.procedencia is Procedencia.AUSENTE
+
+
+def test_pieza_sin_nombrar_con_interruptor_apagado_no_dispara():
+    """Misma fila, con `dimensiones_en_ambito_a_revision` en False: vuelve
+    el comportamiento de antes del arreglo -- la tuerca sale RESUELTA con
+    sus propios datos (nombre, norma y calidad estan en su propio tramo) y
+    la pieza sin nombrar se pierde en silencio. Reproduce a proposito el
+    escape que describio el coordinador, para probar que el interruptor
+    es lo que lo gobierna."""
+    fila, puerto = _fila_de_pieza_sin_nombrar()
+    politicas = {**POLITICAS_POR_DEFECTO, "dimensiones_en_ambito_a_revision": False}
+    lineas = _procesar_una_fila_sintetica(fila, puerto, politicas)
+    assert len(lineas) == 1
+    linea = lineas[0]
+    assert linea.nombre.valor == "TUERCA"
+    assert linea.calidad.valor == "GR 2H"
+    assert linea.estado is Estado.RESUELTA
