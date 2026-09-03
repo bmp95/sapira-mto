@@ -59,7 +59,7 @@ ruff check .            # estilo, configurado en pyproject.toml
 
 Los tests corren **sin red y sin clave**: el segmentador va de guion. Los que llaman de verdad a Gemini están marcados `@pytest.mark.red` y se saltan salvo que pases `--red`. La CI de GitHub ejecuta las dos cosas sobre un clon limpio y comprueba además que el servidor levanta.
 
-**Una prueba sólo vale si puede fallar.** Durante el desarrollo aparecieron catorce casos de tests que pasaban midiendo otra cosa —un test que comparaba una construcción rota contra sí misma, un guardián que miraba bytes del fichero en vez del comportamiento, un auditor de invenciones que comparaba contra el texto crudo en vez del saneado—. Por eso cada guardián nuevo se verifica rompiendo el código a propósito y comprobando que salta.
+**Una prueba sólo vale si puede fallar.** Durante el desarrollo apareció una y otra vez el mismo fallo: tests que pasaban midiendo otra cosa. Un test que comparaba una construcción rota contra sí misma. Un guardián que miraba bytes del fichero en vez del comportamiento. Un auditor de invenciones que comparaba contra el texto crudo en vez del saneado. Por eso cada guardián nuevo se verifica **rompiendo el código a propósito** y comprobando que salta — y en un sistema donde el fallo cuesta cincuenta mil euros, la seguridad falsa es el riesgo principal.
 
 ## Las medidas
 
@@ -95,10 +95,20 @@ Todo esto sale de la asimetría de coste: un escape cuesta unos 50.000 € y una
 
 ## Los documentos
 
-- [`docs/De aqui a produccion - One-pager.pdf`](docs/) — timeline con puertas, recursos y QA
-- [`docs/Guia interna - Como funciona.pdf`](docs/) — siete diagramas del funcionamiento interno
-- [`docs/one-pager.md`](docs/one-pager.md) — el entregable del enunciado, seis secciones
-- [`docs/superpowers/specs/`](docs/superpowers/specs/) — el diseño y las decisiones, con lo que se descartó y por qué
+| Documento | Qué es |
+|---|---|
+| [One-pager](docs/One-pager%20-%20Reconciliacion%20MTO.pdf) · [fuente](docs/one-pager.md) | El entregable del enunciado, seis secciones, 2 páginas |
+| [De aquí a producción](docs/De%20aqui%20a%20produccion%20-%20One-pager.pdf) · [versión larga](docs/De%20aqui%20a%20produccion.pdf) | Timeline con cinco puertas, recursos y QA en producción |
+| [Cómo funciona, en diagramas](docs/Guia%20interna%20-%20Como%20funciona.pdf) | Siete diagramas del funcionamiento interno |
+| [Guía interna](docs/Guia%20interna.pdf) | La explicación larga, con los KPI calculados paso a paso |
+| [Métricas](docs/metricas.md) | Salida de `evaluacion.ablaciones`, regenerable |
+| [Diseño](docs/Diseno%20-%20Reconciliacion%20MTO%20Tornilleria.pdf) · [plan](docs/superpowers/) | Las decisiones, con lo que se descartó y por qué |
+
+Los PDF se regeneran desde el repositorio:
+
+```bash
+python docs/activos/md_a_pdf.py one-pager "One-pager - Reconciliacion MTO"
+```
 
 ## La clave
 

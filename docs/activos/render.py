@@ -17,6 +17,10 @@ DOCS = AQUI.parent
 
 
 def logo_data_uri() -> str:
+    """El wordmark de Sapira, extraido del PDF del enunciado (llevaba cuatro
+    imagenes embebidas) y recortado sobre transparente con su rojo de marca
+    muestreado de los propios glifos: #B54D47. Va embebido en base64 para que
+    el documento sea un unico fichero, sin dependencias de red."""
     crudo = (AQUI / "sapira-logo.png").read_bytes()
     return "data:image/png;base64," + base64.b64encode(crudo).decode("ascii")
 

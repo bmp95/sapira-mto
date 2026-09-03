@@ -38,3 +38,27 @@ jobs:
             sleep 1
           done
           curl -sf http://127.0.0.1:8000/ >/dev/null
+
+  front:
+    # El front va compilado en el repositorio para que la demo arranque sin
+    # Node. Eso no exime de comprobar que su codigo fuente sigue sano.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: front/package-lock.json
+
+      - run: npm ci
+      - name: Tipos
+        run: npx tsc --noEmit
+      - name: Estilo
+        run: npm run lint
+      - name: Compila
+        run: npm run build
