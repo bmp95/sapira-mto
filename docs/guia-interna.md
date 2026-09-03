@@ -317,6 +317,40 @@ Es decir: con esta evidencia, **lo máximo que puedo afirmar es que el escape es
 
 Si quisiera comprometerme al 0,5 % necesitaría unas 600 filas anotadas sin escapes; al 0,1 %, unas 3.000. **Eso es lo que costaría bajar el compromiso, y es un dato útil para negociar el alcance de la fase 2.**
 
+### 11.7 bis · Lo que ese 0 % NO cubre, y cómo se tapa el hueco
+
+Esto salió del repaso final y es lo primero que te pueden preguntar, así que llévalo sabido.
+
+El evaluador del blind set compara **una línea por fila: la del elemento principal**. Pero una fila de set produce tres líneas —el tornillo, la tuerca y la arandela—, y el gold sólo describe la primera. Las cuentas:
+
+```
+Bloque A: 200 filas compuestas
+  lineas de salida que producen        279
+  con verdad anotada en el gold        200   (la principal de cada fila)
+  SIN nadie que las haya comparado      79   (28 %)
+```
+
+**Esas 79 son tuercas y arandelas de sets, y salen del sistema sin que ningún anotador las haya mirado.** Decir «escape 0 % sobre 200 filas» es cierto, pero se lee como si todo el resultado estuviera limpio, y no es lo que se midió.
+
+Ahora bien: hay una pregunta más débil que **no necesita gold**. El gold dice si el valor es *el correcto*; la trazabilidad dice sólo si el valor *se puede rastrear* hasta el texto de origen o hasta una regla con nombre. Eso se puede comprobar en todas las líneas, tengan verdad anotada o no — y es justo la pregunta que importa, porque el fallo que cuesta 50.000 € es inventar, no omitir.
+
+```
+evaluacion/trazabilidad.py sobre las 389 lineas del blind set completo
+  celdas con valor no rastreable:  0
+```
+
+**Cómo contarlo en la sesión:** «El escape lo he medido sobre 200 elementos principales, que es lo que tengo anotado; de las 279 líneas que salen, 79 no las ha mirado nadie. Lo que sí he comprobado en las 389 es que no hay ni un valor inventado. Anotar los sets completos es parte de la puerta 1.»
+
+Construir ese auditor costó tres falsos positivos, y los tres son el mismo error de fondo — **comparar contra algo distinto de lo que el sistema vio de verdad**:
+
+| Lo que hacía mal | Qué marcaba como invención |
+|---|---|
+| Comparar contra el texto crudo | La prima doble de `7/8″` y los espacios de `DIN   933`, que arregla el saneado |
+| Comparar el valor y no el literal | Cada normalización correcta: `ZINCADO`→`CINCADO`, `DIN 933`→`ISO 4017` |
+| Mirar sólo la descripción | El `8.8` que estaba escrito en la columna MATERIAL, la segunda fuente del MTO |
+
+Los tres son ahora tests. Y hay un cuarto que rompe el auditor a propósito: sin él, los otros tres seguirían en verde con un comprobador que devolviese «rastreable» siempre.
+
 ### 11.8 La cobertura, y por qué no es mía
 
 ```

@@ -50,13 +50,27 @@ Fíjate en que **hereda una arandela, no las siete**. Las otras seis son piezas 
 
 Con hasta 25 revisiones por obra, preguntar una vez en lugar de veinticinco no reduce el coste de la consulta: lo divide.
 
-## Los tests
+## Calidad
 
 ```bash
-python -m pytest
+python -m pytest        # 220 tests, sin red ni clave
+ruff check .            # estilo, configurado en pyproject.toml
 ```
 
-200 tests, sin red ni clave: el segmentador va de guion. Los que llaman de verdad a Gemini están marcados `@pytest.mark.red` y se saltan salvo que pases `--red`.
+Los tests corren **sin red y sin clave**: el segmentador va de guion. Los que llaman de verdad a Gemini están marcados `@pytest.mark.red` y se saltan salvo que pases `--red`. La CI de GitHub ejecuta las dos cosas sobre un clon limpio y comprueba además que el servidor levanta.
+
+**Una prueba sólo vale si puede fallar.** Durante el desarrollo aparecieron catorce casos de tests que pasaban midiendo otra cosa —un test que comparaba una construcción rota contra sí misma, un guardián que miraba bytes del fichero en vez del comportamiento, un auditor de invenciones que comparaba contra el texto crudo en vez del saneado—. Por eso cada guardián nuevo se verifica rompiendo el código a propósito y comprobando que salta.
+
+## Las medidas
+
+```bash
+python -m evaluacion.ablaciones            # determinista y gratis
+python -m evaluacion.ablaciones --estres   # + corpus de 55 filas y comparativa de modelos (con red)
+```
+
+Vuelca [`docs/metricas.md`](docs/metricas.md): qué le pasa a la cobertura si quito cada política y cada coherencia, el corpus de estrés, y la misma obra procesada con dos modelos.
+
+**Lo que el 0 % de escape no cubre, dicho aquí y no escondido:** el gold anota el elemento principal de cada fila. De las 279 líneas que produce el bloque compuesto del blind set, 79 —las tuercas y arandelas de los sets— no tienen verdad anotada. Lo que sí se audita en las 389 es que ningún valor esté inventado: `evaluacion/trazabilidad.py` comprueba que cada uno se rastrea hasta el texto de origen o hasta una regla con nombre. **0 celdas no rastreables.**
 
 ## El mapa
 
@@ -65,7 +79,7 @@ python -m pytest
 | `motor/` | El sistema. `pipeline.py` orquesta; `catalogos.py` son las cuatro tablas cerradas; `derivaciones.py` lo que se deduce sin alternativa; `invariantes.py` y `coherencias.py` la red de seguridad; `confianza.py` el índice; `historico.py` la herencia entre revisiones |
 | `motor/puerto_gemini.py` | La única llamada a modelo del sistema, detrás de un puerto |
 | `api/` · `front/` | Servidor FastAPI e interfaz compilada |
-| `evaluacion/` | Arnés de métricas y evaluador del blind set |
+| `evaluacion/` | Arnés de métricas, evaluador del blind set, ablaciones y auditoría de trazabilidad |
 | `datos/` | El MTO del enunciado, el gold set, y el generador del blind set de 300 filas |
 | `docs/` | El one-pager, la guía interna y los diagramas |
 

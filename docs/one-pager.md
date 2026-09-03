@@ -36,7 +36,9 @@ Dos propiedades hacen la alucinación estructuralmente imposible, no improbable:
 
 **Ruido de revisión: 0 %.** De las 17 líneas en revisión, **las 17 son dato que el MTO no trae**. Ninguna es duda del sistema. La cobertura no la limita el sistema: la limita que vuestra ingeniería no escribe la dureza de las arandelas.
 
-**Blind set propio de 300 filas no vistas**, con formatos reales de proveedor de tubería: 200 compuestas con verdad conocida dan **escape 0,0 %**; 100 adversarias —normas inventadas, calidades inexistentes, nombres de pieza inventados, cuatro filas que ni son tornillería— dan **0 invenciones**.
+**Blind set propio de 300 filas no vistas**, con formatos reales de proveedor: las 200 compuestas dan **escape 0,0 %** y las 100 adversarias —normas inventadas, calidades inexistentes, cuatro filas que ni son tornillería— dan **0 invenciones**.
+
+**Y el límite de esa medida, que lo digo yo antes de que lo preguntéis:** el gold cubre el elemento principal de cada fila, no todas las líneas. De las 279 que salen del bloque compuesto, **79 —las tuercas y arandelas de los sets— no tienen verdad anotada y nadie las ha comparado con nada**. Lo que sí se puede auditar sin gold es que ningún valor esté inventado, porque eso sólo exige rastrearlo hasta el texto de origen o hasta una regla con nombre. Sobre las **389 líneas** del blind set completo: **0 celdas no rastreables**.
 
 **Corpus de estrés, 55 filas que su MTO nunca toca** —las 16 calidades sin usar, 20 normas sin usar, normas inventadas, filas degeneradas—: **0 invenciones**, y me encontró dos cosas. Una, un fallo duro: una fila que no describe ninguna pieza (`ver plano 3421-B`, una celda vacía) reventaba el pipeline. Ya es un caso previsto. Y dos, **el escape que sí tengo**: cuando el texto trae un acabado o una norma que el catálogo no conoce —`anodizado`, `xilan`, `DIN 99999`—, el sistema lo descarta y **la línea se resuelve igual**, porque ese atributo no es obligatorio. No inventa nada, pero se compra sin el acabado. Son 5 de 55 y es lo primero que arreglaría: un valor escrito que no se reconoce no puede desaparecer en silencio, tiene que ir a revisión.
 
