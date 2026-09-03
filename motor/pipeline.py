@@ -669,6 +669,18 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
     if motivo_roto is not None:
         return [_linea_fila_rota(siguiente_id(), fila, motivo_roto)]
 
+    if not seg.elementos:
+        # Todo MTO real trae filas que no describen ninguna pieza: una celda
+        # vacia, un guion, una nota, una referencia a un plano. No es un fallo
+        # del sistema y no puede contarse como tal -- `fallos_de_proceso` es una
+        # metrica que se vigila en produccion. Antes esto reventaba mas abajo en
+        # datos[indice_principal] y solo lo salvaba el catch-all de procesar_mto,
+        # que se lo apuntaba como fallo y le ensenaba un IndexError al comprador.
+        return [_linea_fila_rota(siguiente_id(), fila, Motivo(
+            codigo="FILA_SIN_PIEZAS",
+            texto="Esta fila no describe ninguna pieza de torniller" + chr(0xed) + "a; "
+                  "no hay nada que comprar en ella."))]
+
     datos = [_DatosElemento(texto, *elem.span, politicas) for elem in seg.elementos]
     indice_principal = _indice_principal(datos)
     _atribuir_ambito_a_principal(datos, texto, seg.ambito_fila, politicas, indice_principal)

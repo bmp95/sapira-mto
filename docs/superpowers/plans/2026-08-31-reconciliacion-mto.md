@@ -1365,11 +1365,11 @@ git commit -m "añade puerto Gemini con cache en disco y contabilidad de coste"
 **Files:**
 - Create: `datos/corpus_estres.csv`, `evaluacion/ablaciones.py`, `evaluacion/informe.py`
 
-- [ ] ~50 filas sintéticas que ejerciten lo que el MTO nunca toca: las 16 calidades sin usar (las 5 HV, GRADE/GRADO 5 y 8, 10.9, 304, 316...), 20 normas sin usar, los 5 acabados ausentes, `VARILLA ROSCADA`, `ASME` y `MSS SP`, `1-1/4"`, longitudes con unidad explícita, comillas tipográficas
-- [ ] Ablaciones: sin votación, sin coherencias, sin derivación de material, sin invariante de cobertura
-- [ ] Comparativa Luna vs Terra: (escape, coste/obra) de cada uno
-- [ ] `informe.py` vuelca las tablas en markdown, listas para el one-pager
-- [ ] Commit: `añade corpus de estres, ablaciones e informe de metricas`
+- [x] ~50 filas sintéticas que ejerciten lo que el MTO nunca toca: las 16 calidades sin usar (las 5 HV, GRADE/GRADO 5 y 8, 10.9, 304, 316...), 20 normas sin usar, los 5 acabados ausentes, `VARILLA ROSCADA`, `ASME` y `MSS SP`, `1-1/4"`, longitudes con unidad explícita, comillas tipográficas
+- [x] Ablaciones: sin votación, sin coherencias, sin derivación de material, sin invariante de cobertura
+- [x] Comparativa Luna vs Terra: (escape, coste/obra) de cada uno
+- [x] `informe.py` vuelca las tablas en markdown, listas para el one-pager
+- [x] Commit: `añade corpus de estres, ablaciones e informe de metricas`
 
 ---
 

@@ -586,3 +586,58 @@ def test_pieza_sin_nombrar_con_interruptor_apagado_no_dispara():
     assert linea.nombre.valor == "TUERCA"
     assert linea.calidad.valor == "GR 2H"
     assert linea.estado is Estado.RESUELTA
+
+
+# --------------------------------------------------------------------------
+# Filas degenerADAS: las que no describen ninguna pieza. Todo MTO real las
+# tiene -- una celda vacia, un guion, una nota, una referencia a un plano.
+# --------------------------------------------------------------------------
+
+def _fila_suelta(descripcion: str) -> FilaMTO:
+    return FilaMTO(item=1, descripcion=descripcion, material_col="", medida_col="",
+                   cantidad=10, unidad="uds")
+
+
+def _procesar_con_segmentacion_vacia(descripcion: str):
+    """El segmentador no encuentra ninguna pieza: no es un error del sistema,
+    es lo correcto para una fila que no describe tornilleria."""
+    # El ambito cubre el texto entero: asi la fila NO la para el invariante de
+    # cobertura y llega al punto donde de verdad reventaba. Es lo que devuelve
+    # el modelo real ante "ver plano 3421-B" -- no ve ninguna pieza, pero
+    # tampoco pierde texto.
+    puerto = PuertoFalso({descripcion: Segmentacion(
+        elementos=[], ambito_fila=[(0, len(descripcion))])})
+    contador = {"n": 0}
+
+    def siguiente_id():
+        contador["n"] += 1
+        return f"L{contador['n']:03d}"
+
+    return _procesar_fila(_fila_suelta(descripcion), puerto, POLITICAS_POR_DEFECTO,
+                          TODAS_ACTIVAS, siguiente_id)
+
+
+def test_una_fila_sin_piezas_no_revienta_el_pipeline():
+    """Antes lanzaba IndexError en datos[indice_principal] y solo la salvaba
+    el catch-all de procesar_mto, que la contaba como fallo de proceso."""
+    for descripcion in ("-", "40", "ver plano 3421-B",
+                        "MATERIAL SEGUN ESPECIFICACION TECNICA", "8.8"):
+        lineas = _procesar_con_segmentacion_vacia(descripcion)
+        assert len(lineas) == 1, descripcion
+        assert lineas[0].estado is Estado.REVISION_MANUAL, descripcion
+
+
+def test_una_fila_sin_piezas_da_un_motivo_legible_y_no_un_fallo_de_proceso():
+    lineas = _procesar_con_segmentacion_vacia("ver plano 3421-B")
+    codigos = [m.codigo for m in lineas[0].motivos]
+    assert "FILA_SIN_PIEZAS" in codigos
+    assert CODIGO_FALLO_DE_PROCESO not in codigos
+    texto = next(m.texto for m in lineas[0].motivos if m.codigo == "FILA_SIN_PIEZAS")
+    assert "no describe ninguna pieza" in texto
+
+
+def test_las_filas_degeneradas_no_cuentan_como_fallos_de_proceso():
+    """`fallos_de_proceso` es una metrica que se vigila: una fila que no
+    describe ninguna pieza no puede inflarla."""
+    lineas = _procesar_con_segmentacion_vacia("-")
+    assert contar_fallos_de_proceso(lineas) == 0
