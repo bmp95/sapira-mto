@@ -1375,9 +1375,9 @@ git commit -m "añade puerto Gemini con cache en disco y contabilidad de coste"
 
 ## Task 17: Arranque en frío
 
-- [ ] `README.md` con los tres comandos exactos
-- [ ] **Probar en frío:** clonar en carpeta limpia, `pip install -e .`, `python arrancar.py`, subir el MTO. Sin `npm install`.
-- [ ] Commit: `añade README y verifica arranque en frio`
+- [x] `README.md` con los tres comandos exactos
+- [x] **Probar en frío:** clonar en carpeta limpia, `pip install -e .`, `python arrancar.py`, subir el MTO. Sin `npm install`.
+- [x] Commit: `añade README y verifica arranque en frio`
 
 ---
 
