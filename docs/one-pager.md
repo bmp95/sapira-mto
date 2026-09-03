@@ -38,9 +38,9 @@ Dos propiedades hacen la alucinación estructuralmente imposible, no improbable:
 
 **Blind set propio de 300 filas no vistas**, con formatos reales de proveedor: las 200 compuestas dan **escape 0,0 %** y las 100 adversarias —normas inventadas, calidades inexistentes, cuatro filas que ni son tornillería— dan **0 invenciones**.
 
-**Y el límite de esa medida, que lo digo yo antes de que lo preguntéis:** el gold cubre el elemento principal de cada fila, no todas las líneas. De las 279 que salen del bloque compuesto, **79 —las tuercas y arandelas de los sets— no tienen verdad anotada y nadie las ha comparado con nada**. Lo que sí se puede auditar sin gold es que ningún valor esté inventado, porque eso sólo exige rastrearlo hasta el texto de origen o hasta una regla con nombre. Sobre las **389 líneas** del blind set completo: **0 celdas no rastreables**.
+**Y el límite de esa medida, que lo digo yo antes de que lo preguntéis:** el gold anota el elemento principal de cada fila. De las 279 líneas que salen del bloque compuesto, **79 —tuercas y arandelas de sets— no las ha comparado nadie con nada**. Lo que sí se audita sin gold es que ningún valor esté inventado, porque eso sólo exige rastrearlo al texto de origen o a una regla con nombre: sobre las **389 líneas**, **0 no rastreables**.
 
-**Corpus de estrés, 55 filas que su MTO nunca toca** —las 16 calidades sin usar, 20 normas sin usar, normas inventadas, filas degeneradas—: **0 invenciones**, y me encontró dos cosas. Una, un fallo duro: una fila que no describe ninguna pieza (`ver plano 3421-B`, una celda vacía) reventaba el pipeline. Ya es un caso previsto. Y dos, **el escape que sí tengo**: cuando el texto trae un acabado o una norma que el catálogo no conoce —`anodizado`, `xilan`, `DIN 99999`—, el sistema lo descarta y **la línea se resuelve igual**, porque ese atributo no es obligatorio. No inventa nada, pero se compra sin el acabado. Son 5 de 55 y es lo primero que arreglaría: un valor escrito que no se reconoce no puede desaparecer en silencio, tiene que ir a revisión.
+**Corpus de estrés, 55 filas que su MTO nunca toca** —calidades y normas sin usar, normas inventadas, filas degeneradas—: **0 invenciones**, y me encontró dos cosas. Un fallo duro: una fila que no describe ninguna pieza (`ver plano 3421-B`, una celda vacía) reventaba el pipeline; ya es un caso previsto. Y **el escape que sí tengo**: si el texto trae un acabado o una norma que el catálogo no conoce —`anodizado`, `xilan`, `DIN 99999`— el sistema lo descarta y **la línea se resuelve igual**, porque ese atributo no es obligatorio. No inventa nada, pero se compra sin el acabado. Son 5 de 55 y es lo primero que arreglaría.
 
 **Dónde falla:** de los fallos por atributo, prácticamente todos son *"no extrajo nada"* y casi ninguno *"extrajo mal"*. **El modo de fallo es la omisión, no la invención.** Las que se caen son los formatos que **no nombran la pieza principal** —`3/4" IN DIA X 200MM LONG, FULLY THREADED, C/W 2 HEAVY HEXAGON NUTS`—: un comprador deduce que es un espárrago, el sistema se niega a ponerle nombre. Y las descripciones en portugués o alemán, que se arreglan añadiendo filas a una tabla, no reentrenando nada.
 
@@ -48,15 +48,19 @@ Dos propiedades hacen la alucinación estructuralmente imposible, no improbable:
 
 ## 4. La solución objetivo
 
-**El histórico de respuestas.** Vuestra respuesta —que la calidad que falta se consulta con ingeniería— cambia dónde está el valor. La misma arandela sin dureza aparece en la revisión 9, en la 12 y en la 15, y hoy se pregunta tres veces. Con clave canónica exacta se pregunta **una** y las otras veinticuatro la heredan: con 25 revisiones por obra, eso no reduce el coste de la consulta, lo divide. Diseñado y especificado; no construido.
+**El histórico de respuestas.** Vuestra respuesta —que la calidad que falta se consulta con ingeniería— cambia dónde está el valor. La misma arandela sin dureza reaparece en casi todas las revisiones, y hoy se pregunta en cada una. Con clave canónica exacta se pregunta **una vez** y el resto la heredan: con 25 revisiones por obra, eso no reduce el coste de la consulta, **lo divide**.
 
-**Aprendizaje del vocabulario por origen**, midiendo la tasa de revisión de cada estudio y ampliando catálogos donde duele. **Y procesado por lotes**, que baja el coste a la mitad y quita el techo de latencia.
+:::figura historico
+
+Construido y probado de punta a punta: resuelves una arandela a mano, vuelves a subir el mismo MTO y vuelve `RESUELTA` con procedencia `HEREDADO` y quién contestó. Lo que falta es persistirlo entre sesiones y contra vuestra base de compras.
+
+**Aprendizaje del vocabulario por origen**, midiendo la tasa de revisión de cada estudio. **Y procesado por lotes**, que baja el coste a la mitad y quita el techo de latencia.
 
 ## 5. Qué he decidido no hacer
 
 **No derivar lo que no es deducción.** El `130` sin unidad de un espárrago ASTM parece milímetros, y probablemente lo es — pero ASTM admite las dos unidades, así que es una suposición. Va a revisión y me cuesta tres líneas de treinta: **diez puntos de cobertura pagados a conciencia**.
 
-**No completar sets por convención**, no usar coincidencia difusa en ninguna parte —`DIN 9331` no se convierte en `DIN 933`—, y no integrarme con vuestra base de compras, que necesita una conversación pendiente.
+**No completar sets por convención**, no usar coincidencia difusa en ninguna parte —`DIN 9331` no se convierte en `DIN 933`—, y no integrarme con vuestra base de compras sin hablarlo antes.
 
 **Y no construir tres de los cuatro agentes que había diseñado.** Los medí primero.
 
@@ -66,8 +70,8 @@ Dos propiedades hacen la alucinación estructuralmente imposible, no improbable:
 
 **Que vuestra base de compras esté sucia.** Normalizaría impecablemente contra un vocabulario que aguas abajo no cuadra: el sistema correcto y el resultado inútil.
 
-**La erosión de la cola.** Si la revisión crece, el comprador aprueba en bloque y el escape entra igual. Es riesgo de proceso: la interfaz no debe permitir aprobar en bloque motivos distintos, y hace falta muestreo de auditoría. Hoy el ruido es 0 % y ése es el número a vigilar.
+**La erosión de la cola.** Si la revisión crece, el comprador aprueba en bloque y el escape entra igual. Es riesgo de proceso: la interfaz no debe permitir aprobar en bloque motivos distintos, y hace falta muestreo de auditoría.
 
 ---
 
-*52 commits · 203 tests · Arranca en frío con un comando, verificado sobre un clon limpio.*
+*220 tests · linter en cero · CI en verde · arranca en frío con un comando, verificado sobre un clon limpio.*

@@ -200,9 +200,10 @@ Ochenta dólares de modelo por obra completa. Frente a las 2.500 horas de compra
 
 ## 10. Lo que falta, y hay que decirlo
 
-- **El histórico de respuestas**: diseñado y especificado, no construido. Es el mayor valor pendiente.
-- **La segunda anotación del gold set**: falta tu pasada a ciegas para medir tu desacuerdo contigo mismo, que pone cota a todo lo demás.
-- **El gold set es pre-anotado y revisado, no independiente.** Yo lo rellené y tú lo validaste. Hay que decirlo.
+- **Los huecos silenciosos.** Es el escape que sí tengo y lo primero de esta lista. Si el texto trae un acabado o una norma que el catálogo no conoce —`anodizado`, `xilan`, `DIN 99999`—, el sistema lo descarta y la línea se resuelve igual, porque ese atributo no es obligatorio. No inventa, pero se compra sin el acabado. **Un valor escrito que no se reconoce no puede desaparecer en silencio: tiene que ir a revisión.** Son 5 de 55 en el corpus de estrés.
+- **Las 79 líneas sin gold.** El evaluador compara el elemento principal de cada fila, y una fila de set produce tres. De las 279 líneas del bloque compuesto, 79 —tuercas y arandelas— no las ha mirado nadie. La auditoría de trazabilidad las cubre contra invención, pero no contra error.
+- **El histórico, entre sesiones.** Está construido y probado de punta a punta, pero vive en memoria del proceso: se pierde al reiniciar. Falta persistirlo y, sobre todo, cruzarlo con vuestra base de compras.
+- **El gold set es pre-anotado y revisado, no independiente.** Yo lo rellené y tú lo validaste. Hay que decirlo — y la segunda anotación que hace falta no es la tuya, que sólo mediría tu consistencia contigo mismo, sino la de dos compradores suyos. Es el criterio de salida de la puerta 1.
 - **Sin cortacircuitos**: si la clave caduca a mitad de un MTO de veinte mil filas, el sistema reintenta fila a fila hasta el final en vez de parar y avisar.
 - **Idiomas**: portugués, italiano y alemán no están en el catálogo de nombres. Se arregla añadiendo filas a una tabla.
 

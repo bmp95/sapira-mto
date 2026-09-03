@@ -29,11 +29,11 @@ ESTILO = """
   :root{ --hueso:#EFECE7; --tinta:#221F1D; --acento:#B54D47; --gris:#857D77; --linea:#D8D2CA; }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:"Segoe UI",Arial,sans-serif; color:var(--tinta); background:#fff}
-  .hoja{width:210mm; padding:14mm 15mm; font-size:9.3pt; line-height:1.5}
+  .hoja{width:210mm; padding:14mm 15mm 11mm; font-size:9.3pt; line-height:1.5}
   h1{font-size:21pt; letter-spacing:-.4pt; line-height:1.1; margin-bottom:1.5mm}
-  h2{font-size:12pt; margin:5mm 0 2mm; padding-bottom:1.2mm; border-bottom:1.4pt solid var(--tinta)}
+  h2{font-size:12pt; margin:4.2mm 0 1.8mm; padding-bottom:1.2mm; border-bottom:1.4pt solid var(--tinta)}
   h2:first-of-type{margin-top:3mm}
-  p{margin-bottom:2.2mm}
+  p{margin-bottom:1.9mm}
   strong{font-weight:700}
   em{font-style:italic; color:#4A4340}
   code{font-family:Consolas,monospace; font-size:8.3pt; background:#F4F1EC;
@@ -47,7 +47,55 @@ ESTILO = """
   ul{margin:0 0 2.2mm 4.5mm}
   li{margin-bottom:1mm}
   .sub{color:var(--gris); font-size:9.5pt; margin-bottom:4mm}
+  figure{margin:2.4mm 0 3mm}
+  figure svg{width:100%; height:auto; display:block}
+  figcaption{font-size:7.6pt; color:var(--gris); margin-top:1.4mm; line-height:1.35}
 """
+
+# ---------------------------------------------------------------------------
+# Figuras. Viven aqui y no en el .md para que el markdown siga leyendose como
+# markdown: en el documento solo hay una linea `:::figura nombre`.
+# ---------------------------------------------------------------------------
+
+FIGURAS = {
+    "historico": ("""
+<svg viewBox="0 0 700 104" role="img" aria-label="Se pregunta una vez y las revisiones siguientes heredan">
+  <defs><style>
+    .rv{font:700 11px "Segoe UI",Arial;fill:#221F1D}
+    .tx{font:10px "Segoe UI",Arial;fill:#857D77}
+    .lb{font:700 9.5px "Segoe UI",Arial;fill:#B54D47}
+    .kk{font:9.5px Consolas,monospace;fill:#221F1D}
+  </style></defs>
+
+  <line x1="0" y1="30" x2="700" y2="30" stroke="#D8D2CA" stroke-width="1.4"/>
+  <path d="M74 30 H256" stroke="#B54D47" stroke-width="1.4" stroke-dasharray="3 3"/>
+  <path d="M274 30 H436" stroke="#B54D47" stroke-width="1.4" stroke-dasharray="3 3"/>
+  <path d="M454 30 H616" stroke="#B54D47" stroke-width="1.4" stroke-dasharray="3 3"/>
+
+  <circle cx="65" cy="30" r="9" fill="#B54D47"/>
+  <text class="rv" x="65" y="15" text-anchor="middle">Revisi&#243;n 9</text>
+  <text class="lb" x="65" y="52" text-anchor="middle">SE PREGUNTA</text>
+
+  <circle cx="265" cy="30" r="8" fill="#fff" stroke="#221F1D" stroke-width="1.6"/>
+  <text class="rv" x="265" y="15" text-anchor="middle">Revisi&#243;n 12</text>
+  <text class="tx" x="265" y="52" text-anchor="middle">hereda</text>
+
+  <circle cx="445" cy="30" r="8" fill="#fff" stroke="#221F1D" stroke-width="1.6"/>
+  <text class="rv" x="445" y="15" text-anchor="middle">Revisi&#243;n 15</text>
+  <text class="tx" x="445" y="52" text-anchor="middle">hereda</text>
+
+  <circle cx="625" cy="30" r="8" fill="#fff" stroke="#221F1D" stroke-width="1.6"/>
+  <text class="rv" x="625" y="15" text-anchor="middle">Revisi&#243;n 21</text>
+  <text class="tx" x="625" y="52" text-anchor="middle">hereda</text>
+
+  <rect x="0" y="66" width="700" height="34" rx="3" fill="#F7F5F2" stroke="#D8D2CA"/>
+  <text class="kk" x="12" y="87">ARANDELA &#183; ACERO &#183; M16 &#183; — &#183; DIN 125 &#183; CINCADO
+    &#8594; calidad = 200 HV &#160;&#160;(J. P&#233;rez, 12-03)</text>
+</svg>""",
+    ("La clave canónica son los otros seis atributos, exactos. Si esa misma arandela viene sin "
+    "acabado es otra clave y se vuelve a preguntar; si dos respuestas humanas se contradicen, no "
+    "hereda ninguna.")),
+}
 
 _EN_LINEA = (
     (re.compile(r"`([^`]+)`"), r"<code>\1</code>"),
@@ -100,6 +148,13 @@ def markdown_a_html(md: str) -> str:
             i += 1
         elif despojada.startswith("# "):
             fuera.append(f"<h1>{_en_linea(despojada[2:])}</h1>")
+            i += 1
+        elif despojada.startswith(":::figura "):
+            nombre = despojada[len(":::figura "):].strip()
+            if nombre not in FIGURAS:
+                raise SystemExit(f"figura desconocida en el markdown: {nombre!r}")
+            svg, pie = FIGURAS[nombre]
+            fuera.append(f"<figure>{svg}<figcaption>{_en_linea(pie)}</figcaption></figure>")
             i += 1
         elif despojada == "---":
             fuera.append("<hr>")
