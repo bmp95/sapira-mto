@@ -11,9 +11,8 @@ tragarselo en silencio.
 
 Los tres documentos de texto salen de aqui:
 
-    python docs/activos/md_a_pdf.py one-pager     "1 - One-pager"
-    python docs/activos/md_a_pdf.py despliegue    "3 - De aqui a produccion, detalle"
-    python docs/activos/md_a_pdf.py guia-interna  "5 - Guia interna"
+    python docs/activos/md_a_pdf.py one-pager   "1 - One-pager"
+    python docs/activos/md_a_pdf.py despliegue  "3 - De aqui a produccion, detalle"
 
 y los dos maquetados a mano, de render.py:
 

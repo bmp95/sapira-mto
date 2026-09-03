@@ -81,7 +81,7 @@ Vuelca [`docs/metricas.md`](docs/metricas.md): qué le pasa a la cobertura si qu
 | `api/` · `front/` | Servidor FastAPI e interfaz compilada |
 | `evaluacion/` | Arnés de métricas, evaluador del blind set, ablaciones y auditoría de trazabilidad |
 | `datos/` | El MTO del enunciado, el gold set, y el generador del blind set de 300 filas |
-| `docs/` | El one-pager, la guía interna y los diagramas |
+| `docs/` | El one-pager, el plan de despliegue y los diagramas del sistema |
 
 ## Cómo está construido
 
@@ -100,9 +100,8 @@ Todo esto sale de la asimetría de coste: un escape cuesta unos 50.000 € y una
 | [One-pager](docs/1%20-%20One-pager.pdf) · [fuente](docs/one-pager.md) | El entregable del enunciado, seis secciones, 2 páginas |
 | [De aquí a producción](docs/2%20-%20De%20aqui%20a%20produccion.pdf) · [versión larga](docs/3%20-%20De%20aqui%20a%20produccion,%20detalle.pdf) | Timeline con cinco puertas, recursos y QA en producción |
 | [Cómo funciona, en diagramas](docs/4%20-%20Como%20funciona,%20en%20diagramas.pdf) | Siete diagramas del funcionamiento interno |
-| [Guía interna](docs/5%20-%20Guia%20interna.pdf) | La explicación larga, con los KPI calculados paso a paso |
 | [Métricas](docs/metricas.md) | Salida de `evaluacion.ablaciones`, regenerable |
-| [Diseño](docs/6%20-%20Diseno%20del%20sistema.pdf) · [plan](docs/diseno/) | Las decisiones, con lo que se descartó y por qué |
+| [Diseño del sistema](docs/5%20-%20Diseno%20del%20sistema.pdf) · [fuente](docs/diseno/specs/) | Las decisiones tomadas antes de escribir código, con lo que se descartó y por qué |
 
 Los seis se regeneran desde el repositorio, ninguno depende de una herramienta externa:
 

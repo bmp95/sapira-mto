@@ -9,7 +9,7 @@ lerna-debug.log*
 
 node_modules
 # front/dist SÍ se versiona a propósito: la API lo sirve en frío, sin
-# npm install ni npm run build (ver CLAUDE.md, "arranca en frío").
+# npm install ni npm run build. Ver "Arrancar" en el README de la raíz.
 dist-ssr
 *.local
 

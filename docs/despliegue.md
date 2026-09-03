@@ -2,7 +2,7 @@
 
 Bernabé Muñoz · Caso técnico Senior FDE · Anexo para la sesión
 
-Responde a las tres preguntas de Adolfo: **timeline con hitos, gestión de recursos y QA en producción.**
+Responde a las tres preguntas que me planteasteis: **timeline con hitos, gestión de recursos y QA en producción.**
 
 ---
 
@@ -66,7 +66,7 @@ Tubería, válvulas, instrumentación. Cada familia son sus tablas y su gold set
 
 **Un segundo comprador, 8 horas en total**, sólo para la anotación ciega de la puerta 1. Sin dos anotadores no hay cota de fiabilidad.
 
-**Un interlocutor de ingeniería, 2 h/semana.** Adolfo ya lo apuntó: *"tendrías que buscar una reunión con ellos y aclarar el tema"*. Hacen falta para cerrar lo que las reglas no deciden —la unidad de la longitud en los espárragos ASTM, el alcance del acabado en un set— y **son el cuello de botella real del sistema**: el 100 % de las revisiones son datos que ellos no escriben.
+**Un interlocutor de ingeniería, 2 h/semana.** Ya lo apuntasteis vosotros: *"tendrías que buscar una reunión con ellos y aclarar el tema"*. Hacen falta para cerrar lo que las reglas no deciden —la unidad de la longitud en los espárragos ASTM, el alcance del acabado en un set— y **son el cuello de botella real del sistema**: el 100 % de las revisiones son datos que ellos no escriben.
 
 **Acceso a la base de datos de compras pasadas**, en lectura. Es contra lo que hay que reconciliar, y sin verla no se puede diseñar la clave canónica definitiva.
 

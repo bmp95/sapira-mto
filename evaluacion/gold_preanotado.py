@@ -1,8 +1,10 @@
-"""Escribe el gold set PRE-ANOTADO por Claude, para que Bernabe lo valide.
+"""Escribe el gold set pre-anotado, para revisarlo celda a celda despues.
 
-AVISO: esto NO es una anotacion independiente. Quien la escribe ha visto la salida del
-sistema. Sirve para ahorrar tecleo, no para sustituir el criterio. Las celdas marcadas
-JUICIO son las que hay que revisar de verdad.
+AVISO, y es el que importa: esto NO es una anotacion independiente. Quien la
+escribe ya ha visto la salida del sistema, asi que arrastra su sesgo. Sirve para
+ahorrar tecleo, no para sustituir el criterio. Las celdas marcadas JUICIO son las
+que hay que mirar de verdad, y la anotacion que de verdad pondria cota a las
+metricas es la de dos compradores del cliente, a ciegas.
 """
 from pathlib import Path
 
