@@ -38,6 +38,8 @@ Dos propiedades hacen la alucinación estructuralmente imposible, no improbable:
 
 **Blind set propio de 300 filas no vistas**, con formatos reales de proveedor de tubería: 200 compuestas con verdad conocida dan **escape 0,0 %**; 100 adversarias —normas inventadas, calidades inexistentes, nombres de pieza inventados, cuatro filas que ni son tornillería— dan **0 invenciones**.
 
+**Corpus de estrés, 55 filas que su MTO nunca toca** —las 16 calidades sin usar, 20 normas sin usar, normas inventadas, filas degeneradas—: **0 invenciones**, y me encontró dos cosas. Una, un fallo duro: una fila que no describe ninguna pieza (`ver plano 3421-B`, una celda vacía) reventaba el pipeline. Ya es un caso previsto. Y dos, **el escape que sí tengo**: cuando el texto trae un acabado o una norma que el catálogo no conoce —`anodizado`, `xilan`, `DIN 99999`—, el sistema lo descarta y **la línea se resuelve igual**, porque ese atributo no es obligatorio. No inventa nada, pero se compra sin el acabado. Son 5 de 55 y es lo primero que arreglaría: un valor escrito que no se reconoce no puede desaparecer en silencio, tiene que ir a revisión.
+
 **Dónde falla:** de los fallos por atributo, prácticamente todos son *"no extrajo nada"* y casi ninguno *"extrajo mal"*. **El modo de fallo es la omisión, no la invención.** Las que se caen son los formatos que **no nombran la pieza principal** —`3/4" IN DIA X 200MM LONG, FULLY THREADED, C/W 2 HEAVY HEXAGON NUTS`—: un comprador deduce que es un espárrago, el sistema se niega a ponerle nombre. Y las descripciones en portugués o alemán, que se arreglan añadiendo filas a una tabla, no reentrenando nada.
 
 **Coste y latencia:** 0,0008 $ y 0,83 s por fila. Una obra completa —100.000 filas en 25 revisiones— sale por **unos 80 $ de modelo**, frente a las ~2.500 horas de comprador que hoy cuesta leerlas.
@@ -66,4 +68,4 @@ Dos propiedades hacen la alucinación estructuralmente imposible, no improbable:
 
 ---
 
-*45 commits · 181 tests · Arranca en frío con un comando.*
+*52 commits · 203 tests · Arranca en frío con un comando, verificado sobre un clon limpio.*

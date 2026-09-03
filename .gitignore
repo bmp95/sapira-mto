@@ -30,3 +30,5 @@ docs/activos/guia_p*.png
 docs/activos/detalle_*.png
 docs/activos/logo_b64.txt
 docs/activos/.*.render.html
+docs/activos/*-doc.html
+docs/activos/*-doc.png
