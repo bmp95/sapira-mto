@@ -1,6 +1,5 @@
-import pytest
-from motor.modelos import LineaSalida, Valor, Procedencia
-from motor.historico import Historico, RespuestaHistorica, clave_de, Hallazgo
+from motor.historico import Hallazgo, Historico, RespuestaHistorica, clave_de
+from motor.modelos import LineaSalida, Procedencia, Valor
 
 
 def _linea(**kw):

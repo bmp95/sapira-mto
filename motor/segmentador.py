@@ -1,5 +1,6 @@
 """A1. Vota 3 pasadas: la firma es (numero, tipos). Los votos alimentan la confianza."""
 from collections import Counter
+
 from motor.modelos import Segmentacion
 from motor.puerto_llm import PuertoLLM
 

@@ -1,4 +1,4 @@
-from motor.catalogos import emparejar, ACABADOS, CALIDADES_ALIAS, GRUPOS_CALIDAD, NORMAS_DIN_ISO, normalizar_norma
+from motor.catalogos import ACABADOS, CALIDADES_ALIAS, GRUPOS_CALIDAD, emparejar, normalizar_norma
 from motor.saneado import sanear
 
 

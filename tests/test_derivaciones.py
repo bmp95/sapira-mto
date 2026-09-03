@@ -1,4 +1,5 @@
 import pytest
+
 from motor.catalogos import GRUPOS_CALIDAD
 from motor.derivaciones import material_de_calidad, material_de_norma, nombre_de_norma
 
@@ -35,6 +36,7 @@ def test_calidad_desconocida_no_deriva_nada():
 def test_nombre_se_deriva_de_la_norma(norma, esperado):
     valor, regla = nombre_de_norma(norma)
     assert valor == esperado
+    assert regla, "un valor derivado sin regla no es auditable"
 
 
 def test_material_se_deriva_de_la_norma_astm_f436():

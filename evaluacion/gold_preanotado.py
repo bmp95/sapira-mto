@@ -4,12 +4,14 @@ AVISO: esto NO es una anotacion independiente. Quien la escribe ha visto la sali
 sistema. Sirve para ahorrar tecleo, no para sustituir el criterio. Las celdas marcadas
 JUICIO son las que hay que revisar de verdad.
 """
+from pathlib import Path
+
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
+
 from motor.lectura_mto import leer_mto
-from pathlib import Path
 
 C, I, X = "cierta", "interpretada", "indecidible"
 
@@ -69,7 +71,8 @@ r = 2
 vista = set()
 for fila, nombre, cant, *attrs in G:
     f = filas[fila]
-    ws.cell(row=r, column=1, value=f"L{fila:02d}-{sum(1 for g in G[:G.index((fila,nombre,cant,*attrs))] if g[0]==fila)+1}")
+    orden = sum(1 for g in G[:G.index((fila, nombre, cant, *attrs))] if g[0] == fila) + 1
+    ws.cell(row=r, column=1, value=f"L{fila:02d}-{orden}")
     ws.cell(row=r, column=2, value=fila)
     if fila not in vista:
         vista.add(fila)

@@ -16,6 +16,7 @@ Los estilos de escritura salen de formatos reales de proveedor de tornilleria de
   "2.1/2 IN DIA X 470MM LONG, FULLY THREADED, C/W 2 HEAVY HEXAGON NUTS"
 """
 import random
+
 import openpyxl
 
 random.seed(20260901)  # reproducible: el blind set es el mismo en cada ejecucion
@@ -51,8 +52,8 @@ filas = []   # (descripcion, material_col, medida_col, cantidad, bloque, gold)
 
 def _g(**kw):
     """Gold de una linea: solo los atributos que la fila fija de verdad."""
-    base = dict(nombre=None, material=None, calidad=None, medida=None,
-                longitud=None, norma=None, acabado=None)
+    base = {"nombre": None, "material": None, "calidad": None, "medida": None,
+                "longitud": None, "norma": None, "acabado": None}
     base.update(kw)
     return base
 
@@ -149,8 +150,13 @@ def bloque_a():
     # A5 - sets metricos completos
     for _ in range(40):
         dt, it = random.choice(NORMAS_TORNILLO)
-        dn, inn = random.choice(NORMAS_TUERCA)
-        da, ia = random.choice(NORMAS_ARANDELA)
+        # Solo se guarda el nombre DIN que va escrito en el texto: la forma
+        # canonica de tuerca y arandela se descarta a proposito porque el gold
+        # de esta fila describe UNICAMENTE el elemento principal. Es la
+        # limitacion de la medida, y esta declarada en el informe: de las 279
+        # lineas que produce el bloque A, el gold solo cubre 200.
+        dn, _ = random.choice(NORMAS_TUERCA)
+        da, _ = random.choice(NORMAS_ARANDELA)
         med = random.choice(METRICAS)
         lar = random.choice(LARGOS)
         cal = random.choice(CAL_ACERO)
@@ -172,7 +178,8 @@ def bloque_a():
 
 def bloque_b():
     out = []
-    A = lambda t, m="", md="", c=1: out.append((t, m, md, c, None))
+    def A(t, m="", md="", c=1):
+        out.append((t, m, md, c, None))
 
     # normas que no existen
     for n in ("DIN 99999", "DIN 12345", "ISO 99999", "ASTM Z999", "MSS SP-999", "EN 000000"):

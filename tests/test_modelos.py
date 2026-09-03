@@ -1,5 +1,6 @@
 import pytest
-from motor.modelos import Procedencia, Valor, LineaSalida, Estado
+
+from motor.modelos import Estado, LineaSalida, Procedencia, Valor
 
 
 def test_valor_extraido_exige_span_y_literal():

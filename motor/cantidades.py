@@ -7,7 +7,6 @@ hay 2*40 = 80 arandelas.
 """
 import re
 
-
 _PATRONES_SUSTANTIVOS = (
     # Compuestos primero (más específicos)
     r"STUD\s+BOLTS?",

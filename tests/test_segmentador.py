@@ -4,10 +4,16 @@ from motor.segmentador import segmentar_con_votacion
 
 class PuertoGuion:
     """Devuelve una segmentacion distinta en cada pasada, segun guion."""
-    def __init__(self, guion): self.guion, self.i = guion, 0
+    def __init__(self, guion):
+        self.guion, self.i = guion, 0
+
     def segmentar(self, texto):
-        s = self.guion[self.i % len(self.guion)]; self.i += 1; return s
-    def extraer(self, tramo): return []
+        s = self.guion[self.i % len(self.guion)]
+        self.i += 1
+        return s
+
+    def extraer(self, tramo):
+        return []
 
 
 def _seg(*tipos):

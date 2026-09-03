@@ -193,7 +193,7 @@ class PuertoGemini:
     # ------------------------------------------------------------------
 
     def _clave_cache(self, texto: str) -> str:
-        material = f"{self.modelo}\x1f{texto}".encode("utf-8")
+        material = f"{self.modelo}\x1f{texto}".encode()
         return hashlib.sha256(material).hexdigest()
 
     def _ruta_cache(self, clave: str) -> Path:
@@ -284,7 +284,7 @@ class PuertoGemini:
             # Comprobacion explicita con hay_solape antes de aceptar: si este tramo se solapa
             # con uno ya aceptado, se descarta -- nunca se devuelve una Segmentacion con
             # elementos solapados.
-            if hay_solape(Segmentacion(elementos=elementos + [candidata])):
+            if hay_solape(Segmentacion(elementos=[*elementos, candidata])):
                 self._registrar_descarte(trozo, "SOLAPE", item["tipo_indicado"])
                 continue
             elementos.append(candidata)

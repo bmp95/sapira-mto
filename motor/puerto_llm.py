@@ -1,5 +1,6 @@
 """El proveedor vive detras de un puerto. Cambiar de modelo es un parametro."""
 from typing import Protocol
+
 from motor.modelos import Segmentacion
 
 

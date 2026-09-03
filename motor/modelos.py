@@ -1,7 +1,8 @@
 """Tipos del dominio. El estado nunca se escribe: se deriva de la confianza."""
 from __future__ import annotations
+
 from enum import Enum
-from typing import Optional
+
 from pydantic import BaseModel, model_validator
 
 ATRIBUTOS = ("nombre", "material", "calidad", "medida", "longitud", "norma", "acabado")
@@ -31,12 +32,12 @@ PUNTOS_PROCEDENCIA = {
 
 
 class Valor(BaseModel):
-    valor: Optional[str] = None
-    literal: Optional[str] = None
-    span: Optional[tuple[int, int]] = None
+    valor: str | None = None
+    literal: str | None = None
+    span: tuple[int, int] | None = None
     procedencia: Procedencia
-    regla: Optional[str] = None
-    confianza: Optional[int] = None
+    regla: str | None = None
+    confianza: int | None = None
     factores: dict[str, int] = {}
 
     @model_validator(mode="after")
@@ -53,7 +54,7 @@ class Valor(BaseModel):
         return self
 
     @property
-    def confianza_procedencia(self) -> Optional[int]:
+    def confianza_procedencia(self) -> int | None:
         return PUNTOS_PROCEDENCIA.get(self.procedencia)
 
 
@@ -72,9 +73,9 @@ class Segmentacion(BaseModel):
 class Motivo(BaseModel):
     codigo: str
     texto: str
-    atributo: Optional[str] = None
-    valor_propuesto: Optional[str] = None
-    factor_limitante: Optional[str] = None
+    atributo: str | None = None
+    valor_propuesto: str | None = None
+    factor_limitante: str | None = None
 
 
 class LineaSalida(BaseModel):
@@ -99,10 +100,10 @@ class LineaSalida(BaseModel):
     # resaltar. Ambos con default para no romper ningun constructor
     # existente (LineaSalida.vacia() y los tests que la usan): es aditivo.
     texto_origen: str = ""
-    tramo: Optional[tuple[int, int]] = None
+    tramo: tuple[int, int] | None = None
 
     @classmethod
-    def vacia(cls, id: str, fila_origen: int, cantidad: int) -> "LineaSalida":
+    def vacia(cls, id: str, fila_origen: int, cantidad: int) -> LineaSalida:
         hueco = Valor(procedencia=Procedencia.AUSENTE)
         return cls(id=id, fila_origen=fila_origen, cantidad=cantidad,
                    **{a: hueco.model_copy() for a in ATRIBUTOS})

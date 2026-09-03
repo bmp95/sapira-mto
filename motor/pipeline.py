@@ -34,8 +34,14 @@ from motor.coherencias import TODAS_ACTIVAS, comprobar
 from motor.confianza import aplicar_confianza
 from motor.derivaciones import material_de_calidad, material_de_norma, nombre_de_norma
 from motor.historico import Hallazgo, Historico, clave_de
-from motor.invariantes import (UMBRAL_COBERTURA, ambito_sin_dimensiones, cobertura,
-                               contar_sustantivos, hay_solape, verificar_literal)
+from motor.invariantes import (
+    UMBRAL_COBERTURA,
+    ambito_sin_dimensiones,
+    cobertura,
+    contar_sustantivos,
+    hay_solape,
+    verificar_literal,
+)
 from motor.lectura_mto import FilaMTO, leer_mto
 from motor.modelos import ATRIBUTOS, LineaSalida, Motivo, Procedencia, Valor
 from motor.puerto_llm import PuertoLLM
@@ -264,7 +270,7 @@ class _DatosElemento:
     """Lo que se extrae de un elemento antes de saber si es principal, si
     hereda algo del ambito de fila o si su medida hay que extrapolarla."""
 
-    __slots__ = ("nombre", "norma", "calidad", "acabado", "medida", "longitud", "calidad_fuente")
+    __slots__ = ("acabado", "calidad", "calidad_fuente", "longitud", "medida", "nombre", "norma")
 
     def __init__(self, texto: str, ini: int, fin: int, politicas: dict[str, bool]):
         self.nombre = _extraer_nombre(texto, ini, fin)
@@ -489,7 +495,7 @@ def _motivo_invariante_rota(texto: str, seg, politicas: dict[str, bool]) -> Moti
     cob = cobertura(texto, seg)
     if cob < UMBRAL_COBERTURA:
         return Motivo(codigo="COBERTURA_INSUFICIENTE",
-                      texto=f"La segmentaci" + chr(0xf3) + f"n solo cubre el {cob:.0%} del "
+                      texto="La segmentaci" + chr(0xf3) + f"n solo cubre el {cob:.0%} del "
                             "texto: es probable que se haya perdido un elemento entero.")
     if hay_solape(seg):
         return Motivo(codigo="SOLAPE_DE_TRAMOS",
@@ -497,7 +503,7 @@ def _motivo_invariante_rota(texto: str, seg, politicas: dict[str, bool]) -> Moti
     n_sustantivos = contar_sustantivos(texto)
     if n_sustantivos != len(seg.elementos):
         return Motivo(codigo="RECUENTO_DE_SUSTANTIVOS_INCONSISTENTE",
-                      texto=f"El esc" + chr(0xe1) + f"ner independiente cuenta "
+                      texto="El esc" + chr(0xe1) + f"ner independiente cuenta "
                             f"{n_sustantivos} sustantivos de tipo pero la segmentaci" +
                             chr(0xf3) + f"n trae {len(seg.elementos)} elementos.")
     if politicas["dimensiones_en_ambito_a_revision"] and not ambito_sin_dimensiones(texto, seg):
@@ -550,7 +556,9 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
                      interruptores_coherencia: dict[str, bool],
                      politicas: dict[str, bool],
                      historico: Historico | None = None) -> LineaSalida:
-    linea = LineaSalida.vacia(id=id_, fila_origen=fila.item, cantidad=fila.cantidad * multiplicador(texto[elem.span[0]:elem.span[1]]))
+    tramo = texto[elem.span[0]:elem.span[1]]
+    linea = LineaSalida.vacia(id=id_, fila_origen=fila.item,
+                              cantidad=fila.cantidad * multiplicador(tramo))
     linea.texto_origen = texto
     linea.tramo = elem.span
 
@@ -654,7 +662,7 @@ def _construir_linea(id_: str, fila: FilaMTO, texto: str, elem, es_principal: bo
 
     motivo_longitud = _motivo_longitud_inferida(linea)
     if motivo_longitud is not None:
-        linea.motivos = linea.motivos + [motivo_longitud]
+        linea.motivos = [*linea.motivos, motivo_longitud]
 
     return linea
 
@@ -696,7 +704,7 @@ def _procesar_fila(fila: FilaMTO, puerto: PuertoLLM, politicas: dict[str, bool],
     medidas_resueltas = _extrapolar_medida(datos, indice_principal)
 
     lineas = []
-    for i, (elem, d, medida_resuelta) in enumerate(zip(seg.elementos, datos, medidas_resueltas)):
+    for i, (elem, d, medida_resuelta) in enumerate(zip(seg.elementos, datos, medidas_resueltas, strict=True)):
         linea = _construir_linea(siguiente_id(), fila, texto, elem, i == indice_principal, d,
                                  medida_resuelta, interruptores_coherencia, politicas, historico)
         lineas.append(linea)
@@ -723,7 +731,7 @@ def procesar_mto(ruta: Path, puerto: PuertoLLM,
         try:
             lineas.extend(_procesar_fila(fila, puerto, politicas, interruptores_coherencia,
                                          siguiente_id, historico))
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - aislamiento por fila: ver el comentario
             # Una excepcion no controlada al procesar una fila (tipicamente un corte de red
             # que agoto los reintentos del puerto) no puede tumbar el lote entero -- en un
             # MTO de veinte mil filas eso significa perder horas de trabajo por un parpadeo

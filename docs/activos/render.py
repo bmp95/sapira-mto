@@ -45,12 +45,13 @@ def render(nombre: str, destino_pdf: pathlib.Path, ancho_px: int = 794) -> None:
             # con line-height apretado tambien da scrollHeight>clientHeight y
             # no es un recorte, es metrica de la fuente.
             desbordes = pagina.evaluate(
-                """() => [...document.querySelectorAll('.hoja, .cuerpo, .izq, .der, .pagina, .dos, .flujo, .notas')]
+                """() => [...document.querySelectorAll(
+                        '.hoja, .cuerpo, .izq, .der, .pagina, .dos, .flujo, .notas')]
                     .filter(e => e.scrollHeight - e.clientHeight > 2)
                     .map(e => `${e.className}: ${e.scrollHeight}>${e.clientHeight}`)"""
             )
             if desbordes:
-                raise SystemExit("CONTENIDO CORTADO en %s -> %s" % (nombre, desbordes))
+                raise SystemExit(f"CONTENIDO CORTADO en {nombre} -> {desbordes}")
 
             # Captura para revision visual, a la anchura real de la hoja.
             pagina.screenshot(path=str(AQUI / f"{nombre}.png"), full_page=True)
@@ -58,7 +59,8 @@ def render(nombre: str, destino_pdf: pathlib.Path, ancho_px: int = 794) -> None:
     finally:
         temporal.unlink(missing_ok=True)
 
-    paginas = destino_pdf.read_bytes().count(b"/Type /Page\n") or destino_pdf.read_bytes().count(b"/Type/Page")
+    crudo = destino_pdf.read_bytes()
+    paginas = crudo.count(b"/Type /Page\n") or crudo.count(b"/Type/Page")
     print(f"{destino_pdf.name}: {destino_pdf.stat().st_size // 1024} KB, ~{paginas} pag.")
 
 

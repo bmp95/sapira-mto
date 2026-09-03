@@ -6,7 +6,6 @@ from io import BytesIO
 from pathlib import Path
 
 import openpyxl
-import pytest
 from fastapi.testclient import TestClient
 
 from api.servidor import crear_app

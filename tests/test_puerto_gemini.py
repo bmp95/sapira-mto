@@ -47,7 +47,8 @@ class _ClienteFalso:
         self.models = _ModelosFalsos(respuestas)
 
 
-def _puerto(tmp_path: Path, respuestas: list[_RespuestaFalsa], **kwargs) -> tuple[PuertoGemini, _ClienteFalso]:
+def _puerto(tmp_path: Path, respuestas: list[_RespuestaFalsa],
+            **kwargs) -> tuple[PuertoGemini, _ClienteFalso]:
     cliente = _ClienteFalso(respuestas)
     puerto = PuertoGemini(cliente=cliente, directorio_cache=tmp_path / "cache_llm", **kwargs)
     return puerto, cliente
@@ -98,7 +99,7 @@ def test_spans_calculados_apuntan_al_texto_correcto(tmp_path):
 
     assert len(seg.elementos) == 3
     literales_esperados = ["BOLT M16", "NUT", "WASHER"]
-    for elemento, literal in zip(seg.elementos, literales_esperados):
+    for elemento, literal in zip(seg.elementos, literales_esperados, strict=True):
         ini, fin = elemento.span
         assert texto[ini:fin] == literal
 
@@ -161,7 +162,7 @@ def test_cache_persiste_para_una_instancia_nueva(tmp_path):
         "conectores": [],
     }
     directorio = tmp_path / "cache_llm"
-    puerto1, cliente1 = _puerto(tmp_path, [_RespuestaFalsa(datos)])
+    puerto1, _ = _puerto(tmp_path, [_RespuestaFalsa(datos)])
     puerto1.segmentar(texto)
 
     cliente2 = _ClienteFalso([])  # sin respuestas preparadas: si llama, revienta

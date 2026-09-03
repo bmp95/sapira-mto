@@ -6,9 +6,14 @@ from datos.guion_falso import puerto_de_guion
 from motor.coherencias import TODAS_ACTIVAS
 from motor.lectura_mto import FilaMTO, leer_mto
 from motor.modelos import Elemento, Estado, Procedencia, Segmentacion
-from motor.pipeline import (CODIGO_FALLO_DE_PROCESO, POLITICAS_POR_DEFECTO,
-                            _calidad_de_columna_material, _procesar_fila,
-                            contar_fallos_de_proceso, procesar_mto)
+from motor.pipeline import (
+    CODIGO_FALLO_DE_PROCESO,
+    POLITICAS_POR_DEFECTO,
+    _calidad_de_columna_material,
+    _procesar_fila,
+    contar_fallos_de_proceso,
+    procesar_mto,
+)
 from motor.puerto_llm import PuertoFalso
 
 RUTA = Path("datos/MTO_tornilleria.xlsx")
@@ -359,7 +364,7 @@ def test_una_fila_fallida_no_tumba_el_lote(tmp_path):
 
     lineas = procesar_mto(ruta, puerto)
 
-    assert sorted(set(l.fila_origen for l in lineas)) == [1, 2, 3, 4, 5]
+    assert sorted({l.fila_origen for l in lineas}) == [1, 2, 3, 4, 5]
 
     fila_rota = [l for l in lineas if l.fila_origen == 3]
     assert len(fila_rota) == 1

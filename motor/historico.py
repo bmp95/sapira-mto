@@ -35,7 +35,6 @@ from __future__ import annotations
 import json
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -83,8 +82,8 @@ class Hallazgo(str, Enum):
 
 class ResultadoBusqueda(BaseModel):
     hallazgo: Hallazgo
-    valor: Optional[str] = None
-    respuesta: Optional[RespuestaHistorica] = None
+    valor: str | None = None
+    respuesta: RespuestaHistorica | None = None
     candidatas: list[RespuestaHistorica] = []
 
 
@@ -122,7 +121,7 @@ class Historico:
         Path(ruta).write_text(json.dumps(datos, ensure_ascii=False, indent=2), encoding="utf-8")
 
     @classmethod
-    def cargar(cls, ruta: str | Path) -> "Historico":
+    def cargar(cls, ruta: str | Path) -> Historico:
         datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
         historico = cls()
         for item in datos:

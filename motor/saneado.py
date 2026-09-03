@@ -13,7 +13,7 @@ _COMILLAS = {
     chr(0x00b4): "'",  # acento agudo (sin normalizar)
     chr(0x0301): "'",  # combining acute accent (resultado de NFKC sobre U+00B4)
 }
-_NORMA = re.compile(r"\b(DIN|ISO|ASME|ASTM|EN|MSS)[\s\-]*((?:SP[\s\-]*)?\d[\w\-]*)", re.I)
+_NORMA = re.compile(r"\b(DIN|ISO|ASME|ASTM|EN|MSS)[\s\-]*((?:SP[\s\-]*)?\d[\w\-]*)", re.IGNORECASE)
 
 
 def sanear(texto: str) -> str:

@@ -33,29 +33,3 @@
 Eso le pone precio a una pregunta abierta para el cliente: **si esparrago y varilla roscada son una referencia o dos en su maestro vale exactamente una linea de treinta.** No es una decision que pueda tomar yo.
 
 **Ninguna coherencia mueve el numero en este MTO, y eso NO significa que sobren.** Significa que el MTO del cliente es coherente consigo mismo: no hay ni una fila donde dos atributos escritos se contradigan. Lo que compran las coherencias solo se ve contra texto que si se contradice, y para eso esta el corpus de estres.
-
-## Corpus de estres (55 filas que el MTO nunca toca)
-
-| Resultado | Filas |
-|---|---|
-| Casos correctos resueltos | 20 |
-| Casos correctos que fueron a revision | 15 |
-| Huecos respetados (deja vacio y manda a revision) | 15 |
-| Huecos silenciosos (resuelve descartando lo que no conoce) | 5 |
-| **Invenciones** (celda con valor no rastreable) | **0** |
-
-**Huecos silenciosos.** El texto dice algo que el sistema no reconoce, lo descarta, y la linea se resuelve igual porque ese atributo no es obligatorio. No inventa nada, pero se compra sin ello:
-- fila 23 (real fuera de catalogo): `Tornillo DIN 912 M10 x 40, 12.9, anodizado`
-- fila 24 (real fuera de catalogo): `Tornillo DIN 933 M10 x 40, 8.8, xilan`
-- fila 25 (inventado): `Tornillo DIN 99999 M10 x 40, 8.8`
-- fila 26 (inventado): `Tuerca ISO 12345 M10, A4-70`
-- fila 29 (inventado): `Tornillo DIN 933 M10 x 40, 8.8, plastificado en frio`
-
-## Comparativa de modelos sobre el MTO del cliente
-
-| Modelo | Resueltas | Fallos | Tokens | Segundos | Coste |
-|---|---|---|---|---|---|
-| gemini-3.7-flash | 13/30 | 0 | 3740 | 31.1 | 0.00685 $ |
-| gemini-3.5-flash-lite | 13/30 | 0 | 3843 | 14.0 | sin precio publicado |
-
-El coste solo aparece para el modelo cuyo precio dio el pliego. Para el ligero no pongo cifra: no tengo un precio publicado que citar, y estimarlo de memoria seria inventar un dato con aspecto de medido.

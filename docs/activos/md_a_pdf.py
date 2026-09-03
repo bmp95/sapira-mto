@@ -36,7 +36,8 @@ ESTILO = """
   p{margin-bottom:2.2mm}
   strong{font-weight:700}
   em{font-style:italic; color:#4A4340}
-  code{font-family:Consolas,monospace; font-size:8.3pt; background:#F4F1EC; padding:0 .7mm; border-radius:.6mm}
+  code{font-family:Consolas,monospace; font-size:8.3pt; background:#F4F1EC;
+       padding:0 .7mm; border-radius:.6mm}
   hr{border:none; border-top:1px solid var(--linea); margin:4mm 0}
   table{width:100%; border-collapse:collapse; margin:2.5mm 0; font-size:8.5pt}
   th{text-align:left; font-size:7.2pt; letter-spacing:.7pt; text-transform:uppercase;

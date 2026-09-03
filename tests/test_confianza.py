@@ -1,15 +1,16 @@
 import pytest
-from motor.modelos import Valor, Procedencia, LineaSalida, Motivo, Estado
-from motor.confianza import confianza_celda, aplicar_confianza
+
+from motor.confianza import aplicar_confianza, confianza_celda
 from motor.invariantes import verificar_literal
+from motor.modelos import Estado, LineaSalida, Procedencia, Valor
 
 
 def _v(p, **kw):
-    base = dict(valor="X", literal="X", span=(0, 1))
+    base = {"valor": "X", "literal": "X", "span": (0, 1)}
     if p is Procedencia.DERIVADO:
-        base = dict(valor="X", regla="MAT-8.8")
+        base = {"valor": "X", "regla": "MAT-8.8"}
     if p is Procedencia.AUSENTE:
-        base = dict()
+        base = {}
     return Valor(procedencia=p, **{**base, **kw})
 
 

@@ -17,7 +17,7 @@ from pathlib import Path
 
 import openpyxl
 
-from motor.catalogos import ACABADOS, CALIDADES_ALIAS, NOMBRES
+from motor.catalogos import ACABADOS, CALIDADES_ALIAS
 
 ATRIBUTOS = ("nombre", "material", "calidad", "medida", "longitud", "norma", "acabado")
 PRINCIPALES = {"TORNILLO", "ESPARRAGO", "VARILLA ROSCADA"}
@@ -114,7 +114,7 @@ def evaluar(ruta_salida="datos/blind_set_salida.json",
 
     # escape: linea RESUELTA con algun atributo distinto del gold
     escapes = set()
-    for item, a, desc, esp, obt in fallos:
+    for item, *_ in fallos:
         p = principal_de(por_fila.get(item, []))
         if p and p["estado"] == "RESUELTA":
             escapes.add(item)
@@ -143,11 +143,11 @@ def evaluar(ruta_salida="datos/blind_set_salida.json",
                 if not any(_norm(x) in texto for x in literales):
                     invenciones.append((item, a, v, proc, g["descripcion"]))
 
-    return dict(gold=gold, por_fila=por_fila, aciertos=aciertos, evaluables=evaluables,
-                fallos=fallos, escapes=escapes, filas_a=filas_a,
-                filas_a_resueltas=filas_a_resueltas, invenciones=invenciones,
-                filas_b=filas_b, filas_b_resueltas=filas_b_resueltas,
-                lineas=len(salida))
+    return {"gold": gold, "por_fila": por_fila, "aciertos": aciertos, "evaluables": evaluables,
+                "fallos": fallos, "escapes": escapes, "filas_a": filas_a,
+                "filas_a_resueltas": filas_a_resueltas, "invenciones": invenciones,
+                "filas_b": filas_b, "filas_b_resueltas": filas_b_resueltas,
+                "lineas": len(salida)}
 
 
 def informe(r):

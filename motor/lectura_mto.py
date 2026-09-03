@@ -1,7 +1,9 @@
 """xlsx -> filas. La cabecera esta en la fila 4; los datos empiezan en la 5."""
 from pathlib import Path
-from pydantic import BaseModel
+
 import openpyxl
+from pydantic import BaseModel
+
 from motor.saneado import sanear
 
 

@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import openpyxl
 from pydantic import BaseModel
@@ -54,27 +53,27 @@ class LineaGold(BaseModel):
     cantidad: int
     nombre: str
     conf_nombre: ConfianzaGold
-    material: Optional[str] = None
+    material: str | None = None
     conf_material: ConfianzaGold
-    calidad: Optional[str] = None
+    calidad: str | None = None
     conf_calidad: ConfianzaGold
-    medida: Optional[str] = None
+    medida: str | None = None
     conf_medida: ConfianzaGold
-    longitud: Optional[str] = None
+    longitud: str | None = None
     conf_longitud: ConfianzaGold
-    norma: Optional[str] = None
+    norma: str | None = None
     conf_norma: ConfianzaGold
-    acabado: Optional[str] = None
+    acabado: str | None = None
     conf_acabado: ConfianzaGold
 
-    def celdas(self) -> dict[str, tuple[Optional[str], ConfianzaGold]]:
+    def celdas(self) -> dict[str, tuple[str | None, ConfianzaGold]]:
         """Un par (valor, confianza) por cada uno de los 7 atributos, en el
         mismo orden que `LineaSalida.celdas()` -- misma clave, misma tabla."""
         return {atributo: (getattr(self, atributo), getattr(self, f"conf_{atributo}"))
                 for atributo in ATRIBUTOS}
 
 
-def _texto(valor) -> Optional[str]:
+def _texto(valor) -> str | None:
     return str(valor) if valor is not None else None
 
 

@@ -26,7 +26,6 @@ from dataclasses import dataclass
 from datetime import date
 from io import BytesIO
 from pathlib import Path
-from typing import Optional
 
 import openpyxl
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -35,12 +34,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from motor.coherencias import TODAS_ACTIVAS, comprobar
-from motor.historico import Historico, RespuestaHistorica, clave_de
 from motor.confianza import PUNTOS_VOTOS, aplicar_confianza
+from motor.historico import Historico, RespuestaHistorica, clave_de
 from motor.modelos import ATRIBUTOS, Estado, LineaSalida, Procedencia, Valor
-from motor.pipeline import (POLITICAS_POR_DEFECTO, _motivo_longitud_inferida,
-                            _verificar_obligatoriedad, contar_fallos_de_proceso,
-                            procesar_mto)
+from motor.pipeline import (
+    POLITICAS_POR_DEFECTO,
+    _motivo_longitud_inferida,
+    _verificar_obligatoriedad,
+    contar_fallos_de_proceso,
+    procesar_mto,
+)
 from motor.puerto_gemini import PuertoGemini
 from motor.puerto_llm import PuertoLLM
 
@@ -84,12 +87,12 @@ def _mensaje_no_xlsx(nombre: str) -> str:
 
 
 def _mensaje_sesion_no_encontrada(sesion_id: str) -> str:
-    return (f"No hay ninguna sesi" + _O + f"n '{sesion_id}' en curso. Sube el MTO de "
+    return ("No hay ninguna sesi" + _O + f"n '{sesion_id}' en curso. Sube el MTO de "
             "nuevo con /api/procesar.")
 
 
 def _mensaje_linea_no_encontrada(linea_id: str) -> str:
-    return f"No hay ninguna l" + _I + f"nea '{linea_id}' en esta sesi" + _O + "n."
+    return "No hay ninguna l" + _I + f"nea '{linea_id}' en esta sesi" + _O + "n."
 
 
 def _mensaje_atributo_invalido(atributo: str) -> str:
@@ -189,7 +192,7 @@ def _recalcular(linea: LineaSalida, atributo_resuelto: str) -> LineaSalida:
 
     motivo_longitud = _motivo_longitud_inferida(linea)
     if motivo_longitud is not None:
-        linea.motivos = linea.motivos + [motivo_longitud]
+        linea.motivos = [*linea.motivos, motivo_longitud]
 
     return linea
 
@@ -204,7 +207,7 @@ def _resolver_celda(linea: LineaSalida, atributo: str, valor: str, autor: str,
     con quien contesto y cuando en la regla, y se registra en el historico para
     que la siguiente revision de la misma pieza no vuelva a preguntar.
     """
-    fecha = date.today().isoformat()
+    fecha = date.today().isoformat()  # noqa: DTZ011 - fecha de calendario, no instante
     clave = clave_de(linea, atributo)
     setattr(linea, atributo, Valor(valor=valor, procedencia=Procedencia.HEREDADO,
                                    regla=f"HIST-{autor}-{fecha}"))
@@ -241,7 +244,7 @@ def _agrupar_por_material_canonico(lineas: list[LineaSalida]) -> list[dict]:
     for clave in orden:
         grupo = grupos[clave]
         filas.append({
-            "valores": dict(zip(ATRIBUTOS, clave)),
+            "valores": dict(zip(ATRIBUTOS, clave, strict=True)),
             "cantidad": grupo["cantidad"],
             "estado": (Estado.REVISION_MANUAL.value if grupo["en_revision"]
                       else Estado.RESUELTA.value),
@@ -254,7 +257,7 @@ def _construir_xlsx_exportacion(filas: list[dict]) -> bytes:
     libro = openpyxl.Workbook()
     hoja = libro.active
     hoja.title = "Cola de compras"
-    cabecera = list(ATRIBUTOS) + ["cantidad", "estado", "motivo"]
+    cabecera = [*list(ATRIBUTOS), "cantidad", "estado", "motivo"]
     hoja.append(cabecera)
     for fila in filas:
         hoja.append([fila["valores"][a] for a in ATRIBUTOS]
@@ -268,8 +271,8 @@ def _construir_xlsx_exportacion(filas: list[dict]) -> bytes:
 # La app
 # --------------------------------------------------------------------------
 
-def crear_app(puerto: Optional[PuertoLLM] = None, *,
-             directorio_front: Optional[Path] = None) -> FastAPI:
+def crear_app(puerto: PuertoLLM | None = None, *,
+             directorio_front: Path | None = None) -> FastAPI:
     """`puerto`, si se pasa, sustituye al puerto real (Gemini) -- es el punto de
     inyeccion que usan los tests con `PuertoFalso`, sin red. `directorio_front`
     sustituye a `front/dist` (solo para tests); si no se pasa, se mira la ruta

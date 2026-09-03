@@ -20,7 +20,6 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -28,7 +27,7 @@ from evaluacion.cargar_gold import ConfianzaGold, LineaGold, cargar_gold
 from motor.modelos import ATRIBUTOS, Estado, LineaSalida
 
 
-def _normalizar(valor: Optional[str]) -> Optional[str]:
+def _normalizar(valor: str | None) -> str | None:
     """Mayusculas, espacios colapsados. None, '' y N/A son el mismo hueco."""
     if valor is None:
         return None
@@ -47,14 +46,14 @@ class MetricaAtributo(BaseModel):
 class FallaEscape(BaseModel):
     id: str
     atributo: str
-    valor_gold: Optional[str]
-    valor_sistema: Optional[str]
+    valor_gold: str | None
+    valor_sistema: str | None
 
 
 class FallaSegmentacion(BaseModel):
     fila: int
-    nombres_sistema: list[Optional[str]]
-    nombres_gold: list[Optional[str]]
+    nombres_sistema: list[str | None]
+    nombres_gold: list[str | None]
 
 
 class Metricas(BaseModel):
@@ -77,8 +76,8 @@ class Metricas(BaseModel):
     revisiones_evaluables: int
     revisiones_ruido: int
     revisiones_dato_ausente: int
-    ruido_revision: Optional[float]
-    tasa_dato_ausente: Optional[float]
+    ruido_revision: float | None
+    tasa_dato_ausente: float | None
 
 
 def _agrupar_por_fila_sistema(lineas: list[LineaSalida]) -> dict[int, list[LineaSalida]]:
@@ -96,7 +95,7 @@ def _agrupar_por_fila_gold(gold: list[LineaGold]) -> dict[int, list[LineaGold]]:
 
 
 def _emparejar_fila(lineas_sistema: list[LineaSalida], lineas_gold: list[LineaGold]
-                    ) -> Optional[list[tuple[LineaSalida, LineaGold]]]:
+                    ) -> list[tuple[LineaSalida, LineaGold]] | None:
     """`None` si la fila es un fallo de segmentacion (numero o tipos no
     coinciden). Si no, los pares (linea_sistema, linea_gold), en orden,
     emparejados por nombre dentro de la fila."""
@@ -105,13 +104,13 @@ def _emparejar_fila(lineas_sistema: list[LineaSalida], lineas_gold: list[LineaGo
     if Counter(nombres_sistema) != Counter(nombres_gold):
         return None
 
-    por_nombre: dict[Optional[str], list[LineaSalida]] = defaultdict(list)
-    for linea, nombre in zip(lineas_sistema, nombres_sistema):
+    por_nombre: dict[str | None, list[LineaSalida]] = defaultdict(list)
+    for linea, nombre in zip(lineas_sistema, nombres_sistema, strict=True):
         por_nombre[nombre].append(linea)
 
-    siguiente_indice: dict[Optional[str], int] = defaultdict(int)
+    siguiente_indice: dict[str | None, int] = defaultdict(int)
     pares: list[tuple[LineaSalida, LineaGold]] = []
-    for linea_gold, nombre in zip(lineas_gold, nombres_gold):
+    for linea_gold, nombre in zip(lineas_gold, nombres_gold, strict=True):
         i = siguiente_indice[nombre]
         pares.append((por_nombre[nombre][i], linea_gold))
         siguiente_indice[nombre] += 1
@@ -232,7 +231,7 @@ _O = chr(0xf3)  # o con tilde
 _U = chr(0xfa)  # u con tilde
 
 
-def _pct(valor: Optional[float]) -> str:
+def _pct(valor: float | None) -> str:
     return f"{valor:.1%}" if valor is not None else "sin datos (0 l" + _I + "neas)"
 
 
@@ -242,7 +241,7 @@ def _formatear_informe(m: Metricas) -> str:
     l.append("")
     l.append("## Cifras globales")
     l.append("")
-    l.append(f"- Total de l" + _I + f"neas: {m.total_lineas}")
+    l.append("- Total de l" + _I + f"neas: {m.total_lineas}")
     l.append(f"- Cobertura: {_pct(m.cobertura)}")
     l.append(f"- Tasa de escape: {_pct(m.tasa_escape)} " +
              chr(0x2014) + " es el n" + _U + "mero que se compromete con el cliente")
@@ -250,8 +249,8 @@ def _formatear_informe(m: Metricas) -> str:
              " las mismas 15 filas que se usaron para ajustar el sistema. Esta cifra "
              "certifica consistencia con ese gold, no generalizaci" + _O + "n a filas no "
              "vistas: eso solo lo mide el corpus de estr" + _E + "s (`datos/corpus_estres.py`).")
-    l.append(f"- Exactitud de segmentaci" + _O + f"n: {_pct(m.exactitud_segmentacion)}")
-    l.append(f"- Celdas indecidibles (excluidas de la comparaci" + _O + "n): "
+    l.append("- Exactitud de segmentaci" + _O + f"n: {_pct(m.exactitud_segmentacion)}")
+    l.append("- Celdas indecidibles (excluidas de la comparaci" + _O + "n): "
              f"{m.celdas_indecidibles}")
     l.append("")
     l.append("## Revisi" + _O + "n manual: ruido vs. dato ausente")
@@ -262,7 +261,7 @@ def _formatear_informe(m: Metricas) -> str:
              _A + "ntas porque el MTO genuinamente no lo trae (dato ausente: hay que volver "
              "a ingenier" + _I + "a).")
     l.append("")
-    l.append(f"- Ruido de revisi" + _O + f"n: {_pct(m.ruido_revision)} "
+    l.append("- Ruido de revisi" + _O + f"n: {_pct(m.ruido_revision)} "
              f"({m.revisiones_ruido}/{m.revisiones_evaluables})")
     l.append(f"- Revisiones por dato ausente: {_pct(m.tasa_dato_ausente)} "
              f"({m.revisiones_dato_ausente}/{m.revisiones_evaluables})")

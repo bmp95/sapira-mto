@@ -6,6 +6,7 @@ ninguna comprobacion por elemento lo detecta porque ese elemento no existe.
 Solo la cobertura del texto lo caza.
 """
 import re
+
 from motor.modelos import Segmentacion
 
 UMBRAL_COBERTURA = 0.75

@@ -1,5 +1,7 @@
-from motor.modelos import LineaSalida, Valor, Procedencia
-from motor.coherencias import comprobar, TODAS_ACTIVAS
+import pytest
+
+from motor.coherencias import TODAS_ACTIVAS, comprobar
+from motor.modelos import LineaSalida, Procedencia, Valor
 
 
 def _linea(**kw):
@@ -200,3 +202,50 @@ def test_tornillo_m20_largo_es_valido():
     codigos = [m.codigo for m in comprobar(
         _linea(nombre="TORNILLO", medida="M20", longitud="60"), TODAS_ACTIVAS)]
     assert "LONGITUD_IMPOSIBLE" not in codigos
+
+
+# --------------------------------------------------------------------------
+# Guardian de los MENSAJES, no de las reglas. Encontrado en el repaso final:
+# INOX_CON_ACABADO_ZINC cerraba la f-string antes de tiempo y le ensenaba al
+# comprador el texto literal "{acabado.lower()}" como motivo de revision.
+# El motivo es la mitad util de una revision; uno roto la inutiliza.
+# --------------------------------------------------------------------------
+
+def _linea(**celdas):
+    linea = LineaSalida.vacia(id="L1", fila_origen=1, cantidad=1)
+    for atributo, valor in celdas.items():
+        setattr(linea, atributo, Valor(valor=valor, literal=valor, span=(0, len(valor)),
+                                       procedencia=Procedencia.EXTRAIDO))
+    return linea
+
+
+# Cada entrada dispara una comprobacion distinta. No estan todas, pero si las
+# que construyen su mensaje interpolando valores, que son las que pueden
+# romperse de esta forma.
+CASOS_QUE_DISPARAN = [
+    {"nombre": "TORNILLO", "calidad": "8"},                                  # solo tuerca
+    {"nombre": "TORNILLO", "calidad": "200HV"},                              # solo arandela
+    {"nombre": "TORNILLO", "material": "INOX", "acabado": "CINCADO"},           # inox + zinc
+    {"nombre": "TORNILLO", "material": "ALUMINIO", "acabado": "CINCADO"},       # no admite zinc
+    {"nombre": "TORNILLO", "norma": "ASTM A193", "medida": "M20"},              # sistema de medida
+    {"nombre": "TORNILLO", "material": "INOX", "calidad": "8.8"},               # material vs calidad
+    {"nombre": "ESPARRAGO", "norma": "ISO 4017"},                            # nombre vs norma
+    {"nombre": "TUERCA", "longitud": "80 mm"},                               # longitud en tuerca
+]
+
+
+@pytest.mark.parametrize("celdas", CASOS_QUE_DISPARAN)
+def test_ningun_motivo_ensena_un_marcador_sin_sustituir(celdas):
+    motivos = comprobar(_linea(**celdas), TODAS_ACTIVAS)
+    assert motivos, f"el caso {celdas} deberia disparar alguna coherencia"
+    for motivo in motivos:
+        assert "{" not in motivo.texto, f"{motivo.codigo} deja un marcador sin sustituir: {motivo.texto}"
+        assert "}" not in motivo.texto, f"{motivo.codigo} deja un marcador sin sustituir: {motivo.texto}"
+
+
+def test_el_mensaje_del_inox_nombra_el_acabado_de_verdad():
+    """La regresion concreta: antes decia '{acabado.lower()}' en vez de 'cincado'."""
+    motivos = comprobar(_linea(nombre="TORNILLO", material="INOX", acabado="CINCADO"), TODAS_ACTIVAS)
+    texto = next(m.texto for m in motivos if m.codigo == "INOX_CON_ACABADO_ZINC")
+    assert "cincado" in texto
+    assert "acabado.lower" not in texto

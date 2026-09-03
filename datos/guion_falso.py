@@ -41,7 +41,8 @@ RUTA_MTO = Path("datos/MTO_tornilleria.xlsx")
 _SEGMENTACION_POR_ITEM: dict[int, tuple[list[tuple[str, tuple[int, int]]],
                                         list[tuple[int, int]],
                                         list[tuple[int, int]]]] = {
-    # 'STUD BOLT 7/8" X 130 LG, ASTM A193, GR B7 W/2 HEX. NUT 7/8", ASTM A194, GR 2H, 2 WASHER 7/8", ASTM F436'
+    # 'STUD BOLT 7/8" X 130 LG, ASTM A193, GR B7 W/2 HEX. NUT 7/8", ASTM A194,
+    #  GR 2H, 2 WASHER 7/8", ASTM F436'
     1: ([("ESPARRAGO", (0, 41)), ("TUERCA", (42, 77)), ("ARANDELA", (79, 103))],
         [], [(41, 42), (77, 79)]),
     # 'BOLT DIN 931 M20x90 with NUT DIN 934 M20'

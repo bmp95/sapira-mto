@@ -29,10 +29,10 @@ import openpyxl
 
 from datos.corpus_estres import CASOS
 from datos.guion_falso import puerto_de_guion
+from evaluacion.trazabilidad import valor_rastreable
 from motor.coherencias import TODAS_ACTIVAS
-from motor.modelos import Estado, Procedencia
+from motor.modelos import Estado
 from motor.pipeline import POLITICAS_POR_DEFECTO, contar_fallos_de_proceso, procesar_mto
-from motor.saneado import sanear
 
 RUTA_MTO = Path("datos/MTO_tornilleria.xlsx")
 
@@ -95,29 +95,10 @@ def _xlsx_del_corpus(destino: Path) -> None:
     wb.save(destino)
 
 
-def _valor_rastreable(celda, texto: str) -> bool:
-    """Un valor es rastreable si esta LITERALMENTE en el texto de origen, o si
-    lo produjo una regla nombrada. Lo demas seria una invencion."""
-    if celda.valor is None:
-        return True
-    if celda.procedencia in (Procedencia.DERIVADO, Procedencia.HEREDADO):
-        return bool(celda.regla)
-    # Se compara contra el texto SANEADO, que es el que vio el pipeline, no
-    # contra el crudo del corpus. Comparar con el crudo marcaba como invencion
-    # justo lo que el saneado arregla: 7/8" (prima doble a comilla recta) y los
-    # espacios multiples de "DIN   933". Es el mismo error que ya se colo una
-    # vez midiendo el blind set -- buscar el valor normalizado en texto crudo.
-    #
-    # Y se comprueba el LITERAL, que es lo que se leyo, no el valor, que es lo
-    # que significa: el catalogo normaliza a proposito (ZINCADO -> CINCADO,
-    # DIN 933 -> ISO 4017) y eso no es inventar.
-    return bool(celda.literal) and celda.literal.upper() in sanear(texto).upper()
-
-
 def corpus_de_estres(puerto) -> dict:
     """Tres preguntas distintas, que antes estaban mezcladas en una:
 
-      INVENCION      un celada con un valor que no se puede rastrear al texto.
+      INVENCION      una celda con un valor que no se puede rastrear al texto.
                      Es el unico fallo que cuesta 50.000 euros.
       HUECO SILENCIOSO  el texto SI dice algo (un acabado, una norma) que el
                      sistema no reconoce, lo descarta, y la linea se resuelve
@@ -142,7 +123,7 @@ def corpus_de_estres(puerto) -> dict:
 
         for linea in del_caso:
             for nombre, celda in linea.celdas().items():
-                if not _valor_rastreable(celda, texto):
+                if not valor_rastreable(celda, texto):
                     r["invenciones"].append((i, nombre, celda.valor, texto))
 
         if esperado == "HUECO":
@@ -231,25 +212,25 @@ def informe(con_estres: bool = False) -> str:
     todas = next((d for n, _, d in coherencias if n.startswith("SIN NINGUNA")), 0)
     if solo_esparrago < 0 and todas == 0:
         partes += ["",
-                   "**Por que apagar un solo interruptor pierde una linea y apagarlos todos no.** "
+                   ("**Por que apagar un solo interruptor pierde una linea y apagarlos todos no.** "
                    "`esparrago_equivale_a_varilla` no es una comprobacion: es un SUPRESOR de "
                    "`nombre_vs_norma` para ese par concreto. La linea L022 dice `Conjunto "
                    "esparrago M20 x 200 DIN 975`, y DIN 975 es varilla roscada. Con el supresor "
                    "apagado salta NOMBRE_CONTRADICE_NORMA y la linea va a revision; con TODAS "
-                   "apagadas, `nombre_vs_norma` tampoco corre y no hay nada que saltar.", "",
-                   "Eso le pone precio a una pregunta abierta para el cliente: **si esparrago y "
+                   "apagadas, `nombre_vs_norma` tampoco corre y no hay nada que saltar."), "",
+                   ("Eso le pone precio a una pregunta abierta para el cliente: **si esparrago y "
                    "varilla roscada son una referencia o dos en su maestro vale exactamente una "
-                   "linea de treinta.** No es una decision que pueda tomar yo."]
+                   "linea de treinta.** No es una decision que pueda tomar yo.")]
 
     sin_efecto = [n for n, _, d in coherencias
                   if d == 0 and n.startswith("sin") and "esparrago" not in n]
     if len(sin_efecto) >= len(TODAS_ACTIVAS) - 1:
         partes += ["",
-                   "**Ninguna coherencia mueve el numero en este MTO, y eso NO significa que "
+                   ("**Ninguna coherencia mueve el numero en este MTO, y eso NO significa que "
                    "sobren.** Significa que el MTO del cliente es coherente consigo mismo: no "
                    "hay ni una fila donde dos atributos escritos se contradigan. Lo que compran "
                    "las coherencias solo se ve contra texto que si se contradice, y para eso "
-                   "esta el corpus de estres."]
+                   "esta el corpus de estres.")]
 
     if con_estres:
         from motor.puerto_gemini import PuertoGemini
@@ -268,9 +249,9 @@ def informe(con_estres: bool = False) -> str:
             partes += ["", "**Invenciones detectadas:**"]
             partes += [f"- fila {i}, `{a}` = `{v}` sobre `{tx}`" for i, a, v, tx in r["invenciones"]]
         if r["huecos_silenciosos"]:
-            partes += ["", "**Huecos silenciosos.** El texto dice algo que el sistema no reconoce, "
+            partes += ["", ("**Huecos silenciosos.** El texto dice algo que el sistema no reconoce, "
                            "lo descarta, y la linea se resuelve igual porque ese atributo no es "
-                           "obligatorio. No inventa nada, pero se compra sin ello:"]
+                           "obligatorio. No inventa nada, pero se compra sin ello:")]
             partes += [f"- fila {i} ({c}): `{tx}`" for i, c, tx in r["huecos_silenciosos"]]
     if con_estres:
         partes += ["", "## Comparativa de modelos sobre el MTO del cliente", "",
@@ -278,9 +259,9 @@ def informe(con_estres: bool = False) -> str:
                           [(f["modelo"], f["resueltas"], f["fallos"], f["tokens"],
                             f["segundos"], f["coste"]) for f in comparar_modelos()]),
                    "",
-                   "El coste solo aparece para el modelo cuyo precio dio el pliego. Para el "
+                   ("El coste solo aparece para el modelo cuyo precio dio el pliego. Para el "
                    "ligero no pongo cifra: no tengo un precio publicado que citar, y estimarlo "
-                   "de memoria seria inventar un dato con aspecto de medido."]
+                   "de memoria seria inventar un dato con aspecto de medido.")]
 
     return "\n".join(partes)
 

@@ -124,8 +124,8 @@ def test_fila_con_fallo_de_segmentacion_no_puntua_en_atributos():
 
 
 def test_exactitud_de_segmentacion_promedia_filas_alineadas_y_rotas():
-    lineas = _sistema_fallo_segmentacion() + [_resuelta_bien()]
-    gold = _gold_fallo_segmentacion() + [_gold_linea("L002", fila=2, nombre="TORNILLO", calidad="10.9")]
+    lineas = [*_sistema_fallo_segmentacion(), _resuelta_bien()]
+    gold = [*_gold_fallo_segmentacion(), _gold_linea("L002", fila=2, nombre="TORNILLO", calidad="10.9")]
     m = evaluar(lineas=lineas, gold=gold)
     assert m.exactitud_segmentacion == 1 / 2
 

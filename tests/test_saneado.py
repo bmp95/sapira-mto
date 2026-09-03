@@ -46,4 +46,4 @@ def test_comillas_curvas_siguen_en_el_diccionario():
     for malo, bueno in esperado.items():
         resultado = sanear(malo).strip()  # strip porque NFKC puede agregar espacios
         assert resultado == bueno, \
-            f"sanear({repr(malo)}) devolvió {repr(resultado)}, esperaba {repr(bueno)}"
+            f"sanear({malo!r}) devolvió {resultado!r}, esperaba {bueno!r}"

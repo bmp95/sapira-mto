@@ -3,12 +3,14 @@
 NO rellena ningun valor. El numero de lineas que escriba Bernabe en cada fila ES su
 decision de segmentacion, y por eso no se le da hecha.
 """
+from pathlib import Path
+
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
+
 from motor.lectura_mto import leer_mto
-from pathlib import Path
 
 ATRIBUTOS = ["nombre", "material", "calidad", "medida", "longitud", "norma", "acabado"]
 HUECOS = 4
@@ -41,7 +43,8 @@ for f in filas:
         ws.cell(row=r, column=1, value=f"L{f.item:02d}-{h + 1}")
         ws.cell(row=r, column=2, value=f.item)
         if h == 0:
-            ws.cell(row=r, column=3, value=f.descripcion).alignment = Alignment(wrap_text=True, vertical="top")
+            ws.cell(row=r, column=3, value=f.descripcion).alignment = Alignment(
+                wrap_text=True, vertical="top")
             ws.cell(row=r, column=4, value=f.material_col)
             ws.cell(row=r, column=5, value=f.medida_col)
             ws.cell(row=r, column=6, value=f.cantidad)
@@ -57,7 +60,8 @@ ultima = r - 1
 
 # Desplegable de confianza en las 7 columnas "conf"
 dv = DataValidation(type="list", formula1='"cierta,interpretada,indecidible"', allow_blank=True)
-dv.prompt = "cierta = esta escrito en el MTO | interpretada = lo decides tu con una regla | indecidible = ni las reglas ni tu lo sabeis"
+dv.prompt = ("cierta = esta escrito en el MTO | interpretada = lo decides tu con una "
+             "regla | indecidible = ni las reglas ni tu lo sabeis")
 dv.promptTitle = "Cuanto te fias de esta celda"
 ws.add_data_validation(dv)
 COLS_CONF = [8] + [11 + i * 2 for i in range(len(ATRIBUTOS) - 1)]

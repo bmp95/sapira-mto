@@ -1,6 +1,11 @@
+from motor.invariantes import (
+    ambito_sin_dimensiones,
+    cobertura,
+    contar_sustantivos,
+    hay_solape,
+    verificar_literal,
+)
 from motor.modelos import Elemento, Segmentacion
-from motor.invariantes import (ambito_sin_dimensiones, cobertura, contar_sustantivos,
-                               hay_solape, verificar_literal)
 
 
 def test_literal_verificado():

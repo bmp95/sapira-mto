@@ -15,3 +15,34 @@ markers = [
 
 [tool.setuptools]
 packages = ["motor", "api"]
+
+# ---------------------------------------------------------------------------
+# Estilo declarado, no heredado de los defaults de la herramienta: si el linter
+# cambia de opinion en una version nueva, el proyecto no cambia con el.
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 110          # lo que el codigo respeta ya; no una aspiracion
+target-version = "py312"
+exclude = ["front"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "ISC", "RUF", "FURB", "DTZ", "BLE"]
+ignore = [
+    # El caso pide identificadores sin tilde y mensajes CON tilde. Los mensajes
+    # de usuario se construyen con chr(0x....) a proposito (ver la cabecera de
+    # motor/saneado.py): un guardian de estilo no debe empujar a teclearlos.
+    "RUF001", "RUF002", "RUF003",
+    # `l` es "linea" y el dominio entero va de lineas: `for l in lineas` se lee
+    # solo. E741 existe por la confusion de l/I/O en fuentes con serifa, y aqui
+    # se usa de forma consistente en 65 sitios. Decision tomada, no descuido.
+    "E741",
+    # `class Procedencia(str, Enum)` -> `StrEnum` NO es un cambio cosmetico:
+    # str(Procedencia.EXTRAIDO) pasa de "Procedencia.EXTRAIDO" a "EXTRAIDO", y
+    # esos valores viajan al front y al xlsx exportado. Se queda como esta.
+    "UP042",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# `archivo: UploadFile = File(...)` es el idioma de FastAPI para declarar un
+# campo multipart. No es un descuido: es como se escribe.
+"api/servidor.py" = ["B008"]
