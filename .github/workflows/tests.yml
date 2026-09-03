@@ -1,0 +1,40 @@
+# Prueba lo mismo que se promete en el README: que un clon limpio arranca y
+# pasa los tests sin red, sin clave de Gemini y sin Node.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar desde cero
+        run: pip install -e ".[dev]" ruff
+
+      - name: Estilo
+        run: ruff check .
+
+      - name: Tests
+        # Sin --red: los que llaman de verdad a Gemini se saltan. Que la suite
+        # pase sin GEMINI_API_KEY es parte de lo que se esta comprobando.
+        run: pytest -q
+
+      - name: El servidor levanta y responde
+        run: |
+          python arrancar.py &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/ >/dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/ >/dev/null

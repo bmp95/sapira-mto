@@ -1,0 +1,17 @@
+# Finales de linea declarados, no dependientes de la maquina de quien clona.
+# El repositorio guarda LF siempre; en Windows se saca CRLF en el arbol de
+# trabajo. Sin esto, cada clon en otro sistema ensucia el diff entero.
+* text=auto eol=lf
+
+# Binarios: nunca se tocan.
+*.xlsx  binary
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.woff2 binary
+*.ico   binary
+
+# El front compilado va versionado a proposito (arranque sin Node), pero no
+# tiene por que aparecer en las estadisticas de lenguaje ni en los diffs.
+front/dist/**   linguist-generated=true
+front/package-lock.json linguist-generated=true
