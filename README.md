@@ -97,17 +97,17 @@ Todo esto sale de la asimetría de coste: un escape cuesta unos 50.000 € y una
 
 | Documento | Qué es |
 |---|---|
-| [One-pager](docs/One-pager%20-%20Reconciliacion%20MTO.pdf) · [fuente](docs/one-pager.md) | El entregable del enunciado, seis secciones, 2 páginas |
-| [De aquí a producción](docs/De%20aqui%20a%20produccion%20-%20One-pager.pdf) · [versión larga](docs/De%20aqui%20a%20produccion.pdf) | Timeline con cinco puertas, recursos y QA en producción |
-| [Cómo funciona, en diagramas](docs/Guia%20interna%20-%20Como%20funciona.pdf) | Siete diagramas del funcionamiento interno |
-| [Guía interna](docs/Guia%20interna.pdf) | La explicación larga, con los KPI calculados paso a paso |
+| [One-pager](docs/1%20-%20One-pager.pdf) · [fuente](docs/one-pager.md) | El entregable del enunciado, seis secciones, 2 páginas |
+| [De aquí a producción](docs/2%20-%20De%20aqui%20a%20produccion.pdf) · [versión larga](docs/3%20-%20De%20aqui%20a%20produccion,%20detalle.pdf) | Timeline con cinco puertas, recursos y QA en producción |
+| [Cómo funciona, en diagramas](docs/4%20-%20Como%20funciona,%20en%20diagramas.pdf) | Siete diagramas del funcionamiento interno |
+| [Guía interna](docs/5%20-%20Guia%20interna.pdf) | La explicación larga, con los KPI calculados paso a paso |
 | [Métricas](docs/metricas.md) | Salida de `evaluacion.ablaciones`, regenerable |
-| [Diseño](docs/Diseno%20-%20Reconciliacion%20MTO%20Tornilleria.pdf) · [plan](docs/superpowers/) | Las decisiones, con lo que se descartó y por qué |
+| [Diseño](docs/6%20-%20Diseno%20del%20sistema.pdf) · [plan](docs/diseno/) | Las decisiones, con lo que se descartó y por qué |
 
-Los PDF se regeneran desde el repositorio:
+Los seis se regeneran desde el repositorio, ninguno depende de una herramienta externa:
 
 ```bash
-python docs/activos/md_a_pdf.py one-pager "One-pager - Reconciliacion MTO"
+python docs/activos/render.py one-pager-visual guia-visual
 ```
 
 ## La clave

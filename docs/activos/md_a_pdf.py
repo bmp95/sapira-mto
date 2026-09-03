@@ -9,8 +9,15 @@ documentos -- encabezados, negrita, cursiva, `codigo`, listas, tablas y
 reglas -- y falla de forma visible si aparece algo que no entiende, en vez de
 tragarselo en silencio.
 
-Uso:
-    python docs/activos/md_a_pdf.py one-pager "One-pager - Reconciliacion MTO"
+Los tres documentos de texto salen de aqui:
+
+    python docs/activos/md_a_pdf.py one-pager     "1 - One-pager"
+    python docs/activos/md_a_pdf.py despliegue    "3 - De aqui a produccion, detalle"
+    python docs/activos/md_a_pdf.py guia-interna  "5 - Guia interna"
+
+y los dos maquetados a mano, de render.py:
+
+    python docs/activos/render.py one-pager-visual guia-visual
 """
 
 import html

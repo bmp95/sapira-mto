@@ -1,11 +1,29 @@
-# Secretos — nunca al repositorio
+# ---------------------------------------------------------------------------
+# Secretos. Nunca al repositorio.
+# ---------------------------------------------------------------------------
 .env
 .env.*
 !.env.example
 *.key
 secrets/
 
-# Python
+# ---------------------------------------------------------------------------
+# Generado y regenerable
+# ---------------------------------------------------------------------------
+# Cache de llamadas al modelo. Se rehace sola; con ella caliente, reprocesar
+# el blind set entero es instantaneo y gratis.
+.cache_llm/
+
+# Intermedios de docs/activos. Los PDF finales SI van versionados; el HTML que
+# los produce y las capturas de revision, no (render.py y md_a_pdf.py).
+docs/activos/*-doc.html
+docs/activos/*.render.html
+docs/activos/*.png
+!docs/activos/sapira-logo.png
+
+# ---------------------------------------------------------------------------
+# Herramientas
+# ---------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 .venv/
@@ -13,22 +31,16 @@ venv/
 .pytest_cache/
 .ruff_cache/
 
-# Node
 node_modules/
 front/node_modules/
 
-# Cache de llamadas al modelo (se regenera)
-.cache_llm/
+# Andamiaje del flujo de trabajo con el que se construyo esto: briefs de tarea,
+# diffs de revision y notas de progreso. Util mientras se desarrolla, ruido
+# para quien clona.
+.superpowers/
 
+# ---------------------------------------------------------------------------
 # Sistema
+# ---------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
-
-# Renders intermedios de docs/activos (se regeneran con render.py)
-docs/activos/*-visual.png
-docs/activos/guia_p*.png
-docs/activos/detalle_*.png
-docs/activos/logo_b64.txt
-docs/activos/.*.render.html
-docs/activos/*-doc.html
-docs/activos/*-doc.png

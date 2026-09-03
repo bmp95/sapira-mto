@@ -69,8 +69,8 @@ def render(nombre: str, destino_pdf: pathlib.Path, ancho_px: int = 794) -> None:
 
 
 SALIDAS = {
-    "one-pager-visual": DOCS / "De aqui a produccion - One-pager.pdf",
-    "guia-visual": DOCS / "Guia interna - Como funciona.pdf",
+    "one-pager-visual": DOCS / "2 - De aqui a produccion.pdf",
+    "guia-visual": DOCS / "4 - Como funciona, en diagramas.pdf",
 }
 
 if __name__ == "__main__":

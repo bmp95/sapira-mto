@@ -1,6 +1,6 @@
 """El arnes de evaluacion: convierte el gold set anotado a mano (Tarea 11)
 y la salida del sistema (`motor.pipeline.procesar_mto`) en las metricas del
-spec (`docs/superpowers/specs/2026-08-31-reconciliacion-mto-design.md`,
+spec (`docs/diseno/specs/2026-08-31-reconciliacion-mto-design.md`,
 seccion 8).
 
 Alineacion de lineas (la parte delicada). El gold y el sistema pueden

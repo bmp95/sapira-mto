@@ -191,5 +191,34 @@ def informe(r):
     return "\n".join(L)
 
 
+def generar_salida(ruta_mto="datos/blind_set.xlsx", ruta_salida="datos/blind_set_salida.json"):
+    """Vuelve a pasar el blind set por el sistema y guarda el resultado.
+
+    Existe porque blind_set_salida.json es la evidencia detras de las cifras
+    publicadas, y una evidencia que no se puede regenerar no vale: nadie puede
+    comprobarla. Con la cache de llamadas caliente tarda menos de un segundo y
+    no cuesta nada; en frio son 300 llamadas al modelo.
+    """
+    from motor.pipeline import POLITICAS_POR_DEFECTO, procesar_mto
+    from motor.puerto_gemini import PuertoGemini
+
+    lineas = procesar_mto(Path(ruta_mto), PuertoGemini(), POLITICAS_POR_DEFECTO)
+    salida = [{
+        "id": l.id, "fila": l.fila_origen, "cantidad": l.cantidad,
+        "estado": l.estado.value, "confianza": l.confianza,
+        **{a: getattr(l, a).valor for a in ATRIBUTOS},
+        "procedencias": {a: getattr(l, a).procedencia.value for a in ATRIBUTOS},
+        "motivos": [{"codigo": m.codigo, "atributo": m.atributo, "texto": m.texto}
+                    for m in l.motivos],
+    } for l in lineas]
+    Path(ruta_salida).write_text(json.dumps(salida, ensure_ascii=False, indent=1),
+                                 encoding="utf-8")
+    return len(salida)
+
+
 if __name__ == "__main__":
+    import sys
+    if "--generar" in sys.argv:
+        n = generar_salida()
+        print(f"datos/blind_set_salida.json regenerado: {n} lineas")
     print(informe(evaluar()))
