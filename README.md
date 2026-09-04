@@ -56,6 +56,21 @@ Una fila del Excel recorre ocho pasos. **Sólo uno usa un modelo de lenguaje; lo
 
 **El umbral es 100, y no lo ha elegido nadie a ojo.** La confianza de una celda es el **mínimo** de cuatro hechos medidos —de dónde viene el valor, si el texto está verificado, si la segmentación fue estable y si no contradice a otro atributo—. `RESUELTA` es exactamente `confianza == 100`. Encima hay un veto independiente: si falta un campo obligatorio, la confianza se pone a cero valga lo que valga ese mínimo. O el valor viene por un camino que no puede estar mal, o lo mira una persona.
 
+## La arquitectura de agentes: uno en producción, tres descartados con medición
+
+Un solo paso de los ocho usa un modelo de lenguaje. Eso no es porque sólo se diseñara uno: **se diseñaron cuatro, se midieron los cuatro, y se retiraron tres con la medición delante**, no por criterio a ojo.
+
+| Componente | Tipo | Qué le pasa al KPI si se quita |
+|---|---|---|
+| **Segmentador** — parte la prosa en las piezas que describe | Modelo · 1 llamada por fila | Se caen las 9 filas de set del MTO de ejemplo: 18 de 30 líneas |
+| Extractor por elemento | Modelo — **descartado** | Con catálogos cerrados, buscar por token lo hace igual y sin llamadas |
+| Árbitro de ambigüedad | Modelo — **descartado** | Subiría la cobertura, pero subiría el escape con ella. El cociente 1:50.000 lo mata |
+| Autoconsistencia ×3 (tres pasadas, se compara) | Modelo — **descartada** | Medida con 90 llamadas reales: 0 desacuerdos, a temperatura 0 y a 0,7 |
+
+La autoconsistencia estaba en el diseño como pilar de fiabilidad. Se construyó, se probó con 90 llamadas reales, y el factor de confianza que alimentaba valía siempre 100 — sugería una protección que no existía. Se quitó porque medirla, no porque estorbara.
+
+**El 90 % de este sistema son cuatro tablas cerradas y once comprobaciones de coherencia — código, no modelo.** El modelo hace lo único que un humano no puede hacer más barato: leer prosa libre y decir qué piezas describe.
+
 ## Arrancarlo
 
 Hace falta **Python 3.12 o superior**. No hace falta Node: la interfaz va compilada dentro del repositorio.
